@@ -57,6 +57,10 @@ friki-nights/
 | `E` | Entity spawn |
 | `T` | Scare trigger tile (which scare is set in the map's `triggers` list) |
 | `X` | Exit |
+| `F` | Fuse box (Night 1, opened with the house key) |
+| `U` | Fuse |
+
+Object details that don't fit in one character (which key opens which door, note texts, what each trigger does) are lists in the map file, assigned in reading order: the first `K` gets `keys[0]`, the first `L` gets `lockedDoors[0]`, and so on. Every object gets a stable id from its type and cell, e.g. `door-12-5`.
 
 Client and server parse the **same file**, so layouts never disagree.
 

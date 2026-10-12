@@ -33,7 +33,9 @@
 ### Plans
 - [Milestone foundation](plans/milestone-foundation.md) — development approach, roadmap, rules, template (section 12)
 - [Milestone status](plans/milestone-status.md) — live progress tracker
-- [Milestone reference](plans/milestone-reference.md) — full scope of M1–M8
+- [Milestone reference](plans/milestone-reference.md) — short scope of M1–M8
+- [Milestone stories](plans/milestones/) — detailed plan: every milestone split into stories (features) with acceptance criteria and tasks, 125 in total
+  - [M1](plans/milestones/m1-dark-house-prototype.md) · [M2](plans/milestones/m2-interactions-and-first-scares.md) · [M3](plans/milestones/m3-multiplayer.md) · [M4](plans/milestones/m4-voice.md) · [M5](plans/milestones/m5-waiting-one-and-scare-director.md) · [M6](plans/milestones/m6-progression.md) · [M7](plans/milestones/m7-content.md) · [M8](plans/milestones/m8-polish-and-release.md)
 
 ### Planning
 - [Testing](planning/testing.md) — section 13

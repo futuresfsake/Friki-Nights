@@ -1,6 +1,18 @@
 # Milestone Reference
 
-Full scope of every milestone: what it includes, what files it touches, which requirements it covers, and how it is tested. Progress is tracked in [Milestone status](milestone-status.md); the process is in [Milestone foundation](milestone-foundation.md).
+Short scope of every milestone: what it includes, what files it touches, which requirements it covers, and how it is tested. The detailed plan, with every **story (feature)**, acceptance criteria, and tasks, is in one file per milestone under [`milestones/`](milestones/). Progress is tracked in [Milestone status](milestone-status.md); the process is in [Milestone foundation](milestone-foundation.md).
+
+| Milestone | Stories | Must · Should · Could |
+| --- | --- | --- |
+| M1 Dark house prototype | 12 | 9 · 3 · 0 |
+| M2 Interactions + first scares | 18 | 15 · 2 · 1 |
+| M3 Multiplayer | 20 | 18 · 2 · 0 |
+| M4 Voice | 11 | 7 · 3 · 1 |
+| M5 The Waiting One + Scare Director | 16 | 13 · 3 · 0 |
+| M6 Progression | 10 | 6 · 3 · 1 |
+| M7 Content | 23 | 20 · 3 · 0 |
+| M8 Polish and release | 15 | 11 · 4 · 0 |
+| **Total** | **125** | **99 · 23 · 3** |
 
 ---
 
@@ -9,6 +21,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** a single-player dark house you can walk around in.
 **Done when:** runs with `npm run dev` and builds.
 **Depends on:** —
+**Stories:** 12 features → [full story list](milestones/m1-dark-house-prototype.md)
 
 **Scope**
 - First-person movement, collision, head-bob
@@ -27,6 +40,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** Night 1 works as a single-player level with puzzles and scares.
 **Done when:** Night 1 is solvable and scary alone.
 **Depends on:** M1
+**Stories:** 18 features → [full story list](milestones/m2-interactions-and-first-scares.md)
 
 **Scope**
 - Shared map format (see [LLD § Map format](../design/low-level-design.md))
@@ -50,6 +64,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** two players in the same house over the internet.
 **Done when:** two browsers finish Night 1 together at 250 ms simulated delay.
 **Depends on:** M2
+**Stories:** 20 features → [full story list](milestones/m3-multiplayer.md)
 
 **Scope**
 - Node + Express + Socket.IO server
@@ -71,6 +86,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** talk to each other inside the game.
 **Done when:** you talk in-game Cebu ↔ Europe.
 **Depends on:** M3
+**Stories:** 11 features → [full story list](milestones/m4-voice.md)
 
 **Scope**
 - WebRTC via `simple-peer`, signalled over Socket.IO
@@ -90,6 +106,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** the house fights back.
 **Done when:** the entity never moves while watched (tested) and scares respect pacing.
 **Depends on:** M3
+**Stories:** 16 features → [full story list](milestones/m5-waiting-one-and-scare-director.md)
 
 **Scope**
 - Entity state machine: DORMANT, STALK, FROZEN, HUNT, CATCH, COOLDOWN
@@ -110,6 +127,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** progress carries over between play sessions.
 **Done when:** XP, rank, perks, and unlocked nights survive a reload on both browsers.
 **Depends on:** M5
+**Stories:** 10 features → [full story list](milestones/m6-progression.md)
 
 **Scope**
 - XP formula, couple rank, perks
@@ -128,6 +146,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** the full story, Nights 2–5 and the ending.
 **Done when:** Nights 2–5 and the ending are playable together.
 **Depends on:** M6 (Night 1 complete end to end)
+**Stories:** 23 features → [full story list](milestones/m7-content.md)
 
 **Scope**
 - Night 2 Library and Study — torn letter split clue, blackouts, JS-03, JS-04, JS-09
@@ -147,6 +166,7 @@ Full scope of every milestone: what it includes, what files it touches, which re
 **Goal:** a public link you can both play on.
 **Done when:** public link works on both laptops with no critical bugs.
 **Depends on:** M7
+**Stories:** 15 features → [full story list](milestones/m8-polish-and-release.md)
 
 **Scope**
 - Settings: sensitivity, volume, sting volume, reduce flashing, subtitles

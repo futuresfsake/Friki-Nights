@@ -1,6 +1,6 @@
 # Milestone Status
 
-Live progress tracker. Update this file whenever a task or milestone changes state.
+Live progress tracker. Update this file whenever a story or milestone changes state. The stories themselves (features, acceptance criteria, tasks) live in [`milestones/`](milestones/).
 
 **Last updated:** 2026-10-12
 **Current milestone:** M2 — Interactions + first scares (next up)
@@ -8,57 +8,41 @@ Live progress tracker. Update this file whenever a task or milestone changes sta
 
 ## Overview
 
-| ID | Milestone | State | Branch | Notes |
+| ID | Milestone | State | Stories done | Branch | Story file |
+| --- | --- | --- | --- | --- | --- |
+| M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
+| M2 | Interactions + first scares | ⏭️ Next | 0 / 18 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
+| M3 | Multiplayer | ⬜ Not started | 0 / 20 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
+| M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
+| M5 | The Waiting One + Scare Director | ⬜ Not started | 0 / 16 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
+| M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
+| M7 | Content | ⬜ Not started | 0 / 23 | `m7-night2` … | [M7](milestones/m7-content.md) |
+| M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
+| | **Total** | | **12 / 125** | | |
+
+Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
+Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
+
+## Stories by priority
+
+| Milestone | Must | Should | Could | Total |
 | --- | --- | --- | --- | --- |
-| M1 | Dark house prototype | ✅ Done | `m1-prototype` (merged) | Rebuilt in `client/`; playtested |
-| M2 | Interactions + first scares | ⏭️ Next | `m2-interactions` | |
-| M3 | Multiplayer | ⬜ Not started | | |
-| M4 | Voice | ⬜ Not started | | |
-| M5 | The Waiting One + Scare Director | ⬜ Not started | | |
-| M6 | Progression | ⬜ Not started | | |
-| M7 | Content | ⬜ Not started | | |
-| M8 | Polish and release | ⬜ Not started | | |
+| M1 | 9 | 3 | 0 | 12 |
+| M2 | 15 | 2 | 1 | 18 |
+| M3 | 18 | 2 | 0 | 20 |
+| M4 | 7 | 3 | 1 | 11 |
+| M5 | 13 | 3 | 0 | 16 |
+| M6 | 6 | 3 | 1 | 10 |
+| M7 | 20 | 3 | 0 | 23 |
+| M8 | 11 | 4 | 0 | 15 |
+| **Total** | **99** | **23** | **3** | **125** |
 
-States: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
+## Current milestone: M2
 
-## M1 — Dark house prototype ✅
+Next story to start: **M2-S01 · Shared map format** (everything else in M2 builds on it).
+Full story list and tasks: [M2 — Interactions + first scares](milestones/m2-interactions-and-first-scares.md).
 
-- [x] Set up `client/` with Vite 5 + three ^0.169.0 (`dev`, `build`, `preview`, `test`)
-- [x] Start screen titled "FRIKI NIGHTS" with content warning
-- [x] First-person movement (WASD, mouse look, Shift to run)
-- [x] Grid collision with wall sliding (unit tested), head-bob
-- [x] Flashlight (F) + battery HUD
-- [x] Fog, vignette, flickering ceiling lights, low pixel ratio
-- [x] Canvas-generated textures (wallpaper, floorboards, ceiling)
-- [x] Web Audio drone, footsteps, knocks
-- [x] ASCII map (uses `S` for lights already)
-- [x] Split into modules following the LLD folder layout
-- [x] Builds; 19 unit tests pass
-- [x] Hands-on playtest: movement, mouse look, sounds, flashlight feel
-- [x] Playtest fixes: quieter, softer footsteps; flashlight blink effect (more often on low battery)
-- [x] **Done when:** runs with `npm run dev` and builds → merged into `main`
-
-## M2 — Interactions + first scares ⏭️
-
-- [ ] Shared map format in `shared/maps/`: extend `world/map.js` with `D L K N B H E T X` + unit tests
-- [ ] Doors and locked doors
-- [ ] Keys, notes, batteries as pickups
-- [ ] E to interact + interaction prompt
-- [ ] Inventory
-- [ ] Note reader UI
-- [ ] Trigger tiles (`T`)
-- [ ] Night 1 fuse box puzzle (house key opens it, fuses restore power)
-- [ ] JS-01 Face in the flashlight
-- [ ] JS-02 Door slam
-- [ ] Sounds: door creak, door slam, whispers
-- [ ] Night 1 map layout (Foyer and Parlor)
-- [ ] **Done when:** Night 1 is solvable and scary alone
-
-## M3 – M8
-
-Tasks will be listed here when each milestone starts. Scope for each is in [Milestone reference](milestone-reference.md).
-
-## Later (ideas not in the current milestone)
+## Later (ideas not in any milestone yet)
 
 - Async "Solo Visit" mode (non-goal for v1)
 
@@ -70,3 +54,4 @@ Tasks will be listed here when each milestone starts. Scope for each is in [Mile
 | 2026-10-12 | Original M1 code found to be lost → M1 back to Next (rebuild). Open questions resolved (access phrase, no checkpoints, closets, fuse box, fake voices, English, keys) |
 | 2026-10-12 | M1 rebuilt in `client/` on `m1-prototype`; tests and build pass → Testing |
 | 2026-10-12 | M1 playtested (footsteps quieter, flashlight blink added) → Done, merged into `main`; M2 next |
+| 2026-10-12 | Planning restructured: every milestone split into stories (one story = one feature); 125 stories across M1–M8 |
