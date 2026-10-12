@@ -24,12 +24,12 @@
 | M2-S13 | JS-01 Face in the flashlight | Must | M | ✅ |
 | M2-S14 | JS-02 Door slam | Must | S | ✅ |
 | M2-S15 | Whispers | Should | S | ✅ |
-| M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ⬜ |
+| M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ✅ |
 | M2-S17 | Night 1 notes (story text) | Should | S | ⬜ |
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 16 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 17 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -326,7 +326,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S16 · Night 1 layout: Foyer and Parlor
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** Story (Night 1)
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** Story (Night 1)
 
 > As a player, I want a real Foyer and Parlor to explore, so that Night 1 feels like a place, not a test map.
 
@@ -337,9 +337,9 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - No dead ends where the player can get stuck
 
 **Tasks**
-- [ ] Draw the map in `shared/maps/night1.js`
-- [ ] Place triggers for whispers, JS-01, JS-02
-- [ ] Playtest timing and tune
+- [x] Draw the map in `shared/maps/night1.js`
+- [x] Place triggers for whispers, JS-01, JS-02
+- [x] Playtest timing and tune
 
 **Tests:** playtest (full solve)
 
