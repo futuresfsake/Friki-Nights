@@ -129,6 +129,42 @@
         list-style: none;
         line-height: 1.6;
       }
+      #note {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(5, 5, 7, 0.82);
+        padding: 16px;
+      }
+      #note.show {
+        display: flex;
+      }
+      #note .paper {
+        max-width: 420px;
+        width: 100%;
+        padding: 28px 30px 20px;
+        background: #cfc6ad;
+        color: #2a2232;
+        font-size: 19px;
+        line-height: 1.55;
+        font-style: italic;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        transform: rotate(-1.2deg);
+      }
+      #note-text {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+      #note .hint {
+        margin: 18px 0 0;
+        font-size: 12px;
+        font-style: normal;
+        letter-spacing: 0.15em;
+        color: #6b6152;
+        text-align: right;
+      }
       #overlay {
         position: fixed;
         inset: 0;
@@ -189,6 +225,9 @@
       <div id="battery-bar"><div id="battery-fill"></div></div>
     </div>
     <div id="inventory"><h2>CARRYING</h2><ul id="inventory-list"></ul></div>
+    <div id="note">
+      <div class="paper"><p id="note-text"></p><p class="hint">E — PUT IT DOWN</p></div>
+    </div>
     <div id="overlay">
       <h1>FRIKI NIGHTS</h1>
       <p class="warning">

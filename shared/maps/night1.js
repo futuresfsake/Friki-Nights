@@ -10,7 +10,7 @@ export default {
     '#.S..#...S...#...S...#',
     '#..K.#.......#......C#',
     '#....###L#####.......#',
-    '#.......PP...........#',
+    '#...N...PP...........#',
     '#....###D#####.......#',
     '#C...#.......#.......#',
     '#.S..#...S...#...S...#',
@@ -22,6 +22,8 @@ export default {
   ],
   keys: ['parlor'],
   lockedDoors: ['parlor'],
-  notes: [],
+  notes: [
+    'Placeholder note. The real Night 1 story notes arrive with M2-S17.',
+  ],
   triggers: [],
 };

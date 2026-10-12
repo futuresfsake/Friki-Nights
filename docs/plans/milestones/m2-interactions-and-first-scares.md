@@ -15,7 +15,7 @@
 | M2-S04 | Doors | Must | M | ✅ |
 | M2-S05 | Locked doors and keys | Must | S | ✅ |
 | M2-S06 | Inventory | Must | S | ✅ |
-| M2-S07 | Notes and note reader | Must | M | ⬜ |
+| M2-S07 | Notes and note reader | Must | M | ✅ |
 | M2-S08 | Battery pickups | Must | S | ⬜ |
 | M2-S09 | Fuse box puzzle and power restore | Must | M | ⬜ |
 | M2-S10 | Exit and night complete | Must | S | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 7 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 8 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -165,7 +165,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S07 · Notes and note reader
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-05, Security (XSS)
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-05, Security (XSS)
 
 > As a player, I want to read notes left in the house, so that I learn the story and find clues.
 
@@ -177,10 +177,10 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Notes found are counted (for the M6 summary)
 
 **Tasks**
-- [ ] `ui/notes.js` reader
-- [ ] Paper mesh with canvas texture
-- [ ] `uiOpen` flag used by the scare framework
-- [ ] Unit test: note text length limit
+- [x] `ui/notes.js` reader
+- [x] Paper mesh with canvas texture
+- [x] `uiOpen` flag used by the scare framework
+- [x] Unit test: note text length limit
 
 **Tests:** unit, playtest
 

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { cellCenter } from '../../../shared/mapParser.js';
+import { paperTexture } from './textures.js';
 
 const HITBOX = 0.5; // small things are hard to aim at, so each gets a bigger invisible target
 
@@ -7,6 +8,7 @@ const HITBOX = 0.5; // small things are hard to aim at, so each gets a bigger in
 // later stories add more. Everything is built from primitives, no model files.
 const builders = {
   key: buildKey,
+  note: buildNote,
 };
 
 const brass = new THREE.MeshPhongMaterial({ color: 0xb08d3c, specular: 0xfff1c0, shininess: 60 });
@@ -23,6 +25,16 @@ function buildKey() {
   group.add(ring, shaft, bit);
   group.position.y = 0.03;
   return group;
+}
+
+let paper = null;
+
+function buildNote() {
+  paper ??= new THREE.MeshLambertMaterial({ map: paperTexture(), transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+  const sheet = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.3), paper);
+  sheet.rotation.x = -Math.PI / 2;
+  sheet.position.y = 0.01;
+  return sheet;
 }
 
 export function createItems(map, scene) {
@@ -67,6 +79,7 @@ export function createItems(map, scene) {
 
 // "parlor" → "Parlor key"
 export function itemName(obj) {
+  if (obj.type === 'note') return 'note';
   if (obj.type === 'key') return `${obj.keyId[0].toUpperCase()}${obj.keyId.slice(1)} key`;
   return obj.type;
 }
