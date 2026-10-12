@@ -7,6 +7,7 @@ import { createAudioEngine } from './audio/engine.js';
 import { doorCreak, doorRattle, doorShut, flashlightClick, footstep, knocks, pickupClink, startDrone } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
 import { createController } from './player/controller.js';
+import { addBattery } from './player/battery.js';
 import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
 import { createHud } from './ui/hud.js';
@@ -156,6 +157,7 @@ function handleEvent(event) {
     case 'item-taken': {
       const item = items.get(event.targetId);
       items.remove(event.targetId);
+      if (event.item === 'battery') flashlight.state.battery = addBattery(flashlight.state.battery, event.amount);
       hud.toast(`Picked up: ${itemName(item.obj)}`);
       if (audio) pickupClink(audio);
       break;
