@@ -141,3 +141,21 @@ describe('cell helpers', () => {
     expect(cellAt(5, 7)).toEqual({ cx: 2, cz: 3 });
   });
 });
+
+describe('parseMap — windows', () => {
+  it('reads a window as wall that faces its floor cell', () => {
+    const map = parseMap(['#W###', '#P..#', '#####']);
+    expect(isSolid(map, 1, 0)).toBe(true);
+    expect(map.objects).toEqual([{ id: 'window-1-0', type: 'window', x: 1, z: 0, facing: { dx: 0, dz: 1 } }]);
+  });
+
+  it('rejects windows that face no floor or several', () => {
+    expect(() => parseMap(['W####', '#P..#', '#####'])).toThrow(/exactly one floor cell/);
+    expect(() => parseMap(['#####', '#PW.#', '#####'])).toThrow(/exactly one floor cell/);
+  });
+
+  it('rejects a JS-06 trigger that names a missing window', () => {
+    const def = { grid: ['#PT#'], keys: [], lockedDoors: [], notes: [], triggers: [{ scare: 'JS-06', window: 'window-0-0' }] };
+    expect(() => parseMap(def)).toThrow(/not a window/);
+  });
+});

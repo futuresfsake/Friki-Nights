@@ -1,5 +1,6 @@
 // Night 1 — Foyer and Parlor.
-// The players wake in the Foyer. The front door (X) is sealed until the hall has power.
+// The players wake in the Foyer. The front door (X) is sealed until the hall has power;
+// a hand slams the window (W) beside it the first time someone walks past (JS-06).
 //   Dormitory (west, dark): the parlor key (JS-01 when taken), a battery, beds to hide under
 //   Parlor (east, locked): the house key and a fuse; leaving it slams the door (JS-02)
 //   Hall (south): fuse box at its east end; its lights (G) come on with the power
@@ -9,9 +10,9 @@ export default {
   id: 'night1',
   name: 'Foyer and Parlor',
   grid: [
-    '##############X###############',
+    '###########W##X###############',
     '#N......#.........#.....B....#',
-    '#C.....C#.N.....U.#........K.#',
+    '#C.....C#.N.T...U.#........K.#',
     '#.......#....S....#..........#',
     '#.......D........TL....S.....#',
     '#C..T...#.........#..........#',
@@ -38,6 +39,8 @@ export default {
     "Day 41. They took my pen, so I scratch a line in the wall for every day without your answer. If anyone reads this: the hall lights still work. The box only needs its fuses. Then the front door will let you go. — A.",
   ],
   triggers: [
+    // A hand slams the foyer window the first time someone walks past it.
+    { scare: 'JS-06', once: true, window: 'window-11-0' },
     // Leaving the parlor with the house key: the parlor door slams behind the player.
     { scare: 'JS-02', once: true, door: 'door-18-4', onlyIf: { doorOpen: 'door-18-4', hasKey: 'house' } },
     { scare: 'whisper' }, // dormitory, in the dark

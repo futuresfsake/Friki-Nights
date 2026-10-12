@@ -10,7 +10,7 @@ describe('Night 1 is solvable', () => {
 
   it('every object except beds can be reached', () => {
     for (const o of map.objects) {
-      if (o.type === 'bed' || o.type === 'trigger') continue;
+      if (o.type === 'bed' || o.type === 'trigger' || o.type === 'window') continue;
       // Doors and the exit sit between rooms; reaching their cell is enough.
       expect(cells.has(`${o.x},${o.z}`), `${o.id} is unreachable`).toBe(true);
     }

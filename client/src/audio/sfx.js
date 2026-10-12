@@ -391,6 +391,40 @@ export function whispers(audio, x, y, z, duration = 2.5) {
   src.stop(t + 0.05);
 }
 
+// JS-06: a flat palm hitting a window. Dull thump plus the pane rattling in its frame.
+export function glassBang(audio, x, y, z) {
+  const { ctx, sting, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  out.disconnect();
+  out.connect(sting);
+  const t = ctx.currentTime;
+  const thump = ctx.createOscillator();
+  thump.frequency.setValueAtTime(130, t);
+  thump.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+  const thumpGain = ctx.createGain();
+  thumpGain.gain.setValueAtTime(1.5, t);
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  thump.connect(thumpGain).connect(out);
+  thump.start(t);
+  thump.stop(t + 0.2);
+
+  const rattle = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 3200;
+  filter.Q.value = 3;
+  const rattleGain = ctx.createGain();
+  rattleGain.gain.setValueAtTime(0.0001, t);
+  for (let i = 0; i < 6; i++) {
+    const at = t + 0.02 + i * 0.045;
+    rattleGain.gain.setValueAtTime(0.5 * (1 - i / 6), at);
+    rattleGain.gain.exponentialRampToValueAtTime(0.01, at + 0.03);
+  }
+  rattle.connect(filter).connect(rattleGain).connect(out);
+  rattle.start(t, Math.random());
+  rattle.stop(t + 0.35);
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;

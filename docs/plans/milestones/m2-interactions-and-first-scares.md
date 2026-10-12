@@ -1,4 +1,4 @@
-# M2 — Interactions + First Scares 🔨
+# M2 — Interactions + First Scares ✅
 
 **Goal:** Night 1 works as a complete single-player level with a puzzle and real scares.
 **Done when:** Night 1 is solvable and scary alone.
@@ -26,10 +26,10 @@
 | M2-S15 | Whispers | Should | S | ✅ |
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ✅ |
 | M2-S17 | Night 1 notes (story text) | Should | S | ✅ |
-| M2-S18 | JS-06 Window hand | Could | M | ⬜ |
+| M2-S18 | JS-06 Window hand | Could | M | ✅ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 18 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 19 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -361,7 +361,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S18 · JS-06 Window hand
 
-**Priority:** Could · **Size:** M · **Status:** ⬜ · **Traces:** Horror design §2
+**Priority:** Could · **Size:** M · **Status:** ✅ · **Traces:** Horror design §2
 
 > As a player, I want a hand to slam against a window as I pass, so that the outside feels dangerous too.
 
@@ -371,8 +371,8 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Map format gains a window marker (to be decided in this story)
 
 **Tasks**
-- [ ] Window mesh, hand mesh, bang sound
-- [ ] Register `JS-06`
+- [x] Window mesh, hand mesh, bang sound
+- [x] Register `JS-06`
 
 **Tests:** playtest
 

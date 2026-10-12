@@ -231,3 +231,36 @@ export function faceTexture() {
     speckle(g, s, rand, 300, 0.12);
   });
 }
+
+// JS-06: a grey, dirty hand pressed flat against glass. Transparent around it.
+export function handTexture() {
+  const rand = mulberry32(131);
+  return canvasTexture(64, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    g.fillStyle = '#a49c90';
+    g.beginPath();
+    g.ellipse(s * 0.5, s * 0.68, s * 0.2, s * 0.22, 0, 0, Math.PI * 2);
+    g.fill();
+    // Four long fingers spread against the glass, and a thumb.
+    const fingers = [
+      [0.33, 0.3, -0.25],
+      [0.45, 0.22, -0.08],
+      [0.57, 0.24, 0.08],
+      [0.68, 0.32, 0.25],
+    ];
+    for (const [fx, fy, angle] of fingers) {
+      g.save();
+      g.translate(s * fx, s * fy);
+      g.rotate(angle);
+      g.fillRect(-3, -2, 6, s * 0.3);
+      g.restore();
+    }
+    g.save();
+    g.translate(s * 0.28, s * 0.66);
+    g.rotate(-1.0);
+    g.fillRect(-3, -2, 6, s * 0.18);
+    g.restore();
+    stain(g, s * 0.5, s * 0.7, 10, 'rgba(60,40,30,0.5)');
+    speckle(g, s, rand, 200, 0.2);
+  });
+}
