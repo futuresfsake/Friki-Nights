@@ -3,7 +3,8 @@ import { CELL, MAX_PLAYERS } from './constants.js';
 // One ASCII grid per night, parsed the same way by client and server.
 //   # wall   . floor   (space) wall   P player spawn (1–4)   S ceiling light
 //   D door   L locked door   X exit door   K key   N note   B battery
-//   F fuse box   U fuse   H hiding closet   E entity spawn   T scare trigger
+//   F fuse box   U fuse   H hiding closet   C bed (hide under it)
+//   E entity spawn   T scare trigger
 // Details that don't fit in one character come from lists in the map file,
 // handed out in reading order: the 1st K gets keys[0], the 1st L gets lockedDoors[0], ...
 
@@ -17,6 +18,7 @@ const OBJECT_TYPES = {
   F: 'fuseBox',
   U: 'fuse',
   H: 'closet',
+  C: 'bed',
   E: 'entitySpawn',
   T: 'trigger',
 };

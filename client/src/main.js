@@ -10,6 +10,7 @@ import { createController } from './player/controller.js';
 import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
 import { createHud } from './ui/hud.js';
+import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
 import { createCeilingLights, updateCeilingLights } from './world/lights.js';
@@ -36,12 +37,13 @@ const house = buildHouse(map);
 scene.add(house);
 const ceilingLights = createCeilingLights(map, scene);
 const doors = createDoors(map, scene);
+const beds = createBeds(map, scene);
 
-// Door cells, so collision can ask "is there a closed door here?" in constant time.
-const doorCells = new Map();
-for (const o of map.objects) if (doors.has(o.id)) doorCells.set(`${o.x},${o.z}`, o.id);
-const doorBlocks = (cx, cz) => {
-  const id = doorCells.get(`${cx},${cz}`);
+// Door and bed cells, so collision can ask "is a closed door or a bed here?" in constant time.
+const objectCells = new Map();
+for (const o of map.objects) if (doors.has(o.id) || beds.has(o.id)) objectCells.set(`${o.x},${o.z}`, o.id);
+const objectBlocks = (cx, cz) => {
+  const id = objectCells.get(`${cx},${cz}`);
   return !!id && blocksMovement(night, id);
 };
 
@@ -50,17 +52,18 @@ let audio = null;
 
 const player = createController(camera, document.body, map, {
   onStep: (running) => audio && footstep(audio, running),
-  extraSolid: doorBlocks,
+  extraSolid: objectBlocks,
 });
 const flashlight = createFlashlight(camera, {
   onToggle: () => audio && flashlightClick(audio),
 });
 const interaction = createInteraction(camera, {
   blockers: house.children,
-  targets: () => doors.panels,
+  targets: () => [...doors.panels, ...beds.meshes],
 });
 
 let nextKnockAt = 20;
+let hiding = null; // { bedId, stood } while under a bed
 
 hud.overlay.addEventListener('click', () => {
   if (!audio) {
@@ -81,7 +84,10 @@ addEventListener('resize', () => {
 
 addEventListener('keydown', (e) => {
   if (e.code !== 'KeyE' || e.repeat || !player.controls.isLocked) return;
-  const id = interaction.lookTarget();
+  // Ignore E while still crawling out, so a new hide never starts inside the bed.
+  if (!hiding && player.crawling()) return;
+  // Under a bed, E always crawls back out, wherever the player is looking.
+  const id = hiding ? hiding.bedId : interaction.lookTarget();
   if (id) interact(id);
 });
 
@@ -109,6 +115,18 @@ function handleEvent(event) {
       doors.close(event.targetId);
       if (audio) doorShut(audio, at.x, 1.2, at.z);
       break;
+    case 'hid': {
+      const bed = beds.get(event.targetId);
+      hiding = { bedId: event.targetId, stood: player.hideAt(bed.under) };
+      if (bed.lookYaw !== null) camera.rotation.set(0, bed.lookYaw, 0, 'YXZ');
+      if (audio) footstep(audio, false);
+      break;
+    }
+    case 'left-hiding':
+      player.standAt(hiding.stood);
+      hiding = null;
+      if (audio) footstep(audio, false);
+      break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -117,6 +135,7 @@ function handleEvent(event) {
         hud.toast("It's locked.");
         if (audio && at) doorRattle(audio, at.x, 1.2, at.z);
       }
+      if (event.reason === 'bed-taken') hud.toast("Someone's already under there.");
       if (event.reason === 'exit-sealed') {
         hud.toast("It won't budge.");
         if (audio && at) doorRattle(audio, at.x, 1.2, at.z);
@@ -126,7 +145,9 @@ function handleEvent(event) {
 }
 
 function describe(id) {
+  if (hiding) return 'Crawl out';
   if (!id) return null;
+  if (beds.has(id)) return 'Hide under bed';
   const door = night.doors[id];
   if (door?.exit) return door.open ? 'Close front door' : 'Open front door';
   if (door) return door.open ? 'Close door' : 'Open door';

@@ -11,7 +11,8 @@
 | `src/world/map.js` | ASCII map parser (`#` `.` `P` `S`, space = wall) |
 | `src/world/levels.js` | Prototype house map |
 | `src/world/builder.js` | Floor/ceiling/wall geometry, merged into 3 meshes |
-| `src/world/textures.js` | Seeded canvas textures: wallpaper with wainscot, floorboards, stained ceiling |
+| `src/world/textures.js` | Seeded canvas textures: cell walls (cinder block), floorboards, stained ceiling, doors, mattress |
+| `src/world/beds.js` | Iron cots built from boxes; where to put the camera when hiding underneath |
 | `src/world/lights.js` | Flickering ceiling lights (respects a `reduceFlashing` flag) |
 | `src/player/controller.js` | PointerLockControls, WASD + Shift run, head-bob, footstep timing |
 | `src/player/collision.js` | Grid collision with wall sliding |

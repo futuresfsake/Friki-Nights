@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { CELL, WALL_HEIGHT } from '../../../shared/constants.js';
 import { cellCenter } from '../../../shared/mapParser.js';
-import { doorTexture, wallpaperTexture } from './textures.js';
+import { doorTexture, wallTexture } from './textures.js';
 
 const DOOR_WIDTH = 1.3;
 const DOOR_HEIGHT = 2.3;
@@ -17,7 +17,7 @@ export function createDoors(map, scene) {
     door: new THREE.MeshLambertMaterial({ map: doorTexture('door') }),
     locked: new THREE.MeshLambertMaterial({ map: doorTexture('locked') }),
     exit: new THREE.MeshLambertMaterial({ map: doorTexture('exit') }),
-    frame: new THREE.MeshLambertMaterial({ map: wallpaperTexture() }),
+    frame: new THREE.MeshLambertMaterial({ map: wallTexture() }),
   };
   const panelGeometry = new THREE.BoxGeometry(DOOR_WIDTH, DOOR_HEIGHT, THICKNESS);
   const jambGeometry = new THREE.BoxGeometry(JAMB_WIDTH, DOOR_HEIGHT, THICKNESS * 2.5);

@@ -8,6 +8,7 @@ export function createNightState(map) {
     doors: {},
     items: {},
     notes: {},
+    beds: {},
     fuseBox: null,
     fusesNeeded: 0,
     power: false,
@@ -25,6 +26,7 @@ export function createNightState(map) {
     }
     if (o.type === 'fuse') state.fusesNeeded++;
     if (o.type === 'note') state.notes[o.id] = { text: o.text };
+    if (o.type === 'bed') state.beds[o.id] = { occupant: null };
     if (o.type === 'fuseBox') state.fuseBox = { id: o.id, locked: !!o.keyId, keyId: o.keyId, placed: 0 };
   }
   // No fuse box means no power puzzle: the exit simply starts unlocked.
@@ -33,7 +35,7 @@ export function createNightState(map) {
 }
 
 export function addPlayer(state, playerId) {
-  state.players[playerId] ??= { keys: [], fuses: 0 };
+  state.players[playerId] ??= { keys: [], fuses: 0, hidingIn: null };
   return state.players[playerId];
 }
 
@@ -52,6 +54,9 @@ export function apply(state, action) {
   if (action.type !== 'interact') return [denied('unknown-action')];
   const id = action.targetId;
 
+  // Under a bed the only thing a player can do is crawl back out.
+  if (player.hidingIn && id !== player.hidingIn) return [denied('hiding', id)];
+  if (state.beds[id]) return useBed(state, player, action.playerId, id);
   if (state.doors[id]) return interactDoor(state, player, id);
   if (state.items[id]) return pickUp(state, player, id);
   if (state.notes[id]) {
@@ -91,6 +96,20 @@ function pickUp(state, player, id) {
   return [event];
 }
 
+// One player per bed. The entity (M5) will read beds[id].occupant to know who is hidden.
+function useBed(state, player, playerId, id) {
+  const bed = state.beds[id];
+  if (player.hidingIn === id) {
+    bed.occupant = null;
+    player.hidingIn = null;
+    return [{ type: 'left-hiding', targetId: id, playerId }];
+  }
+  if (bed.occupant) return [denied('bed-taken', id)];
+  bed.occupant = playerId;
+  player.hidingIn = id;
+  return [{ type: 'hid', targetId: id, playerId }];
+}
+
 function useFuseBox(state, player) {
   const box = state.fuseBox;
   const id = box.id;
@@ -117,8 +136,9 @@ function denied(reason, targetId) {
   return { type: 'denied', reason, targetId };
 }
 
-// Closed doors (including a sealed exit) block movement; everything else is walkable.
+// Closed doors (including a sealed exit) and beds block movement; everything else is walkable.
 export function blocksMovement(state, objectId) {
+  if (state.beds[objectId]) return true;
   const door = state.doors[objectId];
   return !!door && !door.open;
 }

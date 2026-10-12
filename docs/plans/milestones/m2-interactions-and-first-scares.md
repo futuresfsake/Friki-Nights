@@ -11,8 +11,8 @@
 | --- | --- | --- | --- | --- |
 | M2-S01 | Shared map format | Must | M | ✅ |
 | M2-S02 | Night state and objectives | Must | M | ✅ |
-| M2-S03 | Interaction system (E) | Must | M | 🧪 |
-| M2-S04 | Doors | Must | M | 🧪 |
+| M2-S03 | Interaction system (E) | Must | M | ✅ |
+| M2-S04 | Doors | Must | M | ✅ |
 | M2-S05 | Locked doors and keys | Must | S | ⬜ |
 | M2-S06 | Inventory | Must | S | ⬜ |
 | M2-S07 | Notes and note reader | Must | M | ⬜ |
@@ -27,8 +27,9 @@
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ⬜ |
 | M2-S17 | Night 1 notes (story text) | Should | S | ⬜ |
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
+| M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**18 stories · 2 done · 2 testing** (15 Must · 2 Should · 1 Could)
+**19 stories · 5 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -88,7 +89,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S03 · Interaction system (E)
 
-**Priority:** Must · **Size:** M · **Status:** 🧪 · **Traces:** FR-05
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-05
 
 > As a player, I want to press E on things I'm looking at, so that I can use the world.
 
@@ -108,7 +109,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S04 · Doors
 
-**Priority:** Must · **Size:** M · **Status:** 🧪 · **Traces:** FR-05, US-07
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-05, US-07
 
 > As a player, I want to open and close doors, so that I can explore room by room.
 
@@ -374,3 +375,25 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - [ ] Register `JS-06`
 
 **Tests:** playtest
+
+### M2-S19 · Abandoned cell walls and hiding under beds
+
+**Priority:** Should · **Size:** M · **Status:** ✅ · **Traces:** FR-05, FR-17
+
+> As a player, I want the house to feel like abandoned cells, with beds I can crawl under, so that I have somewhere to hide when something comes.
+
+**Acceptance criteria**
+- Walls look like an abandoned cell: cinder blocks, peeling paint band, rust streaks, cracks, scratched tally marks
+- `C` in the map is a rusty iron cot; it blocks walking, and its back sits against the nearest wall
+- E on a bed: the player crawls underneath (camera drops to the floor, facing out into the room); E again crawls back out to where they stood
+- One player per bed; while hiding, nothing else can be used
+- Beds follow the closet rule once The Waiting One exists (M5-S10): safe only if it did not see you go under
+
+**Tasks**
+- [x] `wallTexture()` replaces the wallpaper
+- [x] `C` map character, `bed` object type
+- [x] `useBed` in `nightState`: `hid` / `left-hiding` events, `bed-taken` and `hiding` denials
+- [x] `world/beds.js` cot mesh; controller `hideAt` / `standAt` crawl tween
+- [x] Unit tests: hide and leave, one per bed, nothing else while hiding, beds block movement
+
+**Tests:** unit, playtest

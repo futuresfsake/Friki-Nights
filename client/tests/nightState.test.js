@@ -125,3 +125,37 @@ describe('night state — fuse box and exit', () => {
     expect(s.exitOpen).toBe(true);
   });
 });
+
+describe('night state — hiding under beds', () => {
+  const bedMap = parseMap({ grid: ['#######', '#PC.C.#', '###D###', '#.....#', '#######'], keys: [], lockedDoors: [], notes: [], triggers: [] });
+
+  it('hides a player under a bed and lets them crawl back out', () => {
+    const s = createNightState(bedMap);
+    expect(act(s, 'bed-2-1')).toEqual([{ type: 'hid', targetId: 'bed-2-1', playerId: 'p1' }]);
+    expect(s.beds['bed-2-1'].occupant).toBe('p1');
+    expect(s.players.p1.hidingIn).toBe('bed-2-1');
+    expect(types(act(s, 'bed-2-1'))).toEqual(['left-hiding']);
+    expect(s.beds['bed-2-1'].occupant).toBe(null);
+    expect(s.players.p1.hidingIn).toBe(null);
+  });
+
+  it('fits only one player under each bed', () => {
+    const s = createNightState(bedMap);
+    act(s, 'bed-2-1', 'p1');
+    expect(act(s, 'bed-2-1', 'p2')[0]).toMatchObject({ type: 'denied', reason: 'bed-taken' });
+    expect(types(act(s, 'bed-4-1', 'p2'))).toEqual(['hid']);
+  });
+
+  it('allows nothing else while hiding', () => {
+    const s = createNightState(bedMap);
+    act(s, 'bed-2-1');
+    expect(act(s, 'door-3-2')[0]).toMatchObject({ type: 'denied', reason: 'hiding' });
+    expect(act(s, 'bed-4-1')[0]).toMatchObject({ type: 'denied', reason: 'hiding' });
+    expect(s.doors['door-3-2'].open).toBe(false);
+  });
+
+  it('beds always block movement', () => {
+    const s = createNightState(bedMap);
+    expect(blocksMovement(s, 'bed-2-1')).toBe(true);
+  });
+});

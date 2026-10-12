@@ -85,6 +85,12 @@ describe('parseMap — objects', () => {
     expect(sideways.objects[0].axis).toBe('z');
   });
 
+  it('reads beds as walkable-grid objects', () => {
+    const map = parseMap({ ...base, grid: ['#####', '#PC.#', '#####'] });
+    expect(map.objects).toEqual([{ id: 'bed-2-1', type: 'bed', x: 2, z: 1 }]);
+    expect(isSolid(map, 2, 1)).toBe(false);
+  });
+
   it('assigns list entries in reading order', () => {
     const map = parseMap({ ...base, grid: ['#PKK#'], keys: ['a', 'b'] });
     expect(map.objects.map((o) => o.keyId)).toEqual(['a', 'b']);

@@ -5,6 +5,7 @@ import { cellCenter } from '../../../shared/mapParser.js';
 import { moveWithCollision } from './collision.js';
 
 const BOB_HEIGHT = 0.045;
+const CRAWL_RATE = 8; // how quickly the camera slides under a bed and back out
 
 export function createController(camera, domElement, map, { onStep, extraSolid }) {
   const controls = new PointerLockControls(camera, domElement);
@@ -22,9 +23,23 @@ export function createController(camera, domElement, map, { onStep, extraSolid }
   const up = new THREE.Vector3(0, 1, 0);
   let stepPhase = 0;
   let bob = 0;
+  // While set, WASD is ignored and the camera slides to this spot (hiding under a bed).
+  // release: let go once the camera has arrived (crawling back out).
+  let pin = null;
 
   function update(dt) {
     if (!controls.isLocked) return;
+    if (pin) {
+      const k = 1 - Math.exp(-CRAWL_RATE * dt);
+      camera.position.x += (pin.x - camera.position.x) * k;
+      camera.position.y += (pin.y - camera.position.y) * k;
+      camera.position.z += (pin.z - camera.position.z) * k;
+      if (pin.release && camera.position.distanceTo(pin) < 0.02) {
+        camera.position.copy(pin);
+        pin = null;
+      }
+      return;
+    }
 
     camera.getWorldDirection(forward);
     forward.y = 0;
@@ -66,5 +81,22 @@ export function createController(camera, domElement, map, { onStep, extraSolid }
     camera.position.y = EYE_HEIGHT - Math.abs(Math.sin(stepPhase)) * BOB_HEIGHT * bob;
   }
 
-  return { controls, update, keys };
+  return {
+    controls,
+    update,
+    keys,
+    // Crawl under a bed; returns where the player stood, to crawl back out to.
+    hideAt(spot) {
+      const stood = new THREE.Vector3(camera.position.x, EYE_HEIGHT, camera.position.z);
+      pin = new THREE.Vector3(spot.x, spot.y, spot.z);
+      bob = 0;
+      return stood;
+    },
+    // True while sliding under a bed or back out; WASD does nothing meanwhile.
+    crawling: () => pin !== null,
+    standAt(spot) {
+      pin = new THREE.Vector3(spot.x, EYE_HEIGHT, spot.z);
+      pin.release = true;
+    },
+  };
 }
