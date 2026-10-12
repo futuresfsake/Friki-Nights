@@ -35,7 +35,7 @@ import { createInteraction } from './player/interact.js';
 import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
-import { connectWithAccess, hideLobby } from './ui/lobby.js';
+import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
@@ -133,7 +133,9 @@ let hiding = null; // { bedId, stood } while under a bed
 
 // Connected game server; the lobby covers the game until the server lets us in.
 let socket = null;
-connectWithAccess().then((s) => {
+let playerName = null;
+connectWithAccess().then(async (s) => {
+  playerName = await askName();
   socket = s;
   hideLobby();
 });

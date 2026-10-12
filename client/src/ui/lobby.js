@@ -1,7 +1,9 @@
 import { connectToServer } from '../net/socket.js';
+import { cleanName, NAME_MAX_LENGTH } from '../../../shared/names.js';
 import { local } from '../save/storage.js';
 
 const ACCESS_KEY = 'frikiNights.access';
+const NAME_KEY = 'frikiNights.name';
 
 const MESSAGES = {
   'access-denied': 'The house does not know those words.',
@@ -60,5 +62,25 @@ function askRetry(error) {
   document.getElementById('retry-error').textContent = error;
   return new Promise((resolve) => {
     document.getElementById('retry-button').onclick = resolve;
+  });
+}
+
+// Asks for a display name, pre-filled with the last one used. Resolves with the
+// cleaned name (the server cleans it again).
+export function askName() {
+  show('screen-name');
+  const form = document.getElementById('name-form');
+  const input = document.getElementById('name-input');
+  input.maxLength = NAME_MAX_LENGTH;
+  input.value = local.get(NAME_KEY) ?? '';
+  input.focus();
+  return new Promise((resolve) => {
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const name = cleanName(input.value);
+      if (!name) return;
+      local.set(NAME_KEY, name);
+      resolve(name);
+    };
   });
 }
