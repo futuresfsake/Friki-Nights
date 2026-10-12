@@ -165,6 +165,58 @@
         color: #6b6152;
         text-align: right;
       }
+      #end {
+        position: fixed;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: rgba(5, 5, 7, 0.94);
+        text-align: center;
+        padding: 16px;
+      }
+      #end.show {
+        display: flex;
+      }
+      #end h2 {
+        margin: 0 0 8px;
+        font-size: clamp(28px, 6vw, 52px);
+        font-weight: normal;
+        letter-spacing: 0.16em;
+        color: #e8e0cc;
+      }
+      #end dl {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 6px 18px;
+        margin: 0;
+        font-size: 16px;
+      }
+      #end dt {
+        color: #8f8676;
+        text-align: right;
+        letter-spacing: 0.1em;
+      }
+      #end dd {
+        margin: 0;
+        text-align: left;
+      }
+      #end button {
+        margin-top: 18px;
+        padding: 10px 26px;
+        background: none;
+        border: 1px solid #d8d2c4;
+        color: #d8d2c4;
+        font: inherit;
+        letter-spacing: 0.2em;
+        cursor: pointer;
+      }
+      #end button:hover {
+        background: #d8d2c4;
+        color: #050507;
+      }
       #overlay {
         position: fixed;
         inset: 0;
@@ -227,6 +279,16 @@
     <div id="inventory"><h2>CARRYING</h2><ul id="inventory-list"></ul></div>
     <div id="note">
       <div class="paper"><p id="note-text"></p><p class="hint">E — PUT IT DOWN</p></div>
+    </div>
+    <div id="end">
+      <h2 id="end-title"></h2>
+      <dl>
+        <dt>TIME</dt>
+        <dd id="end-time"></dd>
+        <dt>NOTES FOUND</dt>
+        <dd id="end-notes"></dd>
+      </dl>
+      <button id="end-again" type="button">PLAY AGAIN</button>
     </div>
     <div id="overlay">
       <h1>FRIKI NIGHTS</h1>

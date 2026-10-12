@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
-import { cellCenter, parseMap } from '../../shared/mapParser.js';
+import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createAudioEngine } from './audio/engine.js';
@@ -17,18 +17,19 @@ import {
   startDrone,
 } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
-import { createController } from './player/controller.js';
 import { addBattery } from './player/battery.js';
+import { createController } from './player/controller.js';
 import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
+import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
 import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
-import { createItems, itemName } from './world/items.js';
 import { createFuseBox } from './world/fuseBox.js';
+import { createItems, itemName } from './world/items.js';
 import { createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 
 const FOG_COLOR = 0x050507;
@@ -68,6 +69,10 @@ const objectBlocks = (cx, cz) => {
 const hud = createHud();
 const inventory = createInventory();
 const reader = createNoteReader();
+const endScreen = createEndScreen({ onPlayAgain: () => location.reload() });
+const exitDoor = map.objects.find((o) => o.type === 'exit');
+let playTime = 0; // seconds actually playing, not paused
+let ended = false;
 let audio = null;
 
 const player = createController(camera, document.body, map, {
@@ -86,6 +91,7 @@ let nextKnockAt = 20;
 let hiding = null; // { bedId, stood } while under a bed
 
 hud.overlay.addEventListener('click', () => {
+  if (ended) return;
   if (!audio) {
     audio = createAudioEngine();
     startDrone(audio);
@@ -95,6 +101,7 @@ hud.overlay.addEventListener('click', () => {
 });
 player.controls.addEventListener('lock', () => hud.hideOverlay());
 player.controls.addEventListener('unlock', () => {
+  if (ended) return;
   // Esc while reading puts the note down; the browser also leaves pointer lock, so pause.
   reader.close();
   hud.showOverlay(true);
@@ -195,6 +202,17 @@ function handleEvent(event) {
       hud.toast('The power is back. Somewhere, a lock clicks.');
       if (audio) powerOn(audio);
       break;
+    case 'night-complete':
+      ended = true;
+      player.controls.unlock();
+      hud.setPrompt(null);
+      endScreen.show({
+        title: `${map.name.toUpperCase()} — NIGHT COMPLETE`,
+        seconds: playTime,
+        notesFound: night.notesRead.size,
+        notesTotal: Object.keys(night.notes).length,
+      });
+      break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -235,6 +253,14 @@ function describe(id) {
   return null;
 }
 
+// Stepping into the open exit's doorway leaves the house.
+function checkExit() {
+  if (!exitDoor || ended || !night.doors[exitDoor.id].open) return;
+  const { cx, cz } = cellAt(camera.position.x, camera.position.z);
+  if (cx !== exitDoor.x || cz !== exitDoor.z) return;
+  for (const event of apply(night, { type: 'reach-exit', playerId: PLAYER_ID })) handleEvent(event);
+}
+
 // Knocks come from a random direction a few metres away, so the player turns to look.
 function maybeKnock(time) {
   if (!audio || time < nextKnockAt) return;
@@ -262,6 +288,8 @@ renderer.setAnimationLoop(() => {
     hud.setBattery(flashlight.state.battery);
     hud.setPrompt(describe(interaction.lookTarget()));
     maybeKnock(time);
+    playTime += dt;
+    checkExit();
   }
   doors.update(dt);
   items.update(time);
