@@ -64,6 +64,8 @@ friki-nights/
 
 Object details that don't fit in one character (which key opens which door, note texts, what each trigger does) are lists in the map file, assigned in reading order: the first `K` gets `keys[0]`, the first `L` gets `lockedDoors[0]`, and so on. Every object gets a stable id from its type and cell, e.g. `door-12-5`.
 
+Scares can also be tied to events instead of tiles with an `eventTriggers` list, e.g. `{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }`: it fires when a night-state event matches every field in `when`. Tile triggers fire when a player steps onto the tile; `once` triggers never fire again for anyone (`shared/triggers.js`).
+
 Client and server parse the **same file**, so layouts never disagree.
 
 Milestone 1 uses a subset of this format (`#`, `.`, `P`, `S`, with spaces as wall) in `client/src/world/map.js`. M2 adds the remaining characters.

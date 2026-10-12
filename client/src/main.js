@@ -3,6 +3,7 @@ import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
+import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
   doorCreak,
@@ -50,6 +51,7 @@ scene.add(camera); // the flashlight is a child of the camera, so the camera mus
 
 const map = parseMap(night1);
 const night = createNightState(map);
+const triggers = createTriggers(map);
 const house = buildHouse(map);
 scene.add(house);
 const ceilingLights = createCeilingLights(map, scene);
@@ -151,6 +153,7 @@ function interact(id) {
 }
 
 function handleEvent(event) {
+  for (const trigger of onEvent(triggers, event)) fireScare(trigger);
   const door = doors.get(event.targetId);
   const at = door ? cellCenter(door.obj.x, door.obj.z) : null;
   switch (event.type) {
@@ -253,6 +256,11 @@ function describe(id) {
   return null;
 }
 
+// Placeholder until the scare framework (M2-S12) plays them.
+function fireScare(trigger) {
+  console.debug('scare', trigger.scare);
+}
+
 // Stepping into the open exit's doorway leaves the house.
 function checkExit() {
   if (!exitDoor || ended || !night.doors[exitDoor.id].open) return;
@@ -290,6 +298,8 @@ renderer.setAnimationLoop(() => {
     maybeKnock(time);
     playTime += dt;
     checkExit();
+    const cell = cellAt(camera.position.x, camera.position.z);
+    for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
   doors.update(dt);
   items.update(time);
