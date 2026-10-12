@@ -4,7 +4,7 @@ import { cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createAudioEngine } from './audio/engine.js';
-import { doorCreak, doorRattle, doorShut, flashlightClick, footstep, knocks, startDrone } from './audio/sfx.js';
+import { doorCreak, doorRattle, doorShut, flashlightClick, footstep, knocks, pickupClink, startDrone } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
 import { createController } from './player/controller.js';
 import { createFlashlight } from './player/flashlight.js';
@@ -13,6 +13,7 @@ import { createHud } from './ui/hud.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
+import { createItems, itemName } from './world/items.js';
 import { createCeilingLights, updateCeilingLights } from './world/lights.js';
 
 const FOG_COLOR = 0x050507;
@@ -38,6 +39,7 @@ scene.add(house);
 const ceilingLights = createCeilingLights(map, scene);
 const doors = createDoors(map, scene);
 const beds = createBeds(map, scene);
+const items = createItems(map, scene);
 
 // Door and bed cells, so collision can ask "is a closed door or a bed here?" in constant time.
 const objectCells = new Map();
@@ -59,7 +61,7 @@ const flashlight = createFlashlight(camera, {
 });
 const interaction = createInteraction(camera, {
   blockers: house.children,
-  targets: () => [...doors.panels, ...beds.meshes],
+  targets: () => [...doors.panels, ...beds.meshes, ...items.targets()],
 });
 
 let nextKnockAt = 20;
@@ -127,6 +129,13 @@ function handleEvent(event) {
       hiding = null;
       if (audio) footstep(audio, false);
       break;
+    case 'item-taken': {
+      const item = items.get(event.targetId);
+      items.remove(event.targetId);
+      hud.toast(`Picked up: ${itemName(item.obj)}`);
+      if (audio) pickupClink(audio);
+      break;
+    }
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -148,6 +157,7 @@ function describe(id) {
   if (hiding) return 'Crawl out';
   if (!id) return null;
   if (beds.has(id)) return 'Hide under bed';
+  if (items.has(id)) return `Pick up ${itemName(items.get(id).obj).toLowerCase()}`;
   const door = night.doors[id];
   if (door?.exit) return door.open ? 'Close front door' : 'Open front door';
   if (door) return door.open ? 'Close door' : 'Open door';
@@ -182,6 +192,7 @@ renderer.setAnimationLoop(() => {
     maybeKnock(time);
   }
   doors.update(dt);
+  items.update(time);
   updateCeilingLights(ceilingLights, time);
   camera.updateMatrixWorld();
   if (audio) audio.updateListener(camera);

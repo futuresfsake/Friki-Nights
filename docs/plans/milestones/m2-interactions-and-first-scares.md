@@ -13,7 +13,7 @@
 | M2-S02 | Night state and objectives | Must | M | ✅ |
 | M2-S03 | Interaction system (E) | Must | M | ✅ |
 | M2-S04 | Doors | Must | M | ✅ |
-| M2-S05 | Locked doors and keys | Must | S | ⬜ |
+| M2-S05 | Locked doors and keys | Must | S | ✅ |
 | M2-S06 | Inventory | Must | S | ⬜ |
 | M2-S07 | Notes and note reader | Must | M | ⬜ |
 | M2-S08 | Battery pickups | Must | S | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 5 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 6 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -130,7 +130,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S05 · Locked doors and keys
 
-**Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** FR-05, US-07
+**Priority:** Must · **Size:** S · **Status:** ✅ · **Traces:** FR-05, US-07
 
 > As a player, I want some doors locked until I find the right key, so that exploring has a goal.
 
@@ -140,7 +140,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Keys are small code-built meshes that slowly glint in the flashlight
 
 **Tasks**
-- [ ] Key mesh + pickup
+- [x] Key mesh + pickup
 - [x] Locked-door check in `nightState`
 - [x] Rattle sound
 - [x] Unit tests: wrong key, right key, no key

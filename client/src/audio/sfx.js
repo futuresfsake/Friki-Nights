@@ -171,6 +171,26 @@ export function doorRattle(audio, x, y, z) {
   }
 }
 
+// Two light metallic taps: something small picked up off the floor.
+export function pickupClink(audio) {
+  const { ctx, master } = audio;
+  for (const [delay, freq] of [
+    [0, 2600],
+    [0.07, 3400],
+  ]) {
+    const t = ctx.currentTime + delay;
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(gain).connect(master);
+    osc.start(t);
+    osc.stop(t + 0.13);
+  }
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;
