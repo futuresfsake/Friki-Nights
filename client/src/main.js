@@ -4,6 +4,7 @@ import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
+import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { createScares } from './scares/scares.js';
@@ -12,6 +13,7 @@ import {
   doorCreak,
   doorRattle,
   doorShut,
+  doorSlam,
   flashlightClick,
   footstep,
   fuseClunk,
@@ -55,7 +57,11 @@ scene.add(camera); // the flashlight is a child of the camera, so the camera mus
 
 const map = parseMap(night1);
 const night = createNightState(map);
-const triggers = createTriggers(map);
+// Conditions a trigger's `onlyIf` may ask about.
+const triggers = createTriggers(map, {
+  check: (c, playerId) =>
+    (!c.doorOpen || night.doors[c.doorOpen]?.open) && (!c.hasKey || night.players[playerId]?.keys.includes(c.hasKey)),
+});
 const house = buildHouse(map);
 scene.add(house);
 const ceilingLights = createCeilingLights(map, scene);
@@ -89,9 +95,11 @@ const scares = createScares({
     now: () => clock.elapsedTime,
     audio: () => audio,
     sting: () => audio && screamSting(audio),
+    slamDoor,
   },
 });
 scares.register('JS-01', faceInFlashlight);
+scares.register('JS-02', doorSlamScare);
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;
@@ -235,6 +243,10 @@ function handleEvent(event) {
         notesTotal: Object.keys(night.notes).length,
       });
       break;
+    case 'door-slammed':
+      doors.slam(event.targetId);
+      if (audio) doorSlam(audio, at.x, 1.2, at.z);
+      break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -273,6 +285,22 @@ function describe(id) {
   if (door?.exit) return door.open ? 'Close front door' : 'Open front door';
   if (door) return door.open ? 'Close door' : 'Open door';
   return null;
+}
+
+// Shuts a door for a scare as soon as nobody stands in its doorway (gives up after 5 s).
+function slamDoor(id, then) {
+  const obj = doors.get(id).obj;
+  const started = clock.elapsedTime;
+  const attempt = () => {
+    if (overlapsCell(camera.position.x, camera.position.z, PLAYER_RADIUS, obj.x, obj.z)) {
+      if (clock.elapsedTime - started < 5) setTimeout(attempt, 50);
+      return;
+    }
+    const events = apply(night, { type: 'slam-door', playerId: PLAYER_ID, targetId: id });
+    for (const event of events) handleEvent(event);
+    if (events.length) then();
+  };
+  attempt();
 }
 
 function fireScare(trigger) {

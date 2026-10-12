@@ -159,3 +159,18 @@ describe('night state — hiding under beds', () => {
     expect(blocksMovement(s, 'bed-2-1')).toBe(true);
   });
 });
+
+describe('night state — scripted slams', () => {
+  it('slams an open door shut; it opens again normally', () => {
+    const s = createNightState(map);
+    act(s, 'door-4-4');
+    expect(apply(s, { type: 'slam-door', playerId: 'p1', targetId: 'door-4-4' })).toEqual([{ type: 'door-slammed', targetId: 'door-4-4' }]);
+    expect(blocksMovement(s, 'door-4-4')).toBe(true);
+    expect(types(act(s, 'door-4-4'))).toEqual(['door-opened']);
+  });
+
+  it('does nothing to a door that is already shut', () => {
+    const s = createNightState(map);
+    expect(apply(s, { type: 'slam-door', playerId: 'p1', targetId: 'door-4-4' })).toEqual([]);
+  });
+});
