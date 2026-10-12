@@ -17,7 +17,7 @@
 | M2-S06 | Inventory | Must | S | ✅ |
 | M2-S07 | Notes and note reader | Must | M | ✅ |
 | M2-S08 | Battery pickups | Must | S | ✅ |
-| M2-S09 | Fuse box puzzle and power restore | Must | M | ⬜ |
+| M2-S09 | Fuse box puzzle and power restore | Must | M | ✅ |
 | M2-S10 | Exit and night complete | Must | S | ⬜ |
 | M2-S11 | Trigger tiles | Must | S | ⬜ |
 | M2-S12 | Scare effects framework | Must | M | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 9 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 10 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -201,7 +201,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S09 · Fuse box puzzle and power restore
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** Story (Night 1)
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** Story (Night 1)
 
 > As a player, I want to open the fuse box and put the fuses back, so that I restore power to the hall.
 
@@ -212,10 +212,10 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - When all are placed: hall ceiling lights switch on with a clunk + rising hum, and the exit unlocks
 
 **Tasks**
-- [ ] Fuse box mesh with slots; fuse mesh
-- [ ] Fuse logic in `nightState`
-- [ ] Power-on: enable hall lights, clunk sound
-- [ ] Unit tests: locked box, placing fuses, power on after the last fuse
+- [x] Fuse box mesh with slots; fuse mesh
+- [x] Fuse logic in `nightState`
+- [x] Power-on: enable hall lights, clunk sound
+- [x] Unit tests: locked box, placing fuses, power on after the last fuse
 
 **Tests:** unit, playtest
 

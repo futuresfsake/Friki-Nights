@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { cellCenter, isSolid } from '../../../shared/mapParser.js';
+import { cellCenter, wallSide } from '../../../shared/mapParser.js';
 import { mattressTexture } from './textures.js';
 
 const LENGTH = 1.9;
@@ -9,15 +9,6 @@ const MATTRESS_THICKNESS = 0.14;
 const FRAME_Y = MATTRESS_TOP - MATTRESS_THICKNESS; // underside of the mattress
 const WALL_GAP = 0.08;
 const UNDER_EYE_HEIGHT = 0.2; // camera height while hiding underneath
-
-// [dx, dz, rotation] for a wall on each side. Each bed is built with its long side
-// along local x and its back to local -z, then turned so that back meets the wall.
-const WALL_SIDES = [
-  [0, -1, 0],
-  [0, 1, Math.PI],
-  [-1, 0, Math.PI / 2],
-  [1, 0, -Math.PI / 2],
-];
 
 // Rusty iron cell cots. Every mesh carries the bed's id so the crosshair can find it.
 export function createBeds(map, scene) {
@@ -37,8 +28,10 @@ export function createBeds(map, scene) {
 
   for (const obj of map.objects) {
     if (obj.type !== 'bed') continue;
-    const wall = WALL_SIDES.find(([dx, dz]) => isSolid(map, obj.x + dx, obj.z + dz));
-    const rotation = wall ? wall[2] : 0;
+    // Built with its long side along local x and its back to local -z, then turned so
+    // that back meets the wall.
+    const wall = wallSide(map, obj.x, obj.z);
+    const rotation = wall ? wall.rotation : 0;
     const shift = wall ? 1 - WIDTH / 2 - WALL_GAP : 0;
     const cell = cellCenter(obj.x, obj.z);
     // Local -z (towards the wall) in world space is (-sin, -cos).
@@ -72,7 +65,7 @@ export function createBeds(map, scene) {
       obj,
       under: { x, y: UNDER_EYE_HEIGHT, z },
       // Facing away from the wall, so the player peeks out into the room.
-      lookYaw: wall ? Math.atan2(wall[0], wall[1]) : null,
+      lookYaw: wall ? Math.atan2(wall.dx, wall.dz) : null,
     });
   }
 

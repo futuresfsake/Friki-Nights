@@ -10,6 +10,7 @@ const builders = {
   key: buildKey,
   note: buildNote,
   battery: buildBattery,
+  fuse: buildFuse,
 };
 
 const brass = new THREE.MeshPhongMaterial({ color: 0xb08d3c, specular: 0xfff1c0, shininess: 60 });
@@ -42,6 +43,17 @@ function buildBattery() {
   // Lying on its side, as if dropped.
   group.rotation.z = Math.PI / 2;
   group.position.y = 0.03;
+  return group;
+}
+
+// Old screw-in ceramic fuse with a brass cap.
+function buildFuse() {
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.035, 0.05, 8), new THREE.MeshLambertMaterial({ color: 0xd8d0c0 }));
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.03, 8), brass);
+  cap.position.y = 0.04;
+  group.add(body, cap);
+  group.position.y = 0.025;
   return group;
 }
 
@@ -99,6 +111,7 @@ export function createItems(map, scene) {
 export function itemName(obj) {
   if (obj.type === 'note') return 'note';
   if (obj.type === 'battery') return 'Battery';
+  if (obj.type === 'fuse') return 'Fuse';
   if (obj.type === 'key') return `${obj.keyId[0].toUpperCase()}${obj.keyId.slice(1)} key`;
   return obj.type;
 }

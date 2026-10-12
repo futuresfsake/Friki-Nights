@@ -191,6 +191,65 @@ export function pickupClink(audio) {
   }
 }
 
+// Heavy metal clunk: a fuse screwed in, or the fuse box door.
+export function fuseClunk(audio, x, y, z) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t = ctx.currentTime;
+  const thump = ctx.createOscillator();
+  thump.type = 'square';
+  thump.frequency.setValueAtTime(140, t);
+  thump.frequency.exponentialRampToValueAtTime(60, t + 0.08);
+  const thumpGain = ctx.createGain();
+  thumpGain.gain.setValueAtTime(0.35, t);
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  thump.connect(thumpGain).connect(out);
+  thump.start(t);
+  thump.stop(t + 0.13);
+
+  const clank = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2400;
+  filter.Q.value = 8;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.5, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+  clank.connect(filter).connect(gain).connect(out);
+  clank.start(t, Math.random());
+  clank.stop(t + 0.1);
+}
+
+// Power coming back: a big breaker clunk, then a mains hum rising up to speed and settling.
+export function powerOn(audio) {
+  const { ctx, master } = audio;
+  const t = ctx.currentTime;
+  const breaker = ctx.createOscillator();
+  breaker.frequency.setValueAtTime(90, t);
+  breaker.frequency.exponentialRampToValueAtTime(35, t + 0.25);
+  const breakerGain = ctx.createGain();
+  breakerGain.gain.setValueAtTime(0.8, t);
+  breakerGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+  breaker.connect(breakerGain).connect(master);
+  breaker.start(t);
+  breaker.stop(t + 0.32);
+
+  const hum = ctx.createOscillator();
+  hum.type = 'sawtooth';
+  hum.frequency.setValueAtTime(20, t + 0.1);
+  hum.frequency.exponentialRampToValueAtTime(100, t + 1.8);
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 400;
+  const humGain = ctx.createGain();
+  humGain.gain.setValueAtTime(0, t);
+  humGain.gain.linearRampToValueAtTime(0.12, t + 1.2);
+  humGain.gain.linearRampToValueAtTime(0, t + 3.5);
+  hum.connect(filter).connect(humGain).connect(master);
+  hum.start(t + 0.1);
+  hum.stop(t + 3.6);
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;

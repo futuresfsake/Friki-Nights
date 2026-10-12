@@ -2,6 +2,7 @@ import { CELL, MAX_PLAYERS } from './constants.js';
 
 // One ASCII grid per night, parsed the same way by client and server.
 //   # wall   . floor   (space) wall   P player spawn (1–4)   S ceiling light
+//   G hall light (off until the fuse box power is restored)
 //   D door   L locked door   X exit door   K key   N note   B battery
 //   F fuse box   U fuse   H hiding closet   C bed (hide under it)
 //   E entity spawn   T scare trigger
@@ -51,6 +52,7 @@ export function parseMap(def) {
       if (ch === '.') continue;
       if (ch === 'P') spawns.push({ x, z });
       else if (ch === 'S') lights.push({ x, z });
+      else if (ch === 'G') lights.push({ x, z, powered: true });
       else if (OBJECT_TYPES[ch]) objects.push(makeObject(ch, x, z, meta, counters));
       else throw new Error(`Unknown map character "${ch}" at ${x},${z}`);
     }
@@ -105,8 +107,10 @@ function validate(map, meta, counters) {
       throw new Error(`${o.id} is longer than ${NOTE_MAX_LENGTH} characters`);
     }
   }
-  if (map.objects.filter((o) => o.type === 'fuseBox').length > 1) {
-    throw new Error('Map has more than one fuse box (F)');
+  const boxes = map.objects.filter((o) => o.type === 'fuseBox');
+  if (boxes.length > 1) throw new Error('Map has more than one fuse box (F)');
+  if (boxes.length && !wallSide(map, boxes[0].x, boxes[0].z)) {
+    throw new Error(`${boxes[0].id} must be next to a wall to hang on`);
   }
 }
 
@@ -116,6 +120,19 @@ function doorAxis(map, { x, z, id }) {
   if (isSolid(map, x - 1, z) && isSolid(map, x + 1, z)) return 'x';
   if (isSolid(map, x, z - 1) && isSolid(map, x, z + 1)) return 'z';
   throw new Error(`${id} must have walls on two opposite sides`);
+}
+
+// The first wall found around a cell (north, south, west, east), for things that stand
+// or hang against a wall. rotation turns an object built facing +z so its back is on
+// that wall; dx/dz point from the cell towards the wall.
+const WALL_SIDES = [
+  { dx: 0, dz: -1, rotation: 0 },
+  { dx: 0, dz: 1, rotation: Math.PI },
+  { dx: -1, dz: 0, rotation: Math.PI / 2 },
+  { dx: 1, dz: 0, rotation: -Math.PI / 2 },
+];
+export function wallSide(map, cx, cz) {
+  return WALL_SIDES.find(({ dx, dz }) => isSolid(map, cx + dx, cz + dz)) ?? null;
 }
 
 // Out-of-bounds counts as wall so nothing can leave the map.
