@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { WALL_HEIGHT } from '../constants.js';
-import { cellCenter } from './map.js';
+import { WALL_HEIGHT } from '../../../shared/constants.js';
+import { cellCenter } from '../../../shared/mapParser.js';
 
 const BASE_INTENSITY = 6;
 

@@ -1,4 +1,4 @@
-import { BATTERY_LOW, BATTERY_MAX } from '../constants.js';
+import { BATTERY_LOW, BATTERY_MAX } from '../../../shared/constants.js';
 
 export function createHud() {
   const battery = document.getElementById('battery');

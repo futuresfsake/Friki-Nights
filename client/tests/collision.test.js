@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { blocked, moveWithCollision } from '../src/player/collision.js';
-import { parseMap } from '../src/world/map.js';
+import { parseMap } from '../../shared/mapParser.js';
 
 // Cells are 2 m, so the floor cell (1,1) spans x 2–4, z 2–4.
 const map = parseMap(['#####', '#P..#', '#...#', '#####']);

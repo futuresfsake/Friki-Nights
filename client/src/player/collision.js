@@ -1,5 +1,5 @@
-import { CELL } from '../constants.js';
-import { isSolid } from '../world/map.js';
+import { CELL } from '../../../shared/constants.js';
+import { isSolid } from '../../../shared/mapParser.js';
 
 // Treats the player as a square of half-size r: cheap and good enough on a grid.
 export function blocked(map, x, z, r) {

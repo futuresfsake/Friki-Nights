@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-import { EYE_HEIGHT, PLAYER_RADIUS, RUN_SPEED, STEP_LENGTH, WALK_SPEED } from '../constants.js';
-import { cellCenter } from '../world/map.js';
+import { EYE_HEIGHT, PLAYER_RADIUS, RUN_SPEED, STEP_LENGTH, WALK_SPEED } from '../../../shared/constants.js';
+import { cellCenter } from '../../../shared/mapParser.js';
 import { moveWithCollision } from './collision.js';
 
 const BOB_HEIGHT = 0.045;

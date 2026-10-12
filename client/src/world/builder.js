@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { CELL, WALL_HEIGHT } from '../constants.js';
-import { isSolid } from './map.js';
+import { CELL, WALL_HEIGHT } from '../../../shared/constants.js';
+import { isSolid } from '../../../shared/mapParser.js';
 import { ceilingTexture, floorTexture, wallpaperTexture } from './textures.js';
 
 // Wall faces are only built where floor meets wall, then merged into one mesh per
