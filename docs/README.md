@@ -3,8 +3,7 @@
 > Feed these files to any AI assistant or teammate working on the project. Together they are the single source of truth for what the game is, how it is built, and what has been decided.
 
 **Owner:** Chelsea (IT student, Cebu, Philippines)
-**Players:** Chelsea (Cebu, UTC+8) and her boyfriend (Europe, UTC+1/+2), 6–7 hours apart, ~180–250 ms network delay
-**Last updated:** 2026-10-12
+
 
 ## Contents
 
