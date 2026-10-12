@@ -25,11 +25,11 @@
 | M2-S14 | JS-02 Door slam | Must | S | ✅ |
 | M2-S15 | Whispers | Should | S | ✅ |
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ✅ |
-| M2-S17 | Night 1 notes (story text) | Should | S | ⬜ |
+| M2-S17 | Night 1 notes (story text) | Should | S | ✅ |
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 17 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 18 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -345,7 +345,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S17 · Night 1 notes (story text)
 
-**Priority:** Should · **Size:** S · **Status:** ⬜ · **Traces:** Story
+**Priority:** Should · **Size:** S · **Status:** ✅ · **Traces:** Story
 
 > As a player, I want notes that tell the story of the house, so that I care why I'm here.
 
@@ -355,7 +355,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Introduce the separated couple and the torn letters
 
 **Tasks**
-- [ ] Write note texts in `night1.js`
+- [x] Write note texts in `night1.js`
 
 **Tests:** read-through
 

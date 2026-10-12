@@ -40,3 +40,13 @@ describe('Night 1 can be completed', () => {
     expect(apply(s, { type: 'reach-exit', playerId: 'p1' })).toEqual([{ type: 'night-complete' }]);
   });
 });
+
+describe('Night 1 notes', () => {
+  it('has 3–4 notes, one of which points to a fuse', () => {
+    const map = parseMap(night1);
+    const notes = map.objects.filter((o) => o.type === 'note');
+    expect(notes.length).toBeGreaterThanOrEqual(3);
+    expect(notes.length).toBeLessThanOrEqual(4);
+    expect(notes.some((n) => /fuse/i.test(n.text))).toBe(true);
+  });
+});
