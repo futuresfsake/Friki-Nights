@@ -15,11 +15,11 @@ The repo is one npm workspace (`client`, `server`, `shared`). Install once at th
 
 ```bash
 npm install
-npm run dev      # client: http://localhost:5173
+npm run dev      # game server :3000 + client http://localhost:5173
 npm test         # every workspace's tests
 ```
 
-Server (from Milestone 3): `npm run dev --workspace server` (http://localhost:3000).
+Locally the server's access phrase is `hollowmere` unless `ACCESS_PHRASE` is set; a production server refuses to start without one.
 
 To test several players on one computer, open several browser windows (normal + private windows, or different browsers) and join the same room code. Up to 4.
 

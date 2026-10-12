@@ -35,6 +35,7 @@ import { createInteraction } from './player/interact.js';
 import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
+import { connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
@@ -130,8 +131,15 @@ const interaction = createInteraction(camera, {
 let nextKnockAt = 20;
 let hiding = null; // { bedId, stood } while under a bed
 
+// Connected game server; the lobby covers the game until the server lets us in.
+let socket = null;
+connectWithAccess().then((s) => {
+  socket = s;
+  hideLobby();
+});
+
 hud.overlay.addEventListener('click', () => {
-  if (ended) return;
+  if (ended || !socket) return;
   if (!audio) {
     audio = createAudioEngine();
     startDrone(audio);
