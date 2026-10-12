@@ -2,7 +2,7 @@ import { CELL, MAX_PLAYERS } from './constants.js';
 
 // One ASCII grid per night, parsed the same way by client and server.
 //   # wall   . floor   (space) wall   P player spawn (1–4)   S ceiling light
-//   G hall light (off until the fuse box power is restored)
+//   G hall light (off until the fuse box power is restored)   W wall with a window
 //   D door   L locked door   X exit door   K key   N note   B battery
 //   F fuse box   U fuse   H hiding closet   C bed (hide under it)
 //   E entity spawn   T scare trigger
@@ -44,8 +44,9 @@ export function parseMap(def) {
     const line = [];
     for (let x = 0; x < width; x++) {
       const ch = rows[z][x] ?? ' ';
-      if (ch === '#' || ch === ' ') {
+      if (ch === '#' || ch === ' ' || ch === 'W') {
         line.push(true);
+        if (ch === 'W') objects.push({ id: `window-${x}-${z}`, type: 'window', x, z });
         continue;
       }
       line.push(false);
@@ -63,6 +64,7 @@ export function parseMap(def) {
   const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
   validate(map, meta, counters);
   for (const obj of objects) if (DOOR_TYPES.has(obj.type)) obj.axis = doorAxis(map, obj);
+  for (const obj of objects) if (obj.type === 'window') obj.facing = windowFacing(map, obj);
   return map;
 }
 
@@ -112,6 +114,9 @@ function validate(map, meta, counters) {
   for (const t of [...map.objects.filter((o) => o.type === 'trigger'), ...map.eventTriggers]) {
     if (typeof t.scare !== 'string') throw new Error(`${t.id} has no scare`);
   }
+  for (const t of map.objects.filter((o) => o.type === 'trigger' && o.window)) {
+    if (!map.objects.some((o) => o.id === t.window && o.type === 'window')) throw new Error(`${t.id} uses "${t.window}", which is not a window`);
+  }
   for (const t of map.objects.filter((o) => o.type === 'trigger' && o.door)) {
     if (!map.objects.some((o) => o.id === t.door && o.type === 'door')) throw new Error(`${t.id} slams "${t.door}", which is not a door`);
   }
@@ -143,6 +148,14 @@ const WALL_SIDES = [
 ];
 export function wallSide(map, cx, cz) {
   return WALL_SIDES.find(({ dx, dz }) => isSolid(map, cx + dx, cz + dz)) ?? null;
+}
+
+// A window is a wall cell seen from exactly one floor cell; facing points from the
+// window towards that floor cell.
+function windowFacing(map, { x, z, id }) {
+  const open = WALL_SIDES.filter(({ dx, dz }) => !isSolid(map, x + dx, z + dz));
+  if (open.length !== 1) throw new Error(`${id} must face exactly one floor cell`);
+  return { dx: open[0].dx, dz: open[0].dz };
 }
 
 // Out-of-bounds counts as wall so nothing can leave the map.

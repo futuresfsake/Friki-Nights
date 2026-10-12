@@ -56,6 +56,7 @@ friki-nights/
 | `G` | Hall light: dark until the fuse box power is restored, then flickers like `S` |
 | `H` | Hiding closet |
 | `C` | Bed (iron cot); hide underneath it |
+| `W` | Wall with a window (must face exactly one floor cell); JS-06 triggers name it, e.g. `window: 'window-11-0'` |
 | `E` | Entity spawn |
 | `T` | Scare trigger tile (which scare is set in the map's `triggers` list) |
 | `X` | Exit |

@@ -8,6 +8,7 @@ import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { whisperScare } from './scares/whisper.js';
+import { windowHandScare } from './scares/windowHand.js';
 import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
@@ -17,6 +18,7 @@ import {
   doorSlam,
   flashlightClick,
   footstep,
+  glassBang,
   fuseClunk,
   knocks,
   pickupClink,
@@ -40,6 +42,7 @@ import { createDoors } from './world/doors.js';
 import { createFuseBox } from './world/fuseBox.js';
 import { createItems, itemName } from './world/items.js';
 import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
+import { createWindows } from './world/windows.js';
 
 const FOG_COLOR = 0x050507;
 const PLAYER_ID = 'local'; // single player until M3 gives each player a server id
@@ -71,6 +74,7 @@ const doors = createDoors(map, scene);
 const beds = createBeds(map, scene);
 const items = createItems(map, scene);
 const fuseBox = createFuseBox(map, scene, night.fusesNeeded);
+const windows = createWindows(map, scene);
 
 // Door and bed cells, so collision can ask "is a closed door or a bed here?" in constant time.
 const objectCells = new Map();
@@ -99,11 +103,14 @@ const scares = createScares({
     sting: () => audio && screamSting(audio),
     slamDoor,
     whispers,
+    windows,
+    glassBang,
   },
 });
 scares.register('JS-01', faceInFlashlight);
 scares.register('JS-02', doorSlamScare);
 scares.register('whisper', whisperScare);
+scares.register('JS-06', windowHandScare);
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;
@@ -355,6 +362,7 @@ renderer.setAnimationLoop(() => {
   doors.update(dt);
   items.update(time);
   fuseBox?.update(dt);
+  windows.update(time);
   updateCeilingLights(ceilingLights, time);
   if (effects.isBlackout(time)) {
     blackOutCeilingLights(ceilingLights);
