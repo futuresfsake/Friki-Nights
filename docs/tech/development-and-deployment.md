@@ -58,9 +58,9 @@ Never commit real values; `.env` is in `.gitignore`.
 - Set `VITE_SERVER_URL`
 
 **Server → Render (web service, free)**
-- Root directory: `server`
+- Root directory: repo root (the server imports `shared/`, and npm workspaces install everything from the root)
 - Build command: `npm install`
-- Start command: `npm start`
+- Start command: `npm start --workspace server`
 - Region: Singapore or Frankfurt (decide after the M3 real-distance test)
 - Set `ACCESS_PHRASE`, `CLIENT_ORIGIN`, and TURN variables if used
 

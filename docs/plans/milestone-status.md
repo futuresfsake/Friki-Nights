@@ -12,13 +12,13 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
 | M2 | Interactions + first scares | ✅ Done | 19 / 19 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
-| M3 | Multiplayer | 🔨 In progress | 1 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
+| M3 | Multiplayer | 🔨 In progress | 2 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started | 0 / 16 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| | **Total** | | **32 / 130** | | |
+| | **Total** | | **33 / 130** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -37,10 +37,10 @@ Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done ·
 | M8 | 11 | 4 | 0 | 15 |
 | **Total** | **103** | **24** | **3** | **130** |
 
-## Current milestone: M2
+## Current milestone: M3
 
-Done: S01–S04, S19. Working through the rest story by story: one branch per story, merged into `main` when its tests and build pass. Next: **M2-S05 · Locked doors and keys**.
-Full story list and tasks: [M2 — Interactions + first scares](milestones/m2-interactions-and-first-scares.md).
+M2 done (19/19). M3 in progress: one branch per story, merged into `main` when its tests and build pass.
+Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 
 ## Later (ideas not in any milestone yet)
 

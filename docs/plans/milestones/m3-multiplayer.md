@@ -12,7 +12,7 @@
 | ID | Story (feature) | Priority | Size | Status |
 | --- | --- | --- | --- | --- |
 | M3-S01 | Repo layout: client, server, shared | Must | S | ✅ |
-| M3-S02 | Game server bootstrap | Must | M | ⬜ |
+| M3-S02 | Game server bootstrap | Must | M | ✅ |
 | M3-S03 | Access phrase | Must | S | ⬜ |
 | M3-S04 | Display name | Must | S | ⬜ |
 | M3-S05 | Create room with code | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 1 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 2 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -55,7 +55,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S02 · Game server bootstrap
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** Tech stack, Security
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** Tech stack, Security
 
 > As a developer, I want a Node + Express + Socket.IO server, so that players can connect.
 
