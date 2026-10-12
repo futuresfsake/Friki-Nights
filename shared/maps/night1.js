@@ -30,11 +30,12 @@ export default {
   // Reading order: the house key (in the parlor) comes before the parlor key (dormitory).
   keys: ['house', 'parlor'],
   lockedDoors: ['parlor'],
+  // Reading order: dormitory, foyer, parlor, cells. Each ≤ 280 characters.
   notes: [
-    'Note 1 (foyer). Story text arrives with M2-S17.',
-    'Note 2 (dormitory). Story text arrives with M2-S17.',
-    'Note 3 (parlor). Story text arrives with M2-S17.',
-    'Note 4 (cells). Story text arrives with M2-S17.',
+    "They moved the beds in here after the letters stopped coming. I sleep under mine now. When the knocking starts, under the bed is the only place it doesn't look. — E.",
+    "Dearest A., the post came again and nothing from you. Mother says the sea swallows letters. I don't believe her. I believe this house. At night I hear paper tearing inside the walls. Write anyway. — E.",
+    "Half a letter, torn clean down the middle: '...the brass key for the fuse box, I keep it here in the par...' and '...three fuses, love. One is in the last cell, where they put the ones who wouldn't stop wr...' The other half is gone.",
+    "Day 41. They took my pen, so I scratch a line in the wall for every day without your answer. If anyone reads this: the hall lights still work. The box only needs its fuses. Then the front door will let you go. — A.",
   ],
   triggers: [
     // Leaving the parlor with the house key: the parlor door slams behind the player.
