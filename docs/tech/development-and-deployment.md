@@ -14,7 +14,7 @@
 Client (Milestone 1, current):
 
 ```bash
-cd client        # currently the tether/ folder
+cd client
 npm install
 npm run dev      # http://localhost:5173
 ```
@@ -28,6 +28,8 @@ npm run dev      # Proposed: http://localhost:3000
 ```
 
 To test two players on one computer, open two browser windows (or one normal + one private window) and join the same room code.
+
+**Solo test mode (developers only):** the game is 2-player only, but a dev flag (e.g. `?solo=1`, only in dev builds) lets one person walk a night alone for testing. It is never available in the production build.
 
 ## 3. Scripts
 
@@ -48,6 +50,7 @@ Never commit real values; `.env` is in `.gitignore`.
 | --- | --- | --- |
 | Client (Netlify) | `VITE_SERVER_URL` | Game server URL, e.g. `https://friki-nights.onrender.com` |
 | Server (Render) | `PORT` | Port to listen on (set by Render) |
+| Server (Render) | `ACCESS_PHRASE` | Shared secret phrase; only people who know it can play (decided) |
 | Server (Render) | `CLIENT_ORIGIN` | Allowed origin for CORS and Socket.IO (the Netlify URL) |
 | Server (Render) | `TURN_URL`, `TURN_USERNAME`, `TURN_CREDENTIAL` | TURN server for voice, only if needed |
 
@@ -64,7 +67,7 @@ Never commit real values; `.env` is in `.gitignore`.
 - Build command: `npm install`
 - Start command: `npm start`
 - Region: Singapore or Frankfurt (decide after the M3 real-distance test)
-- Set `CLIENT_ORIGIN` and TURN variables if used
+- Set `ACCESS_PHRASE`, `CLIENT_ORIGIN`, and TURN variables if used
 
 Render's free tier sleeps when idle, so the lobby pings the server on open and shows "Waking the house…".
 

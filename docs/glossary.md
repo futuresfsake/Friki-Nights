@@ -12,7 +12,9 @@
 | **Player token** | Random secret given at join; needed to rejoin after a disconnect |
 | **Down / downed** | State of a player caught by The Waiting One; can be revived within 60 s |
 | **Revive** | Partner holds E for 3 s within 1.5 m of a downed player |
-| **Checkpoint** | Restart point within a night when both players are down |
+| **Night failed** | A downed player wasn't revived in 60 s, or both players are down; the night restarts from the beginning (there are no checkpoints) |
+| **Access phrase** | Shared secret both players enter once; the server refuses anyone without it |
+| **Fuse box** | Night 1 puzzle: opened with the house key; fuses found around the level restore power to the hall |
 | **View cone** | The 60° area in front of a player, with line of sight, used to decide if The Waiting One is seen |
 | **Scare Director** | Server system that paces scares using a tension value |
 | **Tension** | Number that rises with time and darkness and falls after a scare |

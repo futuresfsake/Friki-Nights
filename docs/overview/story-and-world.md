@@ -14,10 +14,18 @@ The house once belonged to a couple separated by distance. Their letters never a
 
 | Night | Area | Objective | New mechanic | New threat |
 | --- | --- | --- | --- | --- |
-| 1 | Foyer and Parlor | Find the house key, restore power to the hall | Doors, keys, notes, flashlight battery | Knocking, flickering lights, first jump scare |
+| 1 | Foyer and Parlor | Find the house key and the fuses, open the fuse box with the key, restore power to the hall | Doors, keys, notes, flashlight battery | Knocking, flickering lights, first jump scare |
 | 2 | Library and Study | Rebuild a torn letter whose halves are in different rooms | Split clues, inventory, describing what you see | 10-second blackouts, books falling |
 | 3 | Cellar | Cross the flooded cellar while one player holds a lever | Co-op holds, scarce batteries | The Waiting One appears |
-| 4 | Upper Floor and Nursery | Find the nursery music box | Fake partner voices on the radio, verified by code word | The Waiting One hunts; hide in closets |
+| 4 | Upper Floor and Nursery | Find the nursery music box | Fake partner voices on the radio (garbled speech + subtitles), verified by code word | The Waiting One hunts; hide in closets |
 | 5 | Attic | Reunite the owners' letters and escape together | Everything combined | Final chase down the stairs |
+
+### Night 1 puzzle: the fuse box
+
+The hall's power is off. The **house key** opens a locked **fuse box**, and the **fuses** are hidden around the Foyer and Parlor. With all fuses placed, the hall lights come on and the way to the exit opens.
+
+### Night 4: fake partner voices
+
+All audio is generated in code, so the radio "voices" are **distorted, speech-shaped radio noise** with the words shown as **subtitles** (e.g. *"[radio] It's me… come to the nursery."*). They may use the partner's display name. The real partner proves who they are by saying their **code word** over voice chat.
 
 **Ending:** when both letters are whole, the house releases the owners and the players wake up. End screen shows the couple's stats for the whole run.

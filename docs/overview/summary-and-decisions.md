@@ -17,6 +17,11 @@ Friki Nights is a **first-person, two-player online co-op horror game** that run
 | Voice | In-game proximity voice chat (WebRTC); fallback is a Messenger/Discord call |
 | Editor | VS Code, plain JavaScript (ES modules) |
 | Hosting | Netlify (client) + Render (game server), free tiers |
+| Who can play | **Only the two of us.** The server requires a shared secret **access phrase** before showing the lobby |
+| Solo play | **No.** Exactly 2 players; solo exists only as a developer test mode |
+| Language | **English only** |
+| Failure rule | A downed player not revived in 60 s, or both players down → **night failed**, restart the night (no checkpoints) |
+| Deadline | Personal date, **flexible**; target is the **full game** (M1–M8) |
 
 ## 3. Non-goals for v1
 

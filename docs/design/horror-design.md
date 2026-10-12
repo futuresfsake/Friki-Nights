@@ -37,6 +37,7 @@
 | Heartbeat | Two low sine thumps; rate rises as The Waiting One gets closer |
 | Scream sting | Detuned sawtooth glide down + noise burst + distortion (WaveShaperNode) |
 | Radio static | White noise through bandpass + random crackle bursts |
+| Fake radio voice (Night 4) | Noise and a buzzy oscillator through moving formant bandpass filters with a speech-like rhythm, radio bandpass + crackle; words shown as subtitles |
 | Music box | Sine notes with slight detune, slowed and out of tune |
 | Low "it saw you" tone | Very low sine (40 Hz) swell when The Waiting One freezes in view |
 

@@ -21,7 +21,7 @@ Friki Nights uses an **iterative, milestone-based development approach** instead
 
 | ID | Milestone | Done when |
 | --- | --- | --- |
-| M1 | Dark house prototype | Runs with `npm run dev` and builds |
+| M1 | Dark house prototype (rebuild) | Runs with `npm run dev` and builds |
 | M2 | Interactions + first scares | Night 1 is solvable and scary alone |
 | M3 | Multiplayer | Two browsers finish Night 1 together at 250 ms simulated delay |
 | M4 | Voice | You talk in-game Cebu ↔ Europe |
