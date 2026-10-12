@@ -11,21 +11,15 @@
 
 ## 2. Run locally
 
-Client (Milestone 1, current):
+The repo is one npm workspace (`client`, `server`, `shared`). Install once at the root:
 
 ```bash
-cd client
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # client: http://localhost:5173
+npm test         # every workspace's tests
 ```
 
-Server (from Milestone 3):
-
-```bash
-cd server
-npm install
-npm run dev      # Proposed: http://localhost:3000
-```
+Server (from Milestone 3): `npm run dev --workspace server` (http://localhost:3000).
 
 To test several players on one computer, open several browser windows (normal + private windows, or different browsers) and join the same room code. Up to 4.
 
@@ -39,7 +33,8 @@ To test several players on one computer, open several browser windows (normal + 
 | client | `build` | Production build into `dist/` |
 | client | `preview` | Serve the production build locally |
 | server | `dev` / `start` | Run the game server — **Proposed** |
-| root | `test` | Run Vitest — **Proposed** |
+| root | `test` | Run every workspace's Vitest suite |
+| root | `dev` / `build` | Client dev server / production build |
 | root | `lint` | ESLint + Prettier check — **Proposed** |
 
 ## 4. Environment variables — Proposed

@@ -1,0 +1,7 @@
+{
+  "name": "@friki/shared",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Maps, constants, night state and event schemas used by both client and server"
+}
