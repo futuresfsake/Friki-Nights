@@ -1,4 +1,4 @@
-import { BATTERY_DRAIN_PER_SECOND, BATTERY_MAX } from '../constants.js';
+import { BATTERY_DRAIN_PER_SECOND, BATTERY_MAX } from '../../../shared/constants.js';
 
 export function drainBattery(level, on, dt) {
   if (!on) return level;

@@ -8,7 +8,7 @@
 | FR-02 | Create a room with a 6-character code; others join with it; 1 to 4 players |
 | FR-03 | First-person movement: WASD, mouse look, Shift to run, wall collision |
 | FR-04 | Flashlight on F; battery drains while on, refills with pickups |
-| FR-05 | Doors, keys, notes, batteries, levers, hiding closets interact with E |
+| FR-05 | Doors, keys, notes, batteries, levers, hiding closets, beds interact with E |
 | FR-06 | Each player sees every other player move in real time |
 | FR-07 | Door, item, and puzzle state identical on every screen |
 | FR-08 | Proximity voice chat with mute and push-to-talk |
@@ -20,7 +20,7 @@
 | FR-14 | Rejoin a room within 60 s after a disconnect |
 | FR-15 | Settings: sensitivity, volume, sting volume, reduce flashing, subtitles |
 | FR-16 | Only people who know the shared access phrase can connect to the server |
-| FR-17 | Hiding closets protect a player only if The Waiting One did not see them enter |
+| FR-17 | Hiding closets and beds protect a player only if The Waiting One did not see them enter |
 | FR-18 | All game text is in English |
 | FR-19 | Every night can be played solo; each co-op puzzle has a solo version |
 | FR-20 | Co-op puzzles scale up for 3–4 players (more pieces, more levers) |

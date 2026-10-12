@@ -14,7 +14,7 @@
 
 | Surface | Texture |
 | --- | --- |
-| Walls | Faded, stained wallpaper pattern |
+| Walls | Abandoned cell: cinder blocks, peeling paint band, rust streaks, cracks, scratched tally marks |
 | Floor | Worn floorboards |
 | Ceiling | Plain, water-stained plaster |
 | Cellar (Night 3) | Wet stone, dark water — **Proposed** |
@@ -26,12 +26,13 @@
 | --- | --- |
 | Partner | Simple low-poly figure (box/capsule body + head), with a small flashlight cone so they are visible in the dark |
 | The Waiting One | Tall, thin, faceless figure; dark material; slightly taller than a door |
+| Beds | Rusty iron cot with a stained, striped mattress; the player can crawl underneath |
 | Doors, keys, notes, batteries, levers | Simple primitives with canvas textures |
 | Jump scare face (JS-01) | Pale flat mesh with simple dark features |
 
 ## 4. Palette — Proposed
 
-- Walls and wood: desaturated browns and greens
+- Walls: grey concrete with a faded green paint band and rust; wood: desaturated browns
 - Flashlight: warm yellow-white
 - Ceiling lights: dim orange, flickering
 - The Waiting One: near-black, never fully lit

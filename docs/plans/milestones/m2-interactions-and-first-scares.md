@@ -1,4 +1,4 @@
-# M2 — Interactions + First Scares ⏭️
+# M2 — Interactions + First Scares 🔨
 
 **Goal:** Night 1 works as a complete single-player level with a puzzle and real scares.
 **Done when:** Night 1 is solvable and scary alone.
@@ -9,10 +9,10 @@
 
 | ID | Story (feature) | Priority | Size | Status |
 | --- | --- | --- | --- | --- |
-| M2-S01 | Shared map format | Must | M | ⬜ |
-| M2-S02 | Night state and objectives | Must | M | ⬜ |
-| M2-S03 | Interaction system (E) | Must | M | ⬜ |
-| M2-S04 | Doors | Must | M | ⬜ |
+| M2-S01 | Shared map format | Must | M | ✅ |
+| M2-S02 | Night state and objectives | Must | M | ✅ |
+| M2-S03 | Interaction system (E) | Must | M | ✅ |
+| M2-S04 | Doors | Must | M | ✅ |
 | M2-S05 | Locked doors and keys | Must | S | ⬜ |
 | M2-S06 | Inventory | Must | S | ⬜ |
 | M2-S07 | Notes and note reader | Must | M | ⬜ |
@@ -27,8 +27,9 @@
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ⬜ |
 | M2-S17 | Night 1 notes (story text) | Should | S | ⬜ |
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
+| M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**18 stories · 0 done** (15 Must · 2 Should · 1 Could)
+**19 stories · 5 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -49,7 +50,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S01 · Shared map format
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** LLD §2
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** LLD §2
 
 > As a developer, I want one map format with every object type, so that the client (and later the server) build Night 1 from the same file.
 
@@ -61,16 +62,16 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Every object gets a stable id like `door-12-5` (type + cell), so the server can refer to it in M3
 
 **Tasks**
-- [ ] Create `shared/maps/night1.js` and allow Vite to import from `shared/`
-- [ ] Extend `client/src/world/map.js` → `shared/mapParser.js` with all characters and metadata
-- [ ] Add `F` and `U` to the map table in the LLD
-- [ ] Unit tests: every character, id order, count mismatch errors, object ids
+- [x] Create `shared/maps/night1.js` and allow Vite to import from `shared/`
+- [x] Extend `client/src/world/map.js` → `shared/mapParser.js` with all characters and metadata
+- [x] Add `F` and `U` to the map table in the LLD
+- [x] Unit tests: every character, id order, count mismatch errors, object ids
 
 **Tests:** unit
 
 ### M2-S02 · Night state and objectives
 
-**Priority:** Must · **Size:** M · **Status:** ⬜
+**Priority:** Must · **Size:** M · **Status:** ✅
 
 > As a developer, I want all puzzle state in one pure module, so that it is easy to test and can move to the server in M3 unchanged.
 
@@ -80,15 +81,15 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - No Three.js or DOM imports in the module
 
 **Tasks**
-- [ ] Create `shared/nightState.js` with `createNightState(map)` and `apply(state, action)`
-- [ ] Return events (e.g. `door-opened`, `item-taken`, `power-on`) for the client to animate
-- [ ] Unit tests for every action and invalid action (taking an item twice, opening a locked door without key)
+- [x] Create `shared/nightState.js` with `createNightState(map)` and `apply(state, action)`
+- [x] Return events (e.g. `door-opened`, `item-taken`, `power-on`) for the client to animate
+- [x] Unit tests for every action and invalid action (taking an item twice, opening a locked door without key)
 
 **Tests:** unit
 
 ### M2-S03 · Interaction system (E)
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-05
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-05
 
 > As a player, I want to press E on things I'm looking at, so that I can use the world.
 
@@ -99,16 +100,16 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Prompt text uses `textContent`
 
 **Tasks**
-- [ ] Raycast from the camera against interactable meshes (max 2 m)
-- [ ] Add prompt element to the HUD
-- [ ] E key → `nightState.apply` → play result events
-- [ ] Unit test: distance check helper
+- [x] Raycast from the camera against interactable meshes (max 2 m)
+- [x] Add prompt element to the HUD
+- [x] E key → `nightState.apply` → play result events
+- [ ] Unit test: distance check helper — not written: the 2 m limit is the raycast range for now; the server-side distance check and its test come in M3-S11
 
 **Tests:** unit, playtest
 
 ### M2-S04 · Doors
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-05, US-07
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-05, US-07
 
 > As a player, I want to open and close doors, so that I can explore room by room.
 
@@ -119,11 +120,11 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Door creak sound (sawtooth sweep + resonant bandpass + noise), placed in 3D
 
 **Tasks**
-- [ ] Door mesh + canvas wood texture
-- [ ] Collision: closed door cell counts as solid
-- [ ] Swing tween
-- [ ] `doorCreak()` in `sfx.js`
-- [ ] Unit test: collision with open vs. closed door
+- [x] Door mesh + canvas wood texture
+- [x] Collision: closed door cell counts as solid
+- [x] Swing tween
+- [x] `doorCreak()` in `sfx.js`
+- [x] Unit test: collision with open vs. closed door
 
 **Tests:** unit, playtest
 
@@ -140,9 +141,9 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 **Tasks**
 - [ ] Key mesh + pickup
-- [ ] Locked-door check in `nightState`
-- [ ] Rattle sound
-- [ ] Unit tests: wrong key, right key, no key
+- [x] Locked-door check in `nightState`
+- [x] Rattle sound
+- [x] Unit tests: wrong key, right key, no key
 
 **Tests:** unit, playtest
 
@@ -374,3 +375,25 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - [ ] Register `JS-06`
 
 **Tests:** playtest
+
+### M2-S19 · Abandoned cell walls and hiding under beds
+
+**Priority:** Should · **Size:** M · **Status:** ✅ · **Traces:** FR-05, FR-17
+
+> As a player, I want the house to feel like abandoned cells, with beds I can crawl under, so that I have somewhere to hide when something comes.
+
+**Acceptance criteria**
+- Walls look like an abandoned cell: cinder blocks, peeling paint band, rust streaks, cracks, scratched tally marks
+- `C` in the map is a rusty iron cot; it blocks walking, and its back sits against the nearest wall
+- E on a bed: the player crawls underneath (camera drops to the floor, facing out into the room); E again crawls back out to where they stood
+- One player per bed; while hiding, nothing else can be used
+- Beds follow the closet rule once The Waiting One exists (M5-S10): safe only if it did not see you go under
+
+**Tasks**
+- [x] `wallTexture()` replaces the wallpaper
+- [x] `C` map character, `bed` object type
+- [x] `useBed` in `nightState`: `hid` / `left-hiding` events, `bed-taken` and `hiding` denials
+- [x] `world/beds.js` cot mesh; controller `hideAt` / `standAt` crawl tween
+- [x] Unit tests: hide and leave, one per bed, nothing else while hiding, beds block movement
+
+**Tests:** unit, playtest

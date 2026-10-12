@@ -10,7 +10,7 @@
 | W A S D | Move | FR-03 |
 | Shift (hold) | Run | FR-03 |
 | F | Toggle flashlight | FR-04 |
-| E | Interact: doors, keys, notes, batteries, levers, hiding closets | FR-05 |
+| E | Interact: doors, keys, notes, batteries, levers, hiding closets, beds (crawl under / out) | FR-05 |
 | E (hold 3 s) | Revive a downed partner within 1.5 m | FR-10 |
 | Click | Lock the mouse / resume from pause | M1 |
 | Esc | Release the mouse, open the pause menu | M1 |

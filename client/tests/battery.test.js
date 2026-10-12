@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BATTERY_DRAIN_PER_SECOND, BATTERY_MAX } from '../src/constants.js';
+import { BATTERY_DRAIN_PER_SECOND, BATTERY_MAX } from '../../shared/constants.js';
 import { addBattery, drainBattery } from '../src/player/battery.js';
 
 describe('battery', () => {

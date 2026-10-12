@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BATTERY_LOW, BATTERY_MAX } from '../constants.js';
+import { BATTERY_LOW, BATTERY_MAX } from '../../../shared/constants.js';
 import { drainBattery } from './battery.js';
 import { blinkFactor, blinkFinished, nextBlinkDelay, startBlink } from './blink.js';
 

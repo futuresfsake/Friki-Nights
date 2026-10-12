@@ -54,6 +54,7 @@ friki-nights/
 | `B` | Battery |
 | `S` | Ceiling light (flickers) |
 | `H` | Hiding closet |
+| `C` | Bed (iron cot); hide underneath it |
 | `E` | Entity spawn |
 | `T` | Scare trigger tile (which scare is set in the map's `triggers` list) |
 | `X` | Exit |
@@ -119,7 +120,7 @@ From `PLAYING`: caught player → `DOWNED` → back to `PLAYING` on revive; revi
 - `HUNT` — Nights 4–5, after 20 s unseen, speed 2.5 m/s
 - `CATCH` — within 1 m of a player → player down → `COOLDOWN` 15 s away from all players
 
-**Hiding closets:** a closet is safe only if The Waiting One did **not** see the player enter it. "Seen" means the player was inside the entity's own view cone (line of sight) at the moment they entered. If it saw them, it goes to the closet, opens it, and catches the player. If not, it loses track and goes back to `STALK`.
+**Hiding closets and beds:** a closet, or the space under a bed, is safe only if The Waiting One did **not** see the player enter it. "Seen" means the player was inside the entity's own view cone (line of sight) at the moment they entered. If it saw them, it goes to the closet, opens it, and catches the player. If not, it loses track and goes back to `STALK`.
 
 **Scare Director:** tension rises with time since last scare and darkness; falls after a scare. Big scare allowed when tension > threshold and ≥4 min since last big scare and no UI open.
 
