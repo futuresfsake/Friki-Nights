@@ -112,6 +112,9 @@ function validate(map, meta, counters) {
   for (const t of [...map.objects.filter((o) => o.type === 'trigger'), ...map.eventTriggers]) {
     if (typeof t.scare !== 'string') throw new Error(`${t.id} has no scare`);
   }
+  for (const t of map.objects.filter((o) => o.type === 'trigger' && o.door)) {
+    if (!map.objects.some((o) => o.id === t.door && o.type === 'door')) throw new Error(`${t.id} slams "${t.door}", which is not a door`);
+  }
   for (const t of map.eventTriggers) {
     if (!t.when || typeof t.when.type !== 'string') throw new Error(`${t.id} needs a "when" with an event type`);
   }

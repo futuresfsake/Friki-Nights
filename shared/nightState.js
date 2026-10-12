@@ -51,6 +51,14 @@ export function apply(state, action) {
     return [{ type: 'night-complete' }];
   }
 
+  // Scripted scares (JS-02) shut a door on the players; it can be opened again normally.
+  if (action.type === 'slam-door') {
+    const door = state.doors[action.targetId];
+    if (!door?.open) return [];
+    door.open = false;
+    return [{ type: 'door-slammed', targetId: action.targetId }];
+  }
+
   if (action.type !== 'interact') return [denied('unknown-action')];
   const id = action.targetId;
 

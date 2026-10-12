@@ -293,6 +293,58 @@ export function screamSting(audio) {
   hiss.stop(t + 0.6);
 }
 
+// Reverb tail generated from decaying noise, so the slam rings through the house.
+let slamReverb = null;
+function reverb(ctx) {
+  if (slamReverb) return slamReverb;
+  const length = ctx.sampleRate * 2.2;
+  const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = impulse.getChannelData(ch);
+    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
+  }
+  slamReverb = ctx.createConvolver();
+  slamReverb.buffer = impulse;
+  return slamReverb;
+}
+
+// JS-02: a door slammed hard. Wood crack + deep thump, dry and through the reverb.
+export function doorSlam(audio, x, y, z) {
+  const { ctx, sting, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  out.disconnect();
+  const loud = ctx.createGain();
+  loud.gain.value = 1.4;
+  out.connect(loud).connect(sting);
+  const wet = reverb(ctx);
+  const wetGain = ctx.createGain();
+  wetGain.gain.value = 0.5;
+  loud.connect(wetGain).connect(wet);
+  wet.connect(sting);
+
+  const t = ctx.currentTime;
+  const crack = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 2200;
+  const crackGain = ctx.createGain();
+  crackGain.gain.setValueAtTime(1.6, t);
+  crackGain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+  crack.connect(filter).connect(crackGain).connect(out);
+  crack.start(t, Math.random());
+  crack.stop(t + 0.26);
+
+  const thump = ctx.createOscillator();
+  thump.frequency.setValueAtTime(95, t);
+  thump.frequency.exponentialRampToValueAtTime(32, t + 0.3);
+  const thumpGain = ctx.createGain();
+  thumpGain.gain.setValueAtTime(1.8, t);
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+  thump.connect(thumpGain).connect(out);
+  thump.start(t);
+  thump.stop(t + 0.36);
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;

@@ -59,3 +59,42 @@ describe('Night 1 scares', () => {
     expect(onEvent(t, { type: 'item-taken', keyId: 'parlor' })).toEqual([]);
   });
 });
+
+describe('conditional triggers', () => {
+  const condMap = parseMap({
+    grid: ['#####', '#PT.#', '#####'],
+    keys: [],
+    lockedDoors: [],
+    notes: [],
+    triggers: [{ scare: 'JS-02', once: true, onlyIf: { hasKey: 'house' } }],
+  });
+
+  it('stays armed until its condition holds', () => {
+    const state = { keys: [] };
+    const t = createTriggers(condMap, { check: (c) => state.keys.includes(c.hasKey) });
+    expect(enterCell(t, 'p1', 2, 1)).toEqual([]);
+    enterCell(t, 'p1', 3, 1);
+    state.keys.push('house');
+    expect(scares(enterCell(t, 'p1', 2, 1))).toEqual(['JS-02']);
+  });
+
+  it('rejects a slam trigger that names a missing door', () => {
+    const def = { grid: ['#PT#'], keys: [], lockedDoors: [], notes: [], triggers: [{ scare: 'JS-02', door: 'door-9-9' }] };
+    expect(() => parseMap(def)).toThrow(/not a door/);
+  });
+});
+
+describe('Night 1 door slam', () => {
+  it('JS-02 is armed only once the house key is held and the parlor door is open', async () => {
+    const night1 = (await import('../../shared/maps/night1.js')).default;
+    const map = parseMap(night1);
+    const slam = map.objects.find((o) => o.type === 'trigger' && o.scare === 'JS-02');
+    const world = { open: false, keys: [] };
+    const t = createTriggers(map, { check: (c) => world.open && world.keys.includes(c.hasKey) });
+    world.open = true;
+    expect(enterCell(t, 'p1', slam.x, slam.z)).toEqual([]);
+    enterCell(t, 'p1', slam.x + 1, slam.z);
+    world.keys.push('house');
+    expect(scares(enterCell(t, 'p1', slam.x, slam.z))).toEqual(['JS-02']);
+  });
+});
