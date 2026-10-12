@@ -16,7 +16,7 @@
 | M2-S05 | Locked doors and keys | Must | S | ✅ |
 | M2-S06 | Inventory | Must | S | ✅ |
 | M2-S07 | Notes and note reader | Must | M | ✅ |
-| M2-S08 | Battery pickups | Must | S | ⬜ |
+| M2-S08 | Battery pickups | Must | S | ✅ |
 | M2-S09 | Fuse box puzzle and power restore | Must | M | ⬜ |
 | M2-S10 | Exit and night complete | Must | S | ⬜ |
 | M2-S11 | Trigger tiles | Must | S | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 8 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 9 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -186,7 +186,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S08 · Battery pickups
 
-**Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** FR-04, US-04
+**Priority:** Must · **Size:** S · **Status:** ✅ · **Traces:** FR-04, US-04
 
 > As a player, I want to find batteries, so that I can keep my flashlight alive.
 
@@ -195,7 +195,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - HUD bar updates immediately
 
 **Tasks**
-- [ ] Battery mesh + pickup using `addBattery`
+- [x] Battery mesh + pickup using `addBattery`
 
 **Tests:** unit (exists), playtest
 

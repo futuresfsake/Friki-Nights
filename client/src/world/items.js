@@ -9,6 +9,7 @@ const HITBOX = 0.5; // small things are hard to aim at, so each gets a bigger in
 const builders = {
   key: buildKey,
   note: buildNote,
+  battery: buildBattery,
 };
 
 const brass = new THREE.MeshPhongMaterial({ color: 0xb08d3c, specular: 0xfff1c0, shininess: 60 });
@@ -23,6 +24,23 @@ function buildKey() {
   const bit = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.012, 0.04), brass);
   bit.position.set(0.07, 0, 0.02);
   group.add(ring, shaft, bit);
+  group.position.y = 0.03;
+  return group;
+}
+
+function buildBattery() {
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, 0.11, 8),
+    new THREE.MeshPhongMaterial({ color: 0x2b2f2a, specular: 0x555555, shininess: 30 }),
+  );
+  const label = new THREE.Mesh(new THREE.CylinderGeometry(0.031, 0.031, 0.04, 8), new THREE.MeshLambertMaterial({ color: 0x8a2a1e }));
+  const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.012, 6), brass);
+  label.position.y = 0.01;
+  tip.position.y = 0.061;
+  group.add(body, label, tip);
+  // Lying on its side, as if dropped.
+  group.rotation.z = Math.PI / 2;
   group.position.y = 0.03;
   return group;
 }
@@ -80,6 +98,7 @@ export function createItems(map, scene) {
 // "parlor" → "Parlor key"
 export function itemName(obj) {
   if (obj.type === 'note') return 'note';
+  if (obj.type === 'battery') return 'Battery';
   if (obj.type === 'key') return `${obj.keyId[0].toUpperCase()}${obj.keyId.slice(1)} key`;
   return obj.type;
 }
