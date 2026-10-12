@@ -4,7 +4,18 @@ import { cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createAudioEngine } from './audio/engine.js';
-import { doorCreak, doorRattle, doorShut, flashlightClick, footstep, knocks, pickupClink, startDrone } from './audio/sfx.js';
+import {
+  doorCreak,
+  doorRattle,
+  doorShut,
+  flashlightClick,
+  footstep,
+  fuseClunk,
+  knocks,
+  pickupClink,
+  powerOn,
+  startDrone,
+} from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
 import { createController } from './player/controller.js';
 import { addBattery } from './player/battery.js';
@@ -17,7 +28,8 @@ import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
 import { createItems, itemName } from './world/items.js';
-import { createCeilingLights, updateCeilingLights } from './world/lights.js';
+import { createFuseBox } from './world/fuseBox.js';
+import { createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 
 const FOG_COLOR = 0x050507;
 const PLAYER_ID = 'local'; // single player until M3 gives each player a server id
@@ -43,6 +55,7 @@ const ceilingLights = createCeilingLights(map, scene);
 const doors = createDoors(map, scene);
 const beds = createBeds(map, scene);
 const items = createItems(map, scene);
+const fuseBox = createFuseBox(map, scene, night.fusesNeeded);
 
 // Door and bed cells, so collision can ask "is a closed door or a bed here?" in constant time.
 const objectCells = new Map();
@@ -66,7 +79,7 @@ const flashlight = createFlashlight(camera, {
 });
 const interaction = createInteraction(camera, {
   blockers: house.children,
-  targets: () => [...doors.panels, ...beds.meshes, ...items.targets()],
+  targets: () => [...doors.panels, ...beds.meshes, ...items.targets(), ...(fuseBox?.targets ?? [])],
 });
 
 let nextKnockAt = 20;
@@ -167,6 +180,21 @@ function handleEvent(event) {
       hud.setPrompt(null);
       if (audio) pickupClink(audio);
       break;
+    case 'fusebox-unlocked':
+      fuseBox.open();
+      hud.toast('The fuse box swings open.');
+      if (audio) fuseClunk(audio, fuseBox.position.x, fuseBox.position.y, fuseBox.position.z);
+      break;
+    case 'fuse-placed':
+      fuseBox.setPlaced(event.placed);
+      hud.toast(`Fuse in place (${event.placed}/${event.needed}).`);
+      if (audio) fuseClunk(audio, fuseBox.position.x, fuseBox.position.y, fuseBox.position.z);
+      break;
+    case 'power-on':
+      switchOnHallLights(ceilingLights, clock.elapsedTime);
+      hud.toast('The power is back. Somewhere, a lock clicks.');
+      if (audio) powerOn(audio);
+      break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -174,6 +202,10 @@ function handleEvent(event) {
       if (event.reason === 'locked') {
         hud.toast("It's locked.");
         if (audio && at) doorRattle(audio, at.x, 1.2, at.z);
+      }
+      if (event.reason === 'need-fuses') {
+        const box = night.fuseBox;
+        hud.toast(`Empty slots. It needs fuses (${box.placed}/${night.fusesNeeded}).`);
       }
       if (event.reason === 'bed-taken') hud.toast("Someone's already under there.");
       if (event.reason === 'exit-sealed') {
@@ -188,6 +220,13 @@ function describe(id) {
   if (hiding) return 'Crawl out';
   if (!id) return null;
   if (beds.has(id)) return 'Hide under bed';
+  if (id === fuseBox?.obj.id) {
+    const box = night.fuseBox;
+    if (box.locked) return 'Open fuse box';
+    if (night.power) return null;
+    const carrying = night.players[PLAYER_ID]?.fuses ?? 0;
+    return carrying ? `Place fuse (${box.placed}/${night.fusesNeeded})` : `Fuse box (${box.placed}/${night.fusesNeeded})`;
+  }
   if (items.get(id)?.obj.type === 'note') return 'Read note';
   if (items.has(id)) return `Pick up ${itemName(items.get(id).obj).toLowerCase()}`;
   const door = night.doors[id];
@@ -226,6 +265,7 @@ renderer.setAnimationLoop(() => {
   }
   doors.update(dt);
   items.update(time);
+  fuseBox?.update(dt);
   updateCeilingLights(ceilingLights, time);
   camera.updateMatrixWorld();
   if (audio) audio.updateListener(camera);

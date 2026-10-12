@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cellAt, cellCenter, isSolid, NOTE_MAX_LENGTH, parseMap } from '../../shared/mapParser.js';
+import { cellAt, cellCenter, isSolid, NOTE_MAX_LENGTH, parseMap, wallSide } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 
 const base = { keys: [], lockedDoors: [], notes: [], triggers: [] };
@@ -27,6 +27,18 @@ describe('parseMap — grid', () => {
     expect(parseMap(['#PPPP#']).spawns).toHaveLength(4);
     expect(() => parseMap(['#PPPPP#'])).toThrow(/more than 4 spawns/);
     expect(() => parseMap(['#..#'])).toThrow(/no player spawn/);
+  });
+
+  it('marks hall lights as powered', () => {
+    const map = parseMap(['#PSG#']);
+    expect(map.lights).toEqual([{ x: 2, z: 0 }, { x: 3, z: 0, powered: true }]);
+  });
+
+  it('finds the wall next to a cell', () => {
+    const map = parseMap(['#####', '#P..#', '#...#', '#...#', '#####']);
+    expect(wallSide(map, 1, 1)).toMatchObject({ dx: 0, dz: -1 });
+    expect(wallSide(map, 3, 2)).toMatchObject({ dx: 1, dz: 0 });
+    expect(wallSide(map, 2, 2)).toBe(null);
   });
 
   it('rejects unknown characters', () => {
@@ -109,6 +121,11 @@ describe('parseMap — objects', () => {
   it('rejects doors without walls on two sides', () => {
     expect(() => parseMap({ ...base, grid: ['#P.D.#'] })).not.toThrow();
     expect(() => parseMap({ ...base, grid: ['....', '.PD.', '....'] })).toThrow(/two opposite sides/);
+  });
+
+  it('rejects a fuse box that is not against a wall', () => {
+    const grid = ['#####', '#P..#', '#.F.#', '#...#', '#####'];
+    expect(() => parseMap({ ...base, grid })).toThrow(/next to a wall/);
   });
 
   it('rejects notes that are too long', () => {

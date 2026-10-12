@@ -53,12 +53,13 @@ friki-nights/
 | `N` | Note |
 | `B` | Battery |
 | `S` | Ceiling light (flickers) |
+| `G` | Hall light: dark until the fuse box power is restored, then flickers like `S` |
 | `H` | Hiding closet |
 | `C` | Bed (iron cot); hide underneath it |
 | `E` | Entity spawn |
 | `T` | Scare trigger tile (which scare is set in the map's `triggers` list) |
 | `X` | Exit |
-| `F` | Fuse box (Night 1, opened with the house key) |
+| `F` | Fuse box (Night 1, opened with the house key); must be next to a wall, it hangs on it |
 | `U` | Fuse |
 
 Object details that don't fit in one character (which key opens which door, note texts, what each trigger does) are lists in the map file, assigned in reading order: the first `K` gets `keys[0]`, the first `L` gets `lockedDoors[0]`, and so on. Every object gets a stable id from its type and cell, e.g. `door-12-5`.

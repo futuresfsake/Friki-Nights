@@ -6,7 +6,7 @@ const BASE_INTENSITY = 6;
 
 export function createCeilingLights(map, scene) {
   const bulbGeometry = new THREE.SphereGeometry(0.08, 6, 4);
-  return map.lights.map(({ x, z }) => {
+  return map.lights.map(({ x, z, powered }) => {
     const pos = cellCenter(x, z);
     const light = new THREE.PointLight(0xffa860, BASE_INTENSITY, 9, 2);
     light.position.set(pos.x, WALL_HEIGHT - 0.35, pos.z);
@@ -14,7 +14,8 @@ export function createCeilingLights(map, scene) {
     const bulb = new THREE.Mesh(bulbGeometry, bulbMaterial);
     bulb.position.copy(light.position);
     scene.add(light, bulb);
-    return { light, bulbMaterial, offUntil: 0, nextFlicker: Math.random() * 6 };
+    // Hall lights (G) stay dark until switchOn() gives them a time to come back.
+    return { light, bulbMaterial, offUntil: 0, nextFlicker: Math.random() * 6, onAt: powered ? Infinity : 0 };
   });
 }
 
@@ -26,9 +27,21 @@ export function updateCeilingLights(lights, time, reduceFlashing = false) {
       l.offUntil = time + 0.05 + Math.random() * 0.25;
       l.nextFlicker = time + 2 + Math.random() * 10;
     }
-    const off = time < l.offUntil;
+    const off = time < l.offUntil || time < l.onAt;
     const hum = 0.9 + 0.1 * Math.sin(time * 13 + l.light.position.x);
     l.light.intensity = off ? 0 : BASE_INTENSITY * hum;
     l.bulbMaterial.color.setHex(off ? 0x221a10 : 0xffd9a0);
+  }
+}
+
+// Power restored: hall lights stutter on one after another instead of all at once.
+export function switchOnHallLights(lights, time) {
+  let delay = 0.4;
+  for (const l of lights) {
+    if (l.onAt !== Infinity) continue;
+    l.onAt = time + delay;
+    l.offUntil = l.onAt + 0.15; // one last flicker right after coming on
+    l.nextFlicker = l.onAt + 0.3;
+    delay += 0.25 + Math.random() * 0.3;
   }
 }
