@@ -11,6 +11,7 @@ import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
+import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
@@ -52,6 +53,7 @@ const objectBlocks = (cx, cz) => {
 
 const hud = createHud();
 const inventory = createInventory();
+const reader = createNoteReader();
 let audio = null;
 
 const player = createController(camera, document.body, map, {
@@ -79,6 +81,8 @@ hud.overlay.addEventListener('click', () => {
 });
 player.controls.addEventListener('lock', () => hud.hideOverlay());
 player.controls.addEventListener('unlock', () => {
+  // Esc while reading puts the note down; the browser also leaves pointer lock, so pause.
+  reader.close();
   hud.showOverlay(true);
   inventory.hide();
 });
@@ -102,6 +106,10 @@ addEventListener('blur', () => inventory.hide());
 
 addEventListener('keydown', (e) => {
   if (e.code !== 'KeyE' || e.repeat || !player.controls.isLocked) return;
+  if (reader.isOpen()) {
+    reader.close();
+    return;
+  }
   // Ignore E while still crawling out, so a new hide never starts inside the bed.
   if (!hiding && player.crawling()) return;
   // Under a bed, E always crawls back out, wherever the player is looking.
@@ -152,6 +160,11 @@ function handleEvent(event) {
       if (audio) pickupClink(audio);
       break;
     }
+    case 'note-read':
+      reader.open(event.text);
+      hud.setPrompt(null);
+      if (audio) pickupClink(audio);
+      break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
       break;
@@ -173,6 +186,7 @@ function describe(id) {
   if (hiding) return 'Crawl out';
   if (!id) return null;
   if (beds.has(id)) return 'Hide under bed';
+  if (items.get(id)?.obj.type === 'note') return 'Read note';
   if (items.has(id)) return `Pick up ${itemName(items.get(id).obj).toLowerCase()}`;
   const door = night.doors[id];
   if (door?.exit) return door.open ? 'Close front door' : 'Open front door';
@@ -200,7 +214,8 @@ renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 0.1);
   const time = clock.elapsedTime;
 
-  if (player.controls.isLocked) {
+  // Reading a note pauses the game: nothing moves and the battery doesn't drain.
+  if (player.controls.isLocked && !reader.isOpen()) {
     player.update(dt);
     flashlight.update(dt, time);
     hud.setBattery(flashlight.state.battery);

@@ -179,3 +179,22 @@ export function ceilingTexture() {
     g.stroke();
   });
 }
+
+// A torn sheet of paper with lines of handwriting too small to read: the text
+// itself is shown in the note reader.
+export function paperTexture() {
+  const rand = mulberry32(71);
+  return canvasTexture(32, (g, s) => {
+    g.fillStyle = '#c9c0a8';
+    g.fillRect(0, 0, s, s);
+    g.fillStyle = 'rgba(30,25,40,0.55)';
+    for (let y = 5; y < s - 4; y += 3) {
+      const width = 14 + Math.floor(rand() * 12);
+      for (let x = 3; x < 3 + width; x++) if (rand() < 0.8) g.fillRect(x, y, 1, 1);
+    }
+    stain(g, s * 0.7, s * 0.75, 8, 'rgba(110,80,40,0.5)');
+    // Torn corner.
+    g.clearRect(s - 6, 0, 6, 3);
+    g.clearRect(s - 3, 3, 3, 3);
+  });
+}
