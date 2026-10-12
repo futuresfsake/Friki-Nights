@@ -30,8 +30,12 @@
 - [Specifications](requirements/specifications.md) — section 10
 - [User stories](requirements/user-stories.md) — section 11
 
+### Plans
+- [Milestone foundation](plans/milestone-foundation.md) — development approach, roadmap, rules, template (section 12)
+- [Milestone status](plans/milestone-status.md) — live progress tracker
+- [Milestone reference](plans/milestone-reference.md) — full scope of M1–M8
+
 ### Planning
-- [Milestones](planning/milestones.md) — section 12
 - [Testing](planning/testing.md) — section 13
 - [Risks and open questions](planning/risks-and-open-questions.md) — sections 15–16
 
