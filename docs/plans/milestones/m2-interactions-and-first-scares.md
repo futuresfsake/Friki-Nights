@@ -23,13 +23,13 @@
 | M2-S12 | Scare effects framework | Must | M | ✅ |
 | M2-S13 | JS-01 Face in the flashlight | Must | M | ✅ |
 | M2-S14 | JS-02 Door slam | Must | S | ✅ |
-| M2-S15 | Whispers | Should | S | ⬜ |
+| M2-S15 | Whispers | Should | S | ✅ |
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ⬜ |
 | M2-S17 | Night 1 notes (story text) | Should | S | ⬜ |
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 15 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 16 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -311,7 +311,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S15 · Whispers
 
-**Priority:** Should · **Size:** S · **Status:** ⬜ · **Traces:** Horror design §3
+**Priority:** Should · **Size:** S · **Status:** ✅ · **Traces:** Horror design §3
 
 > As a player, I want to hear whispers somewhere near me, so that the house feels alive.
 
@@ -320,7 +320,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Plays from trigger tiles in dark rooms; never louder than the drone + 6 dB
 
 **Tasks**
-- [ ] `whispers(x, y, z, duration)` in `sfx.js`
+- [x] `whispers(x, y, z, duration)` in `sfx.js`
 
 **Tests:** playtest (headphones)
 

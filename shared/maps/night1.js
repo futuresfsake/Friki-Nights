@@ -12,12 +12,12 @@ export default {
     '#..K.#.......#......C#',
     '#....###L#####.......#',
     'X...N...T...PP......F#',
-    '#....###D#####.......#',
+    '#.T..###D#####.......#',
     '#C...#.......#....B..#',
     '#.S..#...S..U#...G...#',
     '#.U..#.......####D####',
     '######..B....#.......#',
-    '     #C......#...S.U.#',
+    '     #C...T..#...S.U.#',
     '     #########.......#',
     '             #########',
   ],
@@ -26,7 +26,11 @@ export default {
   notes: [
     'Placeholder note. The real Night 1 story notes arrive with M2-S17.',
   ],
-  triggers: [{ scare: 'JS-02', once: true, door: 'door-8-4', onlyIf: { doorOpen: 'door-8-4', hasKey: 'house' } }],
+  triggers: [
+    { scare: 'JS-02', once: true, door: 'door-8-4', onlyIf: { doorOpen: 'door-8-4', hasKey: 'house' } },
+    { scare: 'whisper' },
+    { scare: 'whisper', duration: 3.5 },
+  ],
   fuseBoxKey: 'house',
   eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
 };
