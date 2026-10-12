@@ -50,3 +50,12 @@ describe('event triggers', () => {
     expect(() => parseMap({ ...base, triggers: [{ scare: 'x' }], eventTriggers: [{ scare: 'x' }] })).toThrow(/needs a "when"/);
   });
 });
+
+describe('Night 1 scares', () => {
+  it('JS-01 fires once, on the parlor key pickup', async () => {
+    const night1 = (await import('../../shared/maps/night1.js')).default;
+    const t = createTriggers(parseMap(night1));
+    expect(scares(onEvent(t, { type: 'item-taken', keyId: 'parlor' }))).toEqual(['JS-01']);
+    expect(onEvent(t, { type: 'item-taken', keyId: 'parlor' })).toEqual([]);
+  });
+});
