@@ -10,6 +10,7 @@ import { createController } from './player/controller.js';
 import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
 import { createHud } from './ui/hud.js';
+import { createInventory } from './ui/inventory.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
@@ -50,6 +51,7 @@ const objectBlocks = (cx, cz) => {
 };
 
 const hud = createHud();
+const inventory = createInventory();
 let audio = null;
 
 const player = createController(camera, document.body, map, {
@@ -76,13 +78,27 @@ hud.overlay.addEventListener('click', () => {
   player.controls.lock();
 });
 player.controls.addEventListener('lock', () => hud.hideOverlay());
-player.controls.addEventListener('unlock', () => hud.showOverlay(true));
+player.controls.addEventListener('unlock', () => {
+  hud.showOverlay(true);
+  inventory.hide();
+});
 
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+
+// Tab would move browser focus, so it is always swallowed while playing.
+addEventListener('keydown', (e) => {
+  if (e.code !== 'Tab') return;
+  e.preventDefault();
+  if (player.controls.isLocked) inventory.show(night.players[PLAYER_ID]);
+});
+addEventListener('keyup', (e) => {
+  if (e.code === 'Tab') inventory.hide();
+});
+addEventListener('blur', () => inventory.hide());
 
 addEventListener('keydown', (e) => {
   if (e.code !== 'KeyE' || e.repeat || !player.controls.isLocked) return;

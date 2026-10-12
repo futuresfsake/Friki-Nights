@@ -99,6 +99,36 @@
       #toast.show {
         opacity: 0.9;
       }
+      #inventory {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        min-width: 160px;
+        padding: 10px 14px;
+        border: 1px solid #5a4a3a;
+        background: rgba(5, 5, 7, 0.75);
+        font-size: 14px;
+        letter-spacing: 0.06em;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      #inventory.show {
+        opacity: 0.95;
+      }
+      #inventory h2 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: normal;
+        letter-spacing: 0.2em;
+        color: #8f8676;
+      }
+      #inventory ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        line-height: 1.6;
+      }
       #overlay {
         position: fixed;
         inset: 0;
@@ -158,6 +188,7 @@
       <span>LIGHT</span>
       <div id="battery-bar"><div id="battery-fill"></div></div>
     </div>
+    <div id="inventory"><h2>CARRYING</h2><ul id="inventory-list"></ul></div>
     <div id="overlay">
       <h1>FRIKI NIGHTS</h1>
       <p class="warning">
@@ -166,7 +197,7 @@
       </p>
       <p class="prompt" id="overlay-prompt">CLICK TO ENTER</p>
       <p class="keys">
-        WASD move · Shift run · Mouse look · F flashlight · E interact · Esc pause
+        WASD move · Shift run · Mouse look · F flashlight · E interact · Tab inventory · Esc pause
       </p>
     </div>
     <script type="module" src="/src/main.js"></script>
