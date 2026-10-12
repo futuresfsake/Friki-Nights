@@ -3,7 +3,7 @@
 Live progress tracker. Update this file whenever a story or milestone changes state. The stories themselves (features, acceptance criteria, tasks) live in [`milestones/`](milestones/).
 
 **Last updated:** 2026-10-12
-**Current milestone:** M2 — Interactions + first scares (next up)
+**Current milestone:** M2 — Interactions + first scares (in progress)
 **Deadline:** personal date, flexible — target is the full game (M1–M8)
 
 ## Overview
@@ -11,14 +11,14 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | ID | Milestone | State | Stories done | Branch | Story file |
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
-| M2 | Interactions + first scares | ⏭️ Next | 0 / 18 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
+| M2 | Interactions + first scares | 🔨 In progress | 2 / 18 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
 | M3 | Multiplayer | ⬜ Not started | 0 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started | 0 / 16 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| | **Total** | | **12 / 129** | | |
+| | **Total** | | **14 / 129** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -39,7 +39,7 @@ Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done ·
 
 ## Current milestone: M2
 
-Next story to start: **M2-S01 · Shared map format** (everything else in M2 builds on it).
+Done: S01, S02. Testing: S03, S04 (doors). Next: **M2-S05 · Locked doors and keys**.
 Full story list and tasks: [M2 — Interactions + first scares](milestones/m2-interactions-and-first-scares.md).
 
 ## Later (ideas not in any milestone yet)
@@ -56,3 +56,4 @@ Full story list and tasks: [M2 — Interactions + first scares](milestones/m2-in
 | 2026-10-12 | M1 playtested (footsteps quieter, flashlight blink added) → Done, merged into `main`; M2 next |
 | 2026-10-12 | Planning restructured: every milestone split into stories (one story = one feature); 125 stories across M1–M8 |
 | 2026-10-12 | Players changed from exactly 2 to **1–4**: solo is a real mode, puzzles scale up for 3–4. New stories M3-S21, M3-S22, M7-S24, M7-S25; M3-S18 became Solo play (Must). 129 stories |
+| 2026-10-12 | M2 started on `m2-interactions`: S01 shared map format and S02 night state done; S03 interaction and S04 doors built, awaiting playtest |

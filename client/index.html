@@ -63,6 +63,42 @@
       #battery.low #battery-fill {
         background: #b33a2e;
       }
+      #prompt,
+      #toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+        text-align: center;
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 6px #000;
+        transition: opacity 0.3s;
+      }
+      #prompt {
+        top: calc(50% + 28px);
+        font-size: 15px;
+        opacity: 0;
+      }
+      #prompt kbd {
+        display: inline-block;
+        border: 1px solid #d8d2c4;
+        padding: 0 6px;
+        margin-right: 6px;
+        font-family: inherit;
+        font-size: 13px;
+      }
+      #toast {
+        bottom: 18%;
+        font-size: 17px;
+        font-style: italic;
+        color: #e8e0cc;
+        opacity: 0;
+        max-width: 80vw;
+      }
+      #prompt.show,
+      #toast.show {
+        opacity: 0.9;
+      }
       #overlay {
         position: fixed;
         inset: 0;
@@ -116,6 +152,8 @@
     <div id="game"></div>
     <div id="vignette"></div>
     <div id="crosshair"></div>
+    <div id="prompt"><kbd>E</kbd><span id="prompt-text"></span></div>
+    <div id="toast"></div>
     <div id="battery">
       <span>LIGHT</span>
       <div id="battery-bar"><div id="battery-fill"></div></div>
@@ -128,7 +166,7 @@
       </p>
       <p class="prompt" id="overlay-prompt">CLICK TO ENTER</p>
       <p class="keys">
-        WASD move · Shift run · Mouse look · F flashlight · Esc pause
+        WASD move · Shift run · Mouse look · F flashlight · E interact · Esc pause
       </p>
     </div>
     <script type="module" src="/src/main.js"></script>

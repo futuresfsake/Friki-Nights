@@ -87,6 +87,36 @@ export function floorTexture() {
   });
 }
 
+// kind: 'door' (worn wood), 'locked' (wood + brass lock plate), 'exit' (red front door).
+export function doorTexture(kind = 'door') {
+  const rand = mulberry32(kind.length * 101);
+  return canvasTexture(64, (g, s) => {
+    const base = kind === 'exit' ? [70, 18, 16] : [58, 38, 22];
+    g.fillStyle = `rgb(${base.join(',')})`;
+    g.fillRect(0, 0, s, s);
+    // Vertical grain.
+    for (let x = 0; x < s; x += 2) {
+      g.fillStyle = `rgba(0,0,0,${0.08 + rand() * 0.12})`;
+      g.fillRect(x, 0, 1, s);
+    }
+    // Two recessed panels.
+    g.strokeStyle = 'rgba(0,0,0,0.55)';
+    g.lineWidth = 2;
+    g.strokeRect(10, 6, s - 20, s * 0.38);
+    g.strokeRect(10, s * 0.52, s - 20, s * 0.4);
+    // Handle, and a brass lock plate on locked doors.
+    g.fillStyle = '#b08d3c';
+    g.fillRect(s - 14, s * 0.47, 5, 4);
+    if (kind === 'locked') {
+      g.fillRect(s - 16, s * 0.5, 9, 12);
+      g.fillStyle = '#111';
+      g.fillRect(s - 13, s * 0.55, 3, 5);
+    }
+    stain(g, rand() * s, s * 0.8, 12, 'rgba(10,6,2,0.5)');
+    speckle(g, s, rand, 300, 0.12);
+  });
+}
+
 export function ceilingTexture() {
   const rand = mulberry32(37);
   return canvasTexture(64, (g, s) => {

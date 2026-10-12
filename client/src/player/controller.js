@@ -6,10 +6,10 @@ import { moveWithCollision } from './collision.js';
 
 const BOB_HEIGHT = 0.045;
 
-export function createController(camera, domElement, map, { onStep }) {
+export function createController(camera, domElement, map, { onStep, extraSolid }) {
   const controls = new PointerLockControls(camera, domElement);
   const keys = new Set();
-  const spawn = cellCenter(map.spawn.x, map.spawn.z);
+  const spawn = cellCenter(map.spawns[0].x, map.spawns[0].z);
   camera.position.set(spawn.x, EYE_HEIGHT, spawn.z);
 
   // Matches the physical key, so WASD works on any keyboard layout.
@@ -49,7 +49,7 @@ export function createController(camera, domElement, map, { onStep }) {
     }
 
     const before = { x: camera.position.x, z: camera.position.z };
-    const after = moveWithCollision(map, before, dx, dz, PLAYER_RADIUS);
+    const after = moveWithCollision(map, before, dx, dz, PLAYER_RADIUS, extraSolid);
     camera.position.x = after.x;
     camera.position.z = after.z;
     const moved = Math.hypot(after.x - before.x, after.z - before.z);
