@@ -43,5 +43,5 @@ export function createFlashlight(camera, { onToggle }) {
     spot.intensity = intensity * blinkFactor(blink, time);
   }
 
-  return { state, update };
+  return { state, update, spot };
 }
