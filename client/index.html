@@ -259,6 +259,92 @@
         color: #8f8676;
         line-height: 1.7;
       }
+      #lobby {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #050507;
+        text-align: center;
+        padding: 16px;
+        overflow-y: auto;
+      }
+      #lobby.hidden {
+        display: none;
+      }
+      #lobby section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        max-width: 460px;
+      }
+      #lobby section[hidden] {
+        display: none;
+      }
+      #lobby h1 {
+        margin: 0;
+        font-size: clamp(36px, 8vw, 72px);
+        letter-spacing: 0.18em;
+        font-weight: normal;
+        color: #e8e0cc;
+        text-shadow: 0 0 24px rgba(179, 58, 46, 0.6);
+      }
+      #lobby h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: normal;
+        letter-spacing: 0.25em;
+        color: #8f8676;
+      }
+      #lobby p {
+        margin: 0;
+        line-height: 1.5;
+      }
+      #lobby form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+      #lobby input {
+        padding: 10px 12px;
+        background: #0d0c10;
+        border: 1px solid #5a4a3a;
+        color: #e8e0cc;
+        font: inherit;
+        font-size: 17px;
+        text-align: center;
+        letter-spacing: 0.06em;
+      }
+      #lobby input:focus {
+        outline: none;
+        border-color: #b9a98f;
+      }
+      #lobby button {
+        padding: 10px 22px;
+        background: none;
+        border: 1px solid #d8d2c4;
+        color: #d8d2c4;
+        font: inherit;
+        letter-spacing: 0.2em;
+        cursor: pointer;
+      }
+      #lobby button:hover:not(:disabled) {
+        background: #d8d2c4;
+        color: #050507;
+      }
+      #lobby button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      #lobby .error {
+        min-height: 1.5em;
+        color: #d0705f;
+        font-style: italic;
+      }
       @keyframes pulse {
         50% {
           opacity: 0.35;
@@ -300,6 +386,26 @@
       <p class="keys">
         WASD move · Shift run · Mouse look · F flashlight · E interact · Tab inventory · Esc pause
       </p>
+    </div>
+    <div id="lobby">
+      <section id="screen-access" hidden>
+        <h1>FRIKI NIGHTS</h1>
+        <p>The house only opens for those who know the words.</p>
+        <form id="access-form">
+          <input id="access-input" type="password" maxlength="100" autocomplete="off" aria-label="Access phrase" placeholder="access phrase" />
+          <button type="submit">ENTER</button>
+        </form>
+        <p class="error" id="access-error"></p>
+      </section>
+      <section id="screen-retry" hidden>
+        <h1>FRIKI NIGHTS</h1>
+        <p class="error" id="retry-error"></p>
+        <button id="retry-button" type="button">TRY AGAIN</button>
+      </section>
+      <section id="screen-connecting">
+        <h1>FRIKI NIGHTS</h1>
+        <h2>CONNECTING…</h2>
+      </section>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

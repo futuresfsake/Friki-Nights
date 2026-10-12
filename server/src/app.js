@@ -1,12 +1,14 @@
 import { createServer } from 'node:http';
 import express from 'express';
 import { Server } from 'socket.io';
+import { accessGuard } from './access.js';
 
 export const MAX_MESSAGE_BYTES = 16 * 1024;
 
 // Builds the HTTP + Socket.IO server without listening, so tests can start it on a
 // random port. Only the game's own site (clientOrigin) may talk to it.
-export function createGameServer({ clientOrigin }) {
+export function createGameServer({ clientOrigin, accessPhrase, now }) {
+  if (!accessPhrase) throw new Error('An access phrase is required');
   const app = express();
   app.disable('x-powered-by');
 
@@ -29,6 +31,8 @@ export function createGameServer({ clientOrigin }) {
       callback(null, !origin || origin === clientOrigin);
     },
   });
+
+  io.use(accessGuard(accessPhrase, { now }));
 
   return { app, http, io };
 }

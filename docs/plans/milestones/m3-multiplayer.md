@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- |
 | M3-S01 | Repo layout: client, server, shared | Must | S | ✅ |
 | M3-S02 | Game server bootstrap | Must | M | ✅ |
-| M3-S03 | Access phrase | Must | S | ⬜ |
+| M3-S03 | Access phrase | Must | S | ✅ |
 | M3-S04 | Display name | Must | S | ⬜ |
 | M3-S05 | Create room with code | Must | M | ⬜ |
 | M3-S06 | Join room | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 2 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 3 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -67,7 +67,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S03 · Access phrase
 
-**Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** FR-16, Security
+**Priority:** Must · **Size:** S · **Status:** ✅ · **Traces:** FR-16, Security
 
 > As the owner, I want only people who know our phrase to connect, so that strangers can't use the game.
 
