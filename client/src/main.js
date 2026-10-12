@@ -7,6 +7,7 @@ import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
+import { whisperScare } from './scares/whisper.js';
 import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
@@ -22,6 +23,7 @@ import {
   powerOn,
   screamSting,
   startDrone,
+  whispers,
 } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
 import { addBattery } from './player/battery.js';
@@ -96,10 +98,12 @@ const scares = createScares({
     audio: () => audio,
     sting: () => audio && screamSting(audio),
     slamDoor,
+    whispers,
   },
 });
 scares.register('JS-01', faceInFlashlight);
 scares.register('JS-02', doorSlamScare);
+scares.register('whisper', whisperScare);
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;

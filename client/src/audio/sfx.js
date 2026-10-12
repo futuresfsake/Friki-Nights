@@ -345,6 +345,52 @@ export function doorSlam(audio, x, y, z) {
   thump.stop(t + 0.36);
 }
 
+// Vowel formants (F1, F2) for whispered syllables.
+const VOWELS = [
+  [800, 1200],
+  [400, 2300],
+  [300, 2800],
+  [500, 900],
+  [350, 700],
+];
+export const WHISPER_PEAK = 0.15; // drone peaks at 0.075; whispers stay within +6 dB of it
+
+// Breathy speech you can't quite make out: noise through two narrow band-pass filters
+// that jump between vowel formants, one syllable at a time, placed in 3D.
+export function whispers(audio, x, y, z, duration = 2.5) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t0 = ctx.currentTime + 0.05;
+  const src = noiseSource();
+  const envelope = ctx.createGain();
+  envelope.gain.setValueAtTime(0, t0);
+  envelope.connect(out);
+
+  const formants = [0, 1].map(() => {
+    const f = ctx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.Q.value = 14;
+    src.connect(f).connect(envelope);
+    return f;
+  });
+
+  let t = t0;
+  while (t < t0 + duration) {
+    const length = 0.12 + Math.random() * 0.1;
+    const [f1, f2] = VOWELS[Math.floor(Math.random() * VOWELS.length)];
+    formants[0].frequency.setTargetAtTime(f1, t, 0.02);
+    formants[1].frequency.setTargetAtTime(f2, t, 0.02);
+    const peak = WHISPER_PEAK * (0.5 + Math.random() * 0.5);
+    envelope.gain.setValueAtTime(0, t);
+    envelope.gain.linearRampToValueAtTime(peak, t + length * 0.3);
+    envelope.gain.linearRampToValueAtTime(0, t + length);
+    // Short pauses between "words".
+    t += length + (Math.random() < 0.25 ? 0.25 : 0.02);
+  }
+  src.start(t0, Math.random());
+  src.stop(t + 0.05);
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;
