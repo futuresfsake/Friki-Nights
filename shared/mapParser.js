@@ -59,7 +59,8 @@ export function parseMap(def) {
     solid.push(line);
   }
 
-  const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', width, height, solid, lights, spawns, objects };
+  const eventTriggers = (meta.eventTriggers ?? []).map((t, i) => ({ ...t, id: `event-trigger-${i}` }));
+  const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
   validate(map, meta, counters);
   for (const obj of objects) if (DOOR_TYPES.has(obj.type)) obj.axis = doorAxis(map, obj);
   return map;
@@ -108,6 +109,12 @@ function validate(map, meta, counters) {
     }
   }
   const boxes = map.objects.filter((o) => o.type === 'fuseBox');
+  for (const t of [...map.objects.filter((o) => o.type === 'trigger'), ...map.eventTriggers]) {
+    if (typeof t.scare !== 'string') throw new Error(`${t.id} has no scare`);
+  }
+  for (const t of map.eventTriggers) {
+    if (!t.when || typeof t.when.type !== 'string') throw new Error(`${t.id} needs a "when" with an event type`);
+  }
   if (boxes.length > 1) throw new Error('Map has more than one fuse box (F)');
   if (boxes.length && !wallSide(map, boxes[0].x, boxes[0].z)) {
     throw new Error(`${boxes[0].id} must be next to a wall to hang on`);
