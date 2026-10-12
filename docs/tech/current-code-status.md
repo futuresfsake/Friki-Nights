@@ -1,6 +1,6 @@
 # Current Code Status
 
-**Milestone 1 rebuilt** in `client/` (branch `m1-prototype`). The original `tether/` prototype was lost; this rebuild replaces it and already uses the module layout from the [LLD](../design/low-level-design.md).
+**Milestone 1 done** in `client/` (merged into `main`). The original `tether/` prototype was lost; this rebuild replaces it and already uses the module layout from the [LLD](../design/low-level-design.md).
 
 | File | What it does |
 | --- | --- |
@@ -20,11 +20,12 @@
 | `src/audio/engine.js` | AudioContext, master + sting buses, HRTF panner, listener tracking |
 | `src/audio/sfx.js` | Drone, footsteps, 3D knocks, flashlight click |
 | `src/ui/hud.js` | Battery bar, overlay show/hide |
-| `tests/*.test.js` | 14 unit tests: map parser, collision, battery |
+| `tests/*.test.js` | 19 unit tests: map parser, collision, battery, flashlight blink |
 
 The map already uses `S` for ceiling lights (the shared-format character), so no change is needed in M2.
 
-**Verified:** `npm test` (14 passing), `npm run build` (≈124 KB gzipped JS), page loads in Chrome with no errors and renders the house.
-**Not yet verified:** movement, mouse look, and sound need a hands-on playtest (headless Chrome can't lock the mouse or play audio).
+Also: `src/player/blink.js` — flashlight blink bursts every 7–18 s (1.5–4.5 s on low battery).
+
+**Verified:** `npm test` (19 passing), `npm run build` (≈124 KB gzipped JS), and a hands-on playtest of movement, sound, and flashlight.
 
 Run: `cd client` → `npm install` → `npm run dev` → open `http://localhost:5173`.
