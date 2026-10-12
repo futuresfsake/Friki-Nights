@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { BATTERY_LOW, BATTERY_MAX } from '../constants.js';
 import { drainBattery } from './battery.js';
+import { blinkFactor, blinkFinished, nextBlinkDelay, startBlink } from './blink.js';
 
 const INTENSITY = 30;
 
@@ -21,18 +22,25 @@ export function createFlashlight(camera, { onToggle }) {
     onToggle(state.on);
   });
 
+  let blink = null;
+  let nextBlinkAt = null;
+
   function update(dt, time, reduceFlashing = false) {
     state.battery = drainBattery(state.battery, state.on, dt);
     if (state.battery <= 0) state.on = false;
+    const low = state.battery < BATTERY_LOW;
+
+    if (nextBlinkAt === null) nextBlinkAt = time + nextBlinkDelay(low);
+    if (blink && blinkFinished(blink, time)) blink = null;
+    if (!blink && time >= nextBlinkAt) {
+      nextBlinkAt = time + nextBlinkDelay(low);
+      if (state.on && !reduceFlashing) blink = startBlink(time);
+    }
 
     let intensity = state.on ? INTENSITY : 0;
-    // A dying battery stutters, warning the player before it goes dark.
-    if (state.on && state.battery < BATTERY_LOW) {
-      const weak = 0.35 + 0.65 * (state.battery / BATTERY_LOW);
-      intensity *= weak;
-      if (!reduceFlashing && Math.sin(time * 37) * Math.sin(time * 11) > 0.92) intensity *= 0.15;
-    }
-    spot.intensity = intensity;
+    // A dying battery also dims, warning the player before it goes dark.
+    if (low) intensity *= 0.35 + 0.65 * (state.battery / BATTERY_LOW);
+    spot.intensity = intensity * blinkFactor(blink, time);
   }
 
   return { state, update };

@@ -42,14 +42,15 @@ export function footstep(audio, running) {
 
   const filter = ctx.createBiquadFilter();
   filter.type = 'bandpass';
-  filter.frequency.value = 260 + Math.random() * 180; // wooden floorboards
+  filter.frequency.value = 180 + Math.random() * 120; // soft thud on wooden floorboards
   filter.Q.value = 1.4;
 
   const gain = ctx.createGain();
-  const peak = running ? 0.5 : 0.3;
+  // Kept quiet so the player's own steps don't drown out the house.
+  const peak = running ? 0.14 : 0.07;
   gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(peak, t + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+  gain.gain.linearRampToValueAtTime(peak, t + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
 
   src.connect(filter).connect(gain).connect(master);
   src.start(t, Math.random() * 1.5);

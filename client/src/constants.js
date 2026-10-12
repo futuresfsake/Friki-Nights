@@ -7,7 +7,7 @@ export const PLAYER_RADIUS = 0.3;
 
 export const WALK_SPEED = 2.2; // m/s
 export const RUN_SPEED = 4.0;
-export const STEP_LENGTH = 0.75; // metres per footstep
+export const STEP_LENGTH = 0.95; // metres per footstep
 
 export const PIXEL_RATIO = 0.5; // NFR-01: low resolution for the PS1 look and 60 fps
 
