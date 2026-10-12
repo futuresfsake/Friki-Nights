@@ -250,6 +250,49 @@ export function powerOn(audio) {
   hum.stop(t + 3.6);
 }
 
+// Jump-scare sting: detuned sawtooths gliding down a fifth, a burst of noise, all
+// pushed through distortion. Goes through the sting bus (own volume in M8).
+export function screamSting(audio) {
+  const { ctx, sting, noiseSource } = audio;
+  const t = ctx.currentTime;
+  const shaper = ctx.createWaveShaper();
+  const curve = new Float32Array(1024);
+  for (let i = 0; i < curve.length; i++) {
+    const x = (i / (curve.length - 1)) * 2 - 1;
+    curve[i] = Math.tanh(x * 6);
+  }
+  shaper.curve = curve;
+  const out = ctx.createGain();
+  out.gain.setValueAtTime(0.0001, t);
+  out.gain.exponentialRampToValueAtTime(0.5, t + 0.02);
+  out.gain.setValueAtTime(0.5, t + 0.5);
+  out.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+  shaper.connect(out).connect(sting);
+
+  for (const detune of [-35, 0, 40]) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.detune.value = detune;
+    osc.frequency.setValueAtTime(880, t);
+    osc.frequency.exponentialRampToValueAtTime(587, t + 1.2);
+    const gain = ctx.createGain();
+    gain.gain.value = 0.25;
+    osc.connect(gain).connect(shaper);
+    osc.start(t);
+    osc.stop(t + 1.4);
+  }
+  const hiss = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 1500;
+  const hissGain = ctx.createGain();
+  hissGain.gain.setValueAtTime(0.5, t);
+  hissGain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+  hiss.connect(filter).connect(hissGain).connect(shaper);
+  hiss.start(t, Math.random());
+  hiss.stop(t + 0.6);
+}
+
 export function flashlightClick(audio) {
   const { ctx, master } = audio;
   const t = ctx.currentTime;

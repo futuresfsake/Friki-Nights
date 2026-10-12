@@ -45,3 +45,11 @@ export function switchOnHallLights(lights, time) {
     delay += 0.25 + Math.random() * 0.3;
   }
 }
+
+// Scare blackout: every ceiling light dark for this frame (call after updateCeilingLights).
+export function blackOutCeilingLights(lights) {
+  for (const l of lights) {
+    l.light.intensity = 0;
+    l.bulbMaterial.color.setHex(0x221a10);
+  }
+}

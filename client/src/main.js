@@ -4,6 +4,8 @@ import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
+import { createEffects } from './scares/effects.js';
+import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
   doorCreak,
@@ -15,6 +17,7 @@ import {
   knocks,
   pickupClink,
   powerOn,
+  screamSting,
   startDrone,
 } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
@@ -31,7 +34,7 @@ import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
 import { createFuseBox } from './world/fuseBox.js';
 import { createItems, itemName } from './world/items.js';
-import { createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
+import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 
 const FOG_COLOR = 0x050507;
 const PLAYER_ID = 'local'; // single player until M3 gives each player a server id
@@ -73,6 +76,20 @@ const inventory = createInventory();
 const reader = createNoteReader();
 const endScreen = createEndScreen({ onPlayAgain: () => location.reload() });
 const exitDoor = map.objects.find((o) => o.type === 'exit');
+const effects = createEffects();
+// Everything a scare may use. Scares are registered by id in later stories.
+const scares = createScares({
+  isUiOpen: () => !player.controls.isLocked || reader.isOpen() || ended,
+  ctx: {
+    camera,
+    scene,
+    doors,
+    effects,
+    now: () => clock.elapsedTime,
+    audio: () => audio,
+    sting: () => audio && screamSting(audio),
+  },
+});
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;
@@ -256,9 +273,8 @@ function describe(id) {
   return null;
 }
 
-// Placeholder until the scare framework (M2-S12) plays them.
 function fireScare(trigger) {
-  console.debug('scare', trigger.scare);
+  scares.playScare(trigger.scare, trigger);
 }
 
 // Stepping into the open exit's doorway leaves the house.
@@ -301,12 +317,25 @@ renderer.setAnimationLoop(() => {
     const cell = cellAt(camera.position.x, camera.position.z);
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
+  scares.update();
   doors.update(dt);
   items.update(time);
   fuseBox?.update(dt);
   updateCeilingLights(ceilingLights, time);
+  if (effects.isBlackout(time)) {
+    blackOutCeilingLights(ceilingLights);
+    flashlight.spot.intensity = 0;
+  }
   camera.updateMatrixWorld();
   if (audio) audio.updateListener(camera);
 
+  // Shake only moves the camera for the render, so it never affects collision.
+  const shake = effects.shakeOffset(time);
+  camera.position.x += shake.x;
+  camera.position.y += shake.y;
+  camera.position.z += shake.z;
   renderer.render(scene, camera);
+  camera.position.x -= shake.x;
+  camera.position.y -= shake.y;
+  camera.position.z -= shake.z;
 });
