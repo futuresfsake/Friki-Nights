@@ -21,7 +21,7 @@
 | M2-S10 | Exit and night complete | Must | S | ✅ |
 | M2-S11 | Trigger tiles | Must | S | ✅ |
 | M2-S12 | Scare effects framework | Must | M | ✅ |
-| M2-S13 | JS-01 Face in the flashlight | Must | M | ⬜ |
+| M2-S13 | JS-01 Face in the flashlight | Must | M | ✅ |
 | M2-S14 | JS-02 Door slam | Must | S | ⬜ |
 | M2-S15 | Whispers | Should | S | ⬜ |
 | M2-S16 | Night 1 layout: Foyer and Parlor | Must | M | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 13 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 14 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -276,7 +276,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S13 · JS-01 Face in the flashlight
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-11, US-10
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-11, US-10
 
 > As a player, I want a face to suddenly appear in my flashlight, so that the game actually scares me.
 
@@ -286,9 +286,9 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Fires once in Night 1, after the parlor key pickup (event trigger)
 
 **Tasks**
-- [ ] Face mesh (canvas texture: pale, hollow eyes)
-- [ ] Register `JS-01`
-- [ ] Hook to the parlor key event
+- [x] Face mesh (canvas texture: pale, hollow eyes)
+- [x] Register `JS-01`
+- [x] Hook to the parlor key event
 
 **Tests:** playtest
 

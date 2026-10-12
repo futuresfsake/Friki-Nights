@@ -198,3 +198,36 @@ export function paperTexture() {
     g.clearRect(s - 3, 3, 3, 3);
   });
 }
+
+// JS-01: a pale, stretched face with hollow black eyes and a gaping mouth.
+// Transparent around the head so only the face shows.
+export function faceTexture() {
+  const rand = mulberry32(97);
+  return canvasTexture(64, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    const skin = g.createRadialGradient(s / 2, s * 0.45, 4, s / 2, s * 0.5, s * 0.5);
+    skin.addColorStop(0, '#e6e0d4');
+    skin.addColorStop(0.7, '#bdb5a6');
+    skin.addColorStop(1, 'rgba(120,110,100,0)');
+    g.fillStyle = skin;
+    g.beginPath();
+    g.ellipse(s / 2, s / 2, s * 0.34, s * 0.47, 0, 0, Math.PI * 2);
+    g.fill();
+    // Eyes: deep hollows with a faint wet glint.
+    for (const ex of [s * 0.36, s * 0.64]) {
+      stain(g, ex, s * 0.4, 9, 'rgba(40,30,30,0.7)');
+      g.fillStyle = '#050304';
+      g.beginPath();
+      g.ellipse(ex, s * 0.41, 5, 6.5, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = 'rgba(220,220,210,0.8)';
+      g.fillRect(Math.floor(ex) + 1, Math.floor(s * 0.38), 1, 1);
+    }
+    // Mouth stretched open too far.
+    g.fillStyle = '#0a0506';
+    g.beginPath();
+    g.ellipse(s / 2, s * 0.74, 6, 11, 0, 0, Math.PI * 2);
+    g.fill();
+    speckle(g, s, rand, 300, 0.12);
+  });
+}

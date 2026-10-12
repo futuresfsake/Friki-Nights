@@ -28,4 +28,5 @@ export default {
   ],
   triggers: [],
   fuseBoxKey: 'house',
+  eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
 };

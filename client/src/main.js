@@ -5,6 +5,7 @@ import night1 from '../../shared/maps/night1.js';
 import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { createEffects } from './scares/effects.js';
+import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
@@ -90,6 +91,7 @@ const scares = createScares({
     sting: () => audio && screamSting(audio),
   },
 });
+scares.register('JS-01', faceInFlashlight);
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;
