@@ -14,7 +14,7 @@
 | M2-S03 | Interaction system (E) | Must | M | ✅ |
 | M2-S04 | Doors | Must | M | ✅ |
 | M2-S05 | Locked doors and keys | Must | S | ✅ |
-| M2-S06 | Inventory | Must | S | ⬜ |
+| M2-S06 | Inventory | Must | S | ✅ |
 | M2-S07 | Notes and note reader | Must | M | ⬜ |
 | M2-S08 | Battery pickups | Must | S | ⬜ |
 | M2-S09 | Fuse box puzzle and power restore | Must | M | ⬜ |
@@ -29,7 +29,7 @@
 | M2-S18 | JS-06 Window hand | Could | M | ⬜ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 
-**19 stories · 6 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**19 stories · 7 done · 0 testing** (15 Must · 3 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -149,7 +149,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 
 ### M2-S06 · Inventory
 
-**Priority:** Must · **Size:** S · **Status:** ⬜
+**Priority:** Must · **Size:** S · **Status:** ✅
 
 > As a player, I want to see what I'm carrying, so that I know which key or fuse I have.
 
@@ -158,8 +158,8 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - Picking up an item shows a short "Picked up: Parlor key" message
 
 **Tasks**
-- [ ] `ui/inventory.js`
-- [ ] Pickup toast in HUD
+- [x] `ui/inventory.js`
+- [x] Pickup toast in HUD
 
 **Tests:** playtest
 
