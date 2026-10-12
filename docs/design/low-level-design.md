@@ -60,7 +60,7 @@ friki-nights/
 
 Client and server parse the **same file**, so layouts never disagree.
 
-Milestone 1 currently uses a simpler map (`#`, `.`, `P`, `L` = light) in `src/main.js`. When moving to the shared format, the light character becomes `S`.
+Milestone 1 uses a subset of this format (`#`, `.`, `P`, `S`, with spaces as wall) in `client/src/world/map.js`. M2 adds the remaining characters.
 
 ## 3. Socket events
 

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Friki Nights</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #050507;
+        color: #d8d2c4;
+        font-family: Georgia, 'Times New Roman', serif;
+      }
+      #game canvas {
+        display: block;
+        width: 100vw !important;
+        height: 100vh !important;
+        image-rendering: pixelated;
+      }
+      #vignette {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.85) 100%);
+      }
+      #crosshair {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        width: 4px;
+        height: 4px;
+        margin: -2px 0 0 -2px;
+        border-radius: 50%;
+        background: rgba(216, 210, 196, 0.5);
+        pointer-events: none;
+      }
+      #battery {
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+      #battery-bar {
+        width: 90px;
+        height: 8px;
+        border: 1px solid #d8d2c4;
+        padding: 1px;
+      }
+      #battery-fill {
+        height: 100%;
+        width: 100%;
+        background: #d8d2c4;
+      }
+      #battery.low #battery-fill {
+        background: #b33a2e;
+      }
+      #overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: rgba(5, 5, 7, 0.88);
+        text-align: center;
+        cursor: pointer;
+        padding: 16px;
+      }
+      #overlay.hidden {
+        display: none;
+      }
+      #overlay h1 {
+        margin: 0;
+        font-size: clamp(40px, 9vw, 88px);
+        letter-spacing: 0.18em;
+        font-weight: normal;
+        color: #e8e0cc;
+        text-shadow: 0 0 24px rgba(179, 58, 46, 0.6);
+      }
+      #overlay .warning {
+        max-width: 460px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #b9a98f;
+        border: 1px solid #5a4a3a;
+        padding: 10px 14px;
+      }
+      #overlay .prompt {
+        font-size: 18px;
+        letter-spacing: 0.2em;
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      #overlay .keys {
+        font-size: 13px;
+        color: #8f8676;
+        line-height: 1.7;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.35;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="vignette"></div>
+    <div id="crosshair"></div>
+    <div id="battery">
+      <span>LIGHT</span>
+      <div id="battery-bar"><div id="battery-fill"></div></div>
+    </div>
+    <div id="overlay">
+      <h1>FRIKI NIGHTS</h1>
+      <p class="warning">
+        Content warning: this game contains jump scares, loud sudden sounds, flickering lights, and
+        darkness. Headphones recommended.
+      </p>
+      <p class="prompt" id="overlay-prompt">CLICK TO ENTER</p>
+      <p class="keys">
+        WASD move · Shift run · Mouse look · F flashlight · Esc pause
+      </p>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
