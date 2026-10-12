@@ -6,8 +6,8 @@ The house once belonged to a couple separated by distance. Their letters never a
 
 ## Characters
 
-- **The two players** — themselves. Each sets a display name and a secret **code word** in the lobby (used in Night 4).
-- **The Waiting One** — a tall, faceless figure that moves **only when neither player is looking at it**.
+- **The players (1–4)** — themselves. Each sets a display name and a secret **code word** in the lobby (used in Night 4).
+- **The Waiting One** — a tall, faceless figure that moves **only when no player is looking at it**.
 - **The Owners** — never seen; told through torn letters, notes on walls, and voices on the radio.
 
 ## The five nights (levels)
@@ -27,5 +27,16 @@ The hall's power is off. The **house key** opens a locked **fuse box**, and the 
 ### Night 4: fake partner voices
 
 All audio is generated in code, so the radio "voices" are **distorted, speech-shaped radio noise** with the words shown as **subtitles** (e.g. *"[radio] It's me… come to the nursery."*). They may use the partner's display name. The real partner proves who they are by saying their **code word** over voice chat.
+
+### Player count: solo and 3–4 players
+
+| Puzzle | Solo | 2 players | 3–4 players |
+| --- | --- | --- | --- |
+| Night 2 torn letter | 2 halves, both readable, in rooms far apart | 2 halves, each readable by only one player | One piece per player (3 or 4), each readable by only one player |
+| Night 3 lever | Lever can be **wedged** for 20 s (find a wedge first) | One holds, one crosses | One lever per extra player (2 or 3); all held while the last player crosses |
+| Night 4 fake voices | Voices still lure; no code word check (notes hint which messages lie) | Verify with the code word | Verify with code words; fake voices may pretend to be any teammate |
+| Night 5 letters | Solo versions of all the above | As designed | Scaled versions of all the above |
+
+Scares that fake "your partner" (JS-05, fake footsteps) pick a random teammate; in solo they are replaced by other scares.
 
 **Ending:** when both letters are whole, the house releases the owners and the players wake up. End screen shows the couple's stats for the whole run.

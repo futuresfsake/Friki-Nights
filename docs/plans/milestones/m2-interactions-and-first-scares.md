@@ -54,7 +54,7 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 > As a developer, I want one map format with every object type, so that the client (and later the server) build Night 1 from the same file.
 
 **Acceptance criteria**
-- Parser understands `# . P Q D L K N B S H E T X F U` (`F` fuse box, `U` fuse are new)
+- Parser understands `# . P D L K N B S H E T X F U` (`F` fuse box, `U` fuse are new); `P` may appear up to 4 times (one spawn per player)
 - Map files live in `shared/maps/` and export `{ id, name, grid, keys, lockedDoors, notes, triggers }`
 - IDs are assigned in reading order: the 1st `K` gets `keys[0]`, the 1st `L` gets `lockedDoors[0]`, etc.
 - Mismatched counts (e.g. 2 `K` but 1 key id) throw a clear error

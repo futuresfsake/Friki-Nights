@@ -39,17 +39,17 @@ Recording, text chat, voice changers.
 
 **Acceptance criteria**
 - Mic requested only on the Ready screen, with an explanation
-- Denying it still lets you play (no voice; fallback message shown)
+- Denying it still lets you play (no voice; fallback message shown); solo players are never asked
 - Mic level meter so you can check it works
 
 ### M4-S02 · Peer-to-peer voice connection
 
 **Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** FR-08, US-06, NFR-07
 
-> As a player, I want my voice to go straight to my partner, so that it's fast and private.
+> As a player, I want my voice to go straight to my teammates, so that it's fast and private.
 
 **Acceptance criteria**
-- WebRTC via `simple-peer`; the server only relays `voice:signal` between the two room members
+- WebRTC via `simple-peer` as a mesh: every pair of players connects (up to 6 connections for 4 players); the server only relays `voice:signal` between members of the same room
 - Public STUN servers configured
 - Audio encrypted (DTLS-SRTP); never recorded
 - Reconnects after a rejoin (M3-S14)
@@ -58,11 +58,11 @@ Recording, text chat, voice changers.
 
 **Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-08, US-06
 
-> As a player, I want my partner to sound louder when close and quieter when far, so that it feels like we're in the same house.
+> As a player, I want each teammate to sound louder when close and quieter when far, so that it feels like we're in the same house.
 
 **Acceptance criteria**
 - Full volume within 2 m, fading to a faint minimum (never silent) at 25 m+
-- Volume updates smoothly as either player moves
+- Each teammate's volume is set separately and updates smoothly as anyone moves
 
 ### M4-S04 · 3D voice direction
 
@@ -71,7 +71,7 @@ Recording, text chat, voice changers.
 > As a player, I want to hear which direction my partner is talking from, so that I can find them by voice.
 
 **Acceptance criteria**
-- Partner voice routed through an HRTF `PannerNode` at their position
+- Each teammate's voice routed through its own HRTF `PannerNode` at their position
 
 ### M4-S05 · Mute (M)
 
@@ -99,7 +99,7 @@ Recording, text chat, voice changers.
 > As a player, I want to see when I or my partner is talking, so that I know voice is working.
 
 **Acceptance criteria**
-- HUD icon lights up when your mic picks up voice and when your partner speaks
+- HUD icon lights up when your mic picks up voice; the speaking teammate's name tag lights up
 
 ### M4-S08 · Muffled voice through walls
 
@@ -138,4 +138,5 @@ Recording, text chat, voice changers.
 
 **Acceptance criteria**
 - Clear voice for a full night Cebu ↔ Europe
+- One test with 3–4 players to check the voice mesh
 - Note whether TURN was needed

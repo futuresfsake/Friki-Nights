@@ -6,14 +6,16 @@
 | **The Waiting One** | The faceless entity that moves only when no player is looking at it |
 | **The Owners** | The couple who once lived in the house; never seen, only heard through letters and the radio |
 | **Night** | One level of the game (five in total) |
-| **Room / room code** | A 2-player online session, joined with a 6-character code |
+| **Room / room code** | An online session for 1–4 players, joined with a 6-character code |
+| **Partner / teammate** | Any other player in the same room |
+| **Solo** | Playing a night alone; co-op puzzles use their solo versions |
 | **Host** | The player who created the room; picks the night |
 | **Code word** | Secret word each player sets in the lobby; used in Night 4 to tell the real partner from fake radio voices |
 | **Player token** | Random secret given at join; needed to rejoin after a disconnect |
 | **Down / downed** | State of a player caught by The Waiting One; can be revived within 60 s |
 | **Revive** | Partner holds E for 3 s within 1.5 m of a downed player |
-| **Night failed** | A downed player wasn't revived in 60 s, or both players are down; the night restarts from the beginning (there are no checkpoints) |
-| **Access phrase** | Shared secret both players enter once; the server refuses anyone without it |
+| **Night failed** | A downed player wasn't revived in 60 s, or all players are down (solo: caught once); the night restarts from the beginning (there are no checkpoints) |
+| **Access phrase** | Shared secret every player enters once; the server refuses anyone without it |
 | **Fuse box** | Night 1 puzzle: opened with the house key; fuses found around the level restore power to the hall |
 | **View cone** | The 60° area in front of a player, with line of sight, used to decide if The Waiting One is seen |
 | **Scare Director** | Server system that paces scares using a tension value |

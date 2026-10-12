@@ -1,7 +1,7 @@
 # M3 — Multiplayer ⬜
 
-**Goal:** two players in the same house over the internet.
-**Done when:** two browsers finish Night 1 together at 250 ms simulated delay.
+**Goal:** 1–4 players in the same house over the internet.
+**Done when:** two browsers finish Night 1 together at 250 ms simulated delay, a solo player can finish Night 1 alone, and a 4-player room works.
 **Depends on:** M2
 **Branch:** `m3-multiplayer`
 
@@ -18,7 +18,7 @@
 | M3-S05 | Create room with code | Must | M | ⬜ |
 | M3-S06 | Join room | Must | M | ⬜ |
 | M3-S07 | Ready screen and code word | Must | M | ⬜ |
-| M3-S08 | Night start for both players | Must | S | ⬜ |
+| M3-S08 | Host starts the night for everyone | Must | S | ⬜ |
 | M3-S09 | Send movement and server speed check | Must | M | ⬜ |
 | M3-S10 | Partner model and interpolation | Must | L | ⬜ |
 | M3-S11 | Server-authoritative interactions | Must | L | ⬜ |
@@ -28,11 +28,13 @@
 | M3-S15 | Room expiry and cleanup | Must | S | ⬜ |
 | M3-S16 | Validation and rate limits | Must | M | ⬜ |
 | M3-S17 | "Waking the house…" screen | Should | S | ⬜ |
-| M3-S18 | Developer solo test mode | Should | S | ⬜ |
+| M3-S18 | Solo play | Must | M | ⬜ |
 | M3-S19 | Network delay testing | Must | M | ⬜ |
 | M3-S20 | Real-distance test Cebu ↔ Europe | Must | S | ⬜ |
+| M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
+| M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**20 stories · 0 done** (18 Must · 2 Should · 0 Could)
+**22 stories · 0 done** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -89,7 +91,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 **Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-02, US-01
 
-> As a player, I want to create a room and get a short code, so that my partner can join me.
+> As a player, I want to create a room and get a short code, so that my partner or friends can join me — or I can just start alone.
 
 **Acceptance criteria**
 - Server returns a 6-character code from a 32-character alphabet (no 0/O, 1/I)
@@ -100,11 +102,11 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 **Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-02, US-01
 
-> As a player, I want to type my partner's code and join, so that we're in the same house.
+> As a player, I want to type a room code and join, so that we're all in the same house.
 
 **Acceptance criteria**
-- Join succeeds in < 10 s; both see each other's name
-- Third player gets `room:full`; wrong code gets `room:notfound`
+- Join succeeds in < 10 s; everyone sees everyone's name
+- Fifth player gets `room:full`; wrong code gets `room:notfound`
 - Join attempts limited to 5/min per IP
 - **Tests:** room full, not found, rate limit
 
@@ -115,19 +117,19 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 > As a player, I want to set a secret code word and press Ready, so that we start together and can verify each other in Night 4.
 
 **Acceptance criteria**
-- Code word hashed on the client (SHA-256) before sending; never sent to the partner
-- Shows partner's ready status
-- Night starts only when both are ready
+- Code word hashed on the client (SHA-256) before sending; never sent to other players
+- Shows every player's ready status
+- Host can press Start only when everyone in the room is ready (solo: just the host)
 
-### M3-S08 · Night start for both players
+### M3-S08 · Host starts the night for everyone
 
 **Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** LLD §3
 
-> As a player, I want both of us to load the same night at the same time, so that we start together.
+> As players, we want everyone to load the same night at the same time, so that we start together.
 
 **Acceptance criteria**
-- Server sends `night:start { night, seed }` to both
-- P spawns at `P`, partner at `Q`
+- Server sends `night:start { night, seed, playerCount }` to everyone; puzzles are set up for that player count
+- Players fill the `P` spawn points in join order
 - Short text intro for the night
 
 ### M3-S09 · Send movement and server speed check
@@ -145,7 +147,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 **Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** FR-06, US-05, NFR-03
 
-> As a player, I want to see my partner walking smoothly, so that I always know where they are.
+> As a player, I want to see my teammates walking smoothly, so that I always know where they are.
 
 **Acceptance criteria**
 - Low-poly partner figure with their own flashlight cone and name
@@ -156,12 +158,12 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 **Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** FR-07, US-07
 
-> As a player, I want doors, items, and the fuse box to be the same on both screens, so that we can solve puzzles together.
+> As a player, I want doors, items, and the fuse box to be the same on every screen, so that we can solve puzzles together.
 
 **Acceptance criteria**
 - `nightState` (from M2-S02) runs on the server
 - Client sends `interact { targetId }`; server checks distance (≤ 2 m) and state, then broadcasts `world:update`
-- Change appears on both screens in < 500 ms
+- Change appears on every screen in < 500 ms
 - **Test:** two requests for the same key within 50 ms → exactly one player gets it
 
 ### M3-S12 · Shared and per-player scare triggers
@@ -171,18 +173,18 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 > As a player, I want some scares to happen only to me, so that we end up asking "Did you see that?!"
 
 **Acceptance criteria**
-- Trigger tiles are checked on the server; `scare:play` goes to one or both players
-- Each trigger in the map says `target: 'self' | 'both'`
+- Trigger tiles are checked on the server; `scare:play` goes to one, some, or all players
+- Each trigger in the map says `target: 'self' | 'all'`
 
 ### M3-S13 · Exit together
 
 **Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** Game flow step 9
 
-> As a player, I want the night to end only when we both reach the exit, so that nobody is left behind.
+> As a player, I want the night to end only when everyone reaches the exit, so that nobody is left behind.
 
 **Acceptance criteria**
-- First player at the exit waits ("Waiting for <name>…")
-- Night completes when both are in the exit zone
+- Players at the exit wait ("Waiting for <name>…")
+- Night completes when every player is in the exit zone (solo: immediately)
 
 ### M3-S14 · Disconnect pause and rejoin
 
@@ -191,7 +193,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 > As a player, I want to get back into the game after my connection drops, so that a bad network doesn't ruin the night.
 
 **Acceptance criteria**
-- Night pauses for up to 60 s with a countdown on the partner's screen
+- Night pauses for everyone for up to 60 s with a countdown
 - Rejoin with room code + `playerToken` restores the player and the night state
 - After 60 s → back to lobby; night progress lost
 - **Test:** rejoin within 60 s, refused without token
@@ -203,7 +205,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 > As the owner, I want empty rooms deleted, so that the server stays clean and codes can't be reused.
 
 **Acceptance criteria**
-- Room deleted 5 min after both players leave
+- Room deleted 5 min after all players leave
 - **Test:** expiry with fake timers
 
 ### M3-S16 · Validation and rate limits
@@ -227,14 +229,19 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 **Acceptance criteria**
 - Lobby pings `/health` on open; shows "Waking the house…" until it answers (up to ~1 min)
 
-### M3-S18 · Developer solo test mode
+### M3-S18 · Solo play
 
-**Priority:** Should · **Size:** S · **Status:** ⬜ · **Traces:** Decisions (solo = dev only)
+**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-19, US-13
 
-> As a developer, I want to test a night alone, so that I don't need two browsers for every change.
+> As a player, I want to play a night by myself, so that I can play even when nobody else is online.
 
 **Acceptance criteria**
-- `?solo=1` works only in dev builds; never in production
+- Host can start with only themselves in the room; same server and flow as multiplayer
+- No voice setup or mic request when alone
+- Solo balance: 2 extra batteries in the night
+- Being caught → night failed (nobody can revive)
+- Scares that fake a teammate are swapped for other scares
+- **Test:** solo player finishes Night 1; solo caught → `night:failed`
 
 ### M3-S19 · Network delay testing
 
@@ -256,3 +263,26 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 - Server deployed to Render (test deploy)
 - Delay measured from both sides
 - Server region decided: Singapore or Frankfurt
+
+### M3-S21 · Up to 4 players in a room
+
+**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-02, US-13
+
+> As a player, I want to bring up to 3 friends, so that we can be scared together.
+
+**Acceptance criteria**
+- Rooms hold 1–4 players; every player sees and hears every other
+- Maps have 4 `P` spawn points
+- Only the nearest 1–2 teammate flashlights are real lights; the rest are fake light cones (performance)
+- Night 1 puzzle counts (fuses, batteries) can be set per player count in the map file
+- **Test:** 4 clients in one room move, interact, and finish Night 1; 5th gets `room:full`
+
+### M3-S22 · Player colors and name tags
+
+**Priority:** Should · **Size:** S · **Status:** ⬜
+
+> As a player, I want each teammate to have their own color and name tag, so that I can tell who is who in the dark.
+
+**Acceptance criteria**
+- 4 distinct colors (clothing tint + flashlight tint), assigned in join order
+- Name above each teammate, fading with distance; `textContent` only

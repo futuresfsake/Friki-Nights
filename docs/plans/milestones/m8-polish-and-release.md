@@ -91,7 +91,7 @@ Mobile, more players, monetization (non-goals).
 
 **Acceptance criteria**
 - Resume, Settings, Leave room
-- Online, pausing doesn't stop the world (the partner keeps playing); shows that clearly
+- Online, pausing doesn't stop the world (teammates keep playing); shows that clearly
 
 ### M8-S07 · Lobby and menu polish
 
@@ -144,10 +144,10 @@ Mobile, more players, monetization (non-goals).
 
 **Priority:** Should · **Size:** M · **Status:** ⬜ · **Traces:** Testing
 
-> As a developer, I want automated two-player tests, so that big changes don't break the basics.
+> As a developer, I want automated multiplayer tests, so that big changes don't break the basics.
 
 **Acceptance criteria**
-- Playwright with two browser contexts: join room, open a door, see the partner, finish a night (solo dev map)
+- Playwright with 1, 2, and 4 browser contexts: join room, open a door, see teammates, finish a night
 
 ### M8-S13 · Performance pass
 
@@ -178,4 +178,5 @@ Mobile, more players, monetization (non-goals).
 
 **Acceptance criteria**
 - Full run of all five nights, Cebu ↔ Europe, on both laptops
+- Each night also played once solo and once with 3–4 players
 - No critical bugs; minor ones logged in "Later"

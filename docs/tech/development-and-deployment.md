@@ -27,9 +27,9 @@ npm install
 npm run dev      # Proposed: http://localhost:3000
 ```
 
-To test two players on one computer, open two browser windows (or one normal + one private window) and join the same room code.
+To test several players on one computer, open several browser windows (normal + private windows, or different browsers) and join the same room code. Up to 4.
 
-**Solo test mode (developers only):** the game is 2-player only, but a dev flag (e.g. `?solo=1`, only in dev builds) lets one person walk a night alone for testing. It is never available in the production build.
+**Solo:** solo is a normal game mode (create a room and start alone), so no special test flag is needed.
 
 ## 3. Scripts
 

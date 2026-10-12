@@ -6,13 +6,13 @@ Short scope of every milestone: what it includes, what files it touches, which r
 | --- | --- | --- |
 | M1 Dark house prototype | 12 | 9 · 3 · 0 |
 | M2 Interactions + first scares | 18 | 15 · 2 · 1 |
-| M3 Multiplayer | 20 | 18 · 2 · 0 |
+| M3 Multiplayer | 22 | 20 · 2 · 0 |
 | M4 Voice | 11 | 7 · 3 · 1 |
 | M5 The Waiting One + Scare Director | 16 | 13 · 3 · 0 |
 | M6 Progression | 10 | 6 · 3 · 1 |
-| M7 Content | 23 | 20 · 3 · 0 |
+| M7 Content | 25 | 22 · 3 · 0 |
 | M8 Polish and release | 15 | 11 · 4 · 0 |
-| **Total** | **125** | **99 · 23 · 3** |
+| **Total** | **129** | **103 · 23 · 3** |
 
 ---
 
@@ -61,15 +61,15 @@ Short scope of every milestone: what it includes, what files it touches, which r
 
 ## M3 — Multiplayer
 
-**Goal:** two players in the same house over the internet.
-**Done when:** two browsers finish Night 1 together at 250 ms simulated delay.
+**Goal:** 1–4 players in the same house over the internet.
+**Done when:** two browsers finish Night 1 together at 250 ms simulated delay; solo and 4-player rooms work.
 **Depends on:** M2
-**Stories:** 20 features → [full story list](milestones/m3-multiplayer.md)
+**Stories:** 22 features → [full story list](milestones/m3-multiplayer.md)
 
 **Scope**
 - Node + Express + Socket.IO server
 - Shared access phrase checked in the Socket.IO handshake (`ACCESS_PHRASE` env var) + access screen
-- Room create/join with 6-char codes, max 2 players, room expiry
+- Room create/join with 6-char codes, 1–4 players, solo play, room expiry
 - Partner model, 15 Hz movement + 100 ms interpolation
 - Server-authoritative doors and items (first valid request wins)
 - Rejoin within 60 s with `playerToken`
@@ -111,7 +111,7 @@ Short scope of every milestone: what it includes, what files it touches, which r
 **Scope**
 - Entity state machine: DORMANT, STALK, FROZEN, HUNT, CATCH, COOLDOWN
 - View-cone checks (60°, line of sight) on the server at 10 ticks/s
-- Catch → down → revive (hold E 3 s within 1.5 m, 60 s limit); timer runs out or both down → night failed, restart night
+- Catch → down → revive (hold E 3 s within 1.5 m, 60 s limit); timer runs out, all players down, or solo player caught → night failed, restart night
 - Hiding closets (not safe if The Waiting One saw the player enter)
 - Scare Director: tension, ≥4 min between big scares, never during UI
 - Heartbeat, "it saw you" tone
@@ -125,7 +125,7 @@ Short scope of every milestone: what it includes, what files it touches, which r
 ## M6 — Progression
 
 **Goal:** progress carries over between play sessions.
-**Done when:** XP, rank, perks, and unlocked nights survive a reload on both browsers.
+**Done when:** XP, rank, perks, and unlocked nights survive a reload on every player's browser.
 **Depends on:** M5
 **Stories:** 10 features → [full story list](milestones/m6-progression.md)
 
@@ -137,7 +137,7 @@ Short scope of every milestone: what it includes, what files it touches, which r
 
 **Files:** `client/src/save/local.js`, summary + night select UI
 **Requirements:** FR-12, FR-13 · US-12
-**Tests:** unit tests for XP and rank; reload test on both browsers
+**Tests:** unit tests for XP and rank; reload test on every player's browser
 
 ---
 
@@ -146,7 +146,7 @@ Short scope of every milestone: what it includes, what files it touches, which r
 **Goal:** the full story, Nights 2–5 and the ending.
 **Done when:** Nights 2–5 and the ending are playable together.
 **Depends on:** M6 (Night 1 complete end to end)
-**Stories:** 23 features → [full story list](milestones/m7-content.md)
+**Stories:** 25 features → [full story list](milestones/m7-content.md)
 
 **Scope**
 - Night 2 Library and Study — torn letter split clue, blackouts, JS-03, JS-04, JS-09

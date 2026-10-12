@@ -1,7 +1,7 @@
 # M6 — Progression ⬜
 
 **Goal:** progress carries over between play sessions.
-**Done when:** XP, rank, perks, and unlocked nights survive a reload on both browsers.
+**Done when:** XP, rank, perks, and unlocked nights survive a reload on every player's browser.
 **Depends on:** M5
 **Branch:** `m6-progression`
 
@@ -47,7 +47,7 @@ Server-side saves, accounts, cloud sync (non-goals).
 
 **Priority:** Must · **Size:** S · **Status:** ⬜
 
-> As a developer, I want the server to track each night's stats, so that both players get the same summary.
+> As a developer, I want the server to track each night's stats, so that every player gets the same summary.
 
 **Acceptance criteria**
 - Time, batteries used, times caught, notes found — tracked on the server
@@ -61,7 +61,7 @@ Server-side saves, accounts, cloud sync (non-goals).
 
 **Acceptance criteria**
 - `100 + 50 if no one was caught + up to 50 for speed + 10 per note found`
-- Same XP for both players
+- Same XP for every player in the room (solo included)
 - **Tests:** formula edge cases
 
 ### M6-S04 · Couple rank
@@ -92,9 +92,9 @@ Server-side saves, accounts, cloud sync (non-goals).
 > As the host, I want to choose any night we've unlocked, so that we can replay or continue.
 
 **Acceptance criteria**
-- Nights unlock in order; completing night N unlocks N+1 for both players
+- Nights unlock in order; completing night N unlocks N+1 for every player in the room
 - Host sees only nights unlocked in their browser
-- **Test:** progress survives a page reload on both browsers (US-12)
+- **Test:** progress survives a page reload on every player's browser (US-12)
 
 ### M6-S07 · Perk: longer flashlight battery
 
@@ -119,10 +119,10 @@ Server-side saves, accounts, cloud sync (non-goals).
 
 **Priority:** Should · **Size:** S · **Status:** ⬜ · **Traces:** LLD §7
 
-> As a ranked-up couple, we want to see where our partner is for a moment, so that we can regroup.
+> As a ranked-up couple, we want to see where our teammates are for a moment, so that we can regroup.
 
 **Acceptance criteria**
-- Unlocked at Soulbound; partner's outline visible through walls for 10 s; 60 s cooldown
+- Unlocked at Soulbound; every teammate's outline visible through walls for 10 s; 60 s cooldown; not available solo
 
 ### M6-S10 · Rank and perks screen
 

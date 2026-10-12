@@ -40,7 +40,7 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 
 **Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** HLD rules
 
-> As a developer, I want the server to update the world 10 times a second, so that the entity and scares run in one place for both players.
+> As a developer, I want the server to update the world 10 times a second, so that the entity and scares run in one place for every player.
 
 **Acceptance criteria**
 - Fixed 100 ms tick per active room; stops when the room is paused or empty
@@ -108,17 +108,17 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 
 **Acceptance criteria**
 - Within 1 m → player down; scream sting; screen goes dark red
-- Downed player can't move; sees revive timer (60 s) and partner distance
-- Entity goes to COOLDOWN for 15 s away from both
+- Downed player can't move; sees revive timer (60 s) and nearest teammate distance
+- Entity goes to COOLDOWN for 15 s away from all players
 
 ### M5-S08 · Revive (hold E)
 
 **Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-10, US-11
 
-> As a player, I want to revive my partner by holding E, so that one mistake doesn't end the night.
+> As a player, I want to revive a downed teammate by holding E, so that one mistake doesn't end the night.
 
 **Acceptance criteria**
-- Partner within 1.5 m holds E for 3 s; progress ring shown
+- Any teammate within 1.5 m holds E for 3 s; progress ring shown
 - Moving away or releasing E cancels
 - **Test:** revive timing on the server
 
@@ -129,9 +129,9 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 > As players, we want a clear "night failed" when we lose, so that we know to try again.
 
 **Acceptance criteria**
-- Revive timer runs out OR both players down → `night:failed`
-- Failure screen; both return to the night intro; night restarts from the start
-- **Test:** timeout → failed; both down → failed
+- Revive timer runs out OR all players down OR solo player caught → `night:failed`
+- Failure screen; everyone returns to the night intro; night restarts from the start
+- **Test:** timeout → failed; all down → failed; 3 players with 2 down → continues; solo caught → failed
 
 ### M5-S10 · Hiding closets
 
@@ -173,7 +173,7 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 
 **Acceptance criteria**
 - Director picks from scares unlocked for the night, avoiding repeats
-- Can target one player (the one alone or in the dark) or both
+- Can target one player (the one alone or in the dark), some, or all
 
 ### M5-S14 · JS-03 Lights out, figure appears
 
@@ -189,11 +189,12 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 
 **Priority:** Should · **Size:** M · **Status:** ⬜ · **Traces:** Horror design §1 ("use the partner")
 
-> As a player, I want the house to fake my partner, so that I can't trust what I hear.
+> As a player, I want the house to fake my teammates, so that I can't trust what I hear.
 
 **Acceptance criteria**
-- Fake partner footsteps behind the player when the real partner is far away
-- Distant voice-like whisper using the partner's name in the subtitle
+- Fake teammate footsteps behind the player when the real teammates are far away (a random teammate is chosen)
+- Distant voice-like whisper using a teammate's name in the subtitle
+- Off in solo (replaced by other small scares)
 
 ### M5-S16 · Breathing sound
 

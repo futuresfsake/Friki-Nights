@@ -28,7 +28,7 @@ friki-nights/
     package.json
     src/
       index.js               Express + Socket.IO bootstrap, CORS
-      rooms.js               create/join/leave/expire, max 2 players
+      rooms.js               create/join/leave/expire, 1–4 players
       state.js               authoritative night state
       entity.js              The Waiting One state machine
       director.js            Scare Director (pacing + triggers)
@@ -46,7 +46,7 @@ friki-nights/
 | --- | --- |
 | `#` | Wall |
 | `.` | Floor |
-| `P` / `Q` | Player 1 / Player 2 spawn |
+| `P` | Player spawn point (each map has 4; players fill them in join order) |
 | `D` | Door |
 | `L` | Locked door (needs key) |
 | `K` | Key |
@@ -73,20 +73,20 @@ Milestone 1 uses a subset of this format (`#`, `.`, `P`, `S`, with spaces as wal
 | Event | Direction | Payload | Server rule |
 | --- | --- | --- | --- |
 | `room:create` | C → S | `{ name }` | Returns `{ code }` (6 chars) |
-| `room:join` | C → S | `{ code, name }` | Max 2 players; else `room:full` / `room:notfound` |
+| `room:join` | C → S | `{ code, name }` | Max 4 players; else `room:full` / `room:notfound` |
 | `room:rejoin` | C → S | `{ code, playerToken }` | Restores a dropped player within 60 s |
-| `player:ready` | C → S | `{ codeWordHash }` | Night starts when both ready |
-| `night:start` | S → both | `{ night, seed }` | Host's chosen unlocked night |
-| `night:failed` | S → both | `{ reason }` | Revive timer ran out or both players down; night restarts |
+| `player:ready` | C → S | `{ codeWordHash }` | Host can start when everyone is ready |
+| `night:start` | S → all | `{ night, seed }` | Host's chosen unlocked night |
+| `night:failed` | S → all | `{ reason }` | Revive timer ran out, all players down, or solo player caught; night restarts |
 | `player:move` | C → S | `{ x, z, yaw, pitch, t }` | ≤15 Hz; reject speed > run speed + 10% |
 | `player:state` | S → partner | `{ id, x, z, yaw, pitch, t }` | Forwarded after validation |
 | `interact` | C → S | `{ targetId }` | Within 2 m and state allows it |
-| `world:update` | S → both | `{ targetId, state }` | Door open, item taken, lever held |
-| `entity:state` | S → both | `{ x, z, mode }` | 10 Hz |
-| `scare:play` | S → one/both | `{ scareId, params }` | From Scare Director or trigger tile |
-| `player:down` / `player:revive` | both ways | `{ id }` | Revive: partner within 1.5 m for 3 s |
-| `voice:signal` | C → S → partner | WebRTC SDP / ICE | Only between the two room members |
-| `night:complete` | S → both | `{ xp, stats }` | Clients save to localStorage |
+| `world:update` | S → all | `{ targetId, state }` | Door open, item taken, lever held |
+| `entity:state` | S → all | `{ x, z, mode }` | 10 Hz |
+| `scare:play` | S → one / some / all | `{ scareId, params }` | From Scare Director or trigger tile |
+| `player:down` / `player:revive` | both ways | `{ id }` | Revive: any teammate within 1.5 m for 3 s |
+| `voice:signal` | C → S → one player | `{ to, signal }` WebRTC SDP / ICE | Only between members of the same room (mesh: each pair connects) |
+| `night:complete` | S → all | `{ xp, stats }` | Clients save to localStorage |
 
 ## 4. Server memory model (no database)
 
@@ -110,14 +110,14 @@ rooms = Map<code, {
 ## 6. State machines
 
 **Game:** `LOBBY → READY → INTRO → PLAYING → SUMMARY`
-From `PLAYING`: caught player → `DOWNED` → back to `PLAYING` on revive; revive timer (60 s) runs out or both down → `NIGHT_FAILED` → `INTRO` (night restarts from the beginning); disconnect → `PAUSED` (≤60 s).
+From `PLAYING`: caught player → `DOWNED` → back to `PLAYING` on revive; revive timer (60 s) runs out, all players down, or a solo player is caught → `NIGHT_FAILED` → `INTRO` (night restarts from the beginning); disconnect → `PAUSED` (≤60 s).
 
 **The Waiting One:**
 - `DORMANT` — not yet active this night
 - `STALK` — moves toward nearest player at 1.2 m/s, only while **no** player's view cone (60°, line of sight) contains it
 - `FROZEN` — seen by any player; stops instantly; low tone plays
 - `HUNT` — Nights 4–5, after 20 s unseen, speed 2.5 m/s
-- `CATCH` — within 1 m of a player → player down → `COOLDOWN` 15 s away from both
+- `CATCH` — within 1 m of a player → player down → `COOLDOWN` 15 s away from all players
 
 **Hiding closets:** a closet is safe only if The Waiting One did **not** see the player enter it. "Seen" means the player was inside the entity's own view cone (line of sight) at the moment they entered. If it saw them, it goes to the closet, opens it, and catches the player. If not, it loses track and goes back to `STALK`.
 

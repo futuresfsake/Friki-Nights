@@ -23,11 +23,11 @@ Friki Nights uses an **iterative, milestone-based development approach** instead
 | --- | --- | --- |
 | M1 | Dark house prototype (rebuild) | Runs with `npm run dev` and builds |
 | M2 | Interactions + first scares | Night 1 is solvable and scary alone |
-| M3 | Multiplayer | Two browsers finish Night 1 together at 250 ms simulated delay |
+| M3 | Multiplayer | Two browsers finish Night 1 together at 250 ms simulated delay; solo and 4-player rooms work |
 | M4 | Voice | You talk in-game Cebu ↔ Europe |
 | M5 | The Waiting One + Scare Director | Entity never moves while watched (tested) and scares respect pacing |
-| M6 | Progression | XP, rank, perks, and unlocked nights survive a reload on both browsers |
-| M7 | Content | Nights 2–5 and the ending are playable together |
+| M6 | Progression | XP, rank, perks, and unlocked nights survive a reload on every player's browser |
+| M7 | Content | Nights 2–5 and the ending are playable solo and with 2–4 players |
 | M8 | Polish and release | Public link works on both laptops with no critical bugs |
 
 M6–M8 "Done when" wording is derived from their scope and the user stories; adjust if needed.
