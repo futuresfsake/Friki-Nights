@@ -71,8 +71,8 @@ describe('player:move', () => {
     const { a, b, me, tick } = await playing();
     tick(100);
     const seen = waitFor(b, 'player:state');
-    a.emit('player:move', { x: me.x + 0.2, z: me.z, yaw: 1, pitch: 0, t: 5 });
-    expect(await seen).toMatchObject({ x: me.x + 0.2, z: me.z, yaw: 1, t: 5 });
+    a.emit('player:move', { x: me.x + 0.2, z: me.z, yaw: 1, pitch: 0, light: true, t: 5 });
+    expect(await seen).toMatchObject({ x: me.x + 0.2, z: me.z, yaw: 1, light: true, t: 5 });
   });
 
   it('rejects a speed hack and corrects the sender', async () => {
@@ -81,7 +81,7 @@ describe('player:move', () => {
     b.on('player:state', () => (forwarded = true));
     tick(66);
     const correction = waitFor(a, 'player:correct');
-    a.emit('player:move', { x: me.x + 6, z: me.z, yaw: 0, pitch: 0, t: 66 });
+    a.emit('player:move', { x: me.x + 6, z: me.z, yaw: 0, pitch: 0, light: true, t: 66 });
     expect(await correction).toEqual({ x: me.x, z: me.z });
     expect(forwarded).toBe(false);
   });
