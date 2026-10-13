@@ -19,7 +19,7 @@
 | M3-S06 | Join room | Must | M | ✅ |
 | M3-S07 | Ready screen and code word | Must | M | ✅ |
 | M3-S08 | Host starts the night for everyone | Must | S | ✅ |
-| M3-S09 | Send movement and server speed check | Must | M | ⬜ |
+| M3-S09 | Send movement and server speed check | Must | M | ✅ |
 | M3-S10 | Partner model and interpolation | Must | L | ⬜ |
 | M3-S11 | Server-authoritative interactions | Must | L | ⬜ |
 | M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 8 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 9 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -134,7 +134,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S09 · Send movement and server speed check
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** HLD rules, Security (cheating)
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** HLD rules, Security (cheating)
 
 > As a developer, I want each client to send its position 15×/s and the server to check it, so that movement is smooth and can't be cheated.
 

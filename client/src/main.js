@@ -35,6 +35,7 @@ import { createInteraction } from './player/interact.js';
 import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
+import { createMoveSender } from './net/moves.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createRoomLobby } from './ui/room.js';
 import { createNoteReader } from './ui/notes.js';
@@ -135,6 +136,8 @@ let hiding = null; // { bedId, stood } while under a bed
 // Connected game server; the lobby covers the game until the server lets us in.
 let socket = null;
 let playerName = null;
+let moves = null;
+const look = new THREE.Euler(0, 0, 0, 'YXZ');
 connectWithAccess().then(async (s) => {
   playerName = await askName();
   const room = createRoomLobby(s);
@@ -145,6 +148,9 @@ connectWithAccess().then(async (s) => {
   player.placeAt(me.x, me.z);
   hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
   socket = s;
+  moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
+  // The server refused a move (too fast, or into a wall): go back to where it saw us.
+  socket.on('player:correct', ({ x, z }) => player.placeAt(x, z));
   hideLobby();
 });
 
@@ -373,6 +379,8 @@ renderer.setAnimationLoop(() => {
     maybeKnock(time);
     playTime += dt;
     checkExit();
+    look.setFromQuaternion(camera.quaternion);
+    moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x });
     const cell = cellAt(camera.position.x, camera.position.z);
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }

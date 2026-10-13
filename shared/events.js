@@ -14,6 +14,10 @@ const roomCode = z
   .max(20)
   .transform((s) => s.replace(/\s/g, '').toUpperCase());
 
+const coord = z.number().finite().min(-1000).max(1000);
+
+export const MOVE_RATE = 15; // Hz
+
 export function isRoomCode(code) {
   return code.length === ROOM_CODE_LENGTH && [...code].every((c) => ROOM_CODE_ALPHABET.includes(c));
 }
@@ -27,4 +31,14 @@ export const schemas = {
     z.object({ ready: z.literal(false) }).strict(),
   ]),
   'night:begin': z.object({}).strict(),
+  // Sent up to MOVE_RATE times a second; t is the sender's clock in ms, for smoothing.
+  'player:move': z
+    .object({
+      x: coord,
+      z: coord,
+      yaw: z.number().finite().min(-10).max(10),
+      pitch: z.number().finite().min(-2).max(2),
+      t: z.number().finite().nonnegative(),
+    })
+    .strict(),
 };
