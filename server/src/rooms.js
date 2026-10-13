@@ -50,6 +50,8 @@ export function addPlayer(room, name) {
     token: randomBytes(16).toString('hex'),
     name,
     connected: true,
+    ready: false,
+    codeWordHash: null, // checked in Night 4; never sent to anyone
   };
   room.players.push(player);
   return player;
@@ -67,6 +69,11 @@ export function roomView(room) {
     code: room.code,
     hostId: room.hostId,
     phase: room.phase,
-    players: room.players.map((p) => ({ id: p.id, name: p.name, connected: p.connected })),
+    players: room.players.map((p) => ({ id: p.id, name: p.name, connected: p.connected, ready: p.ready })),
   };
+}
+
+// The host may start once every player in the room is ready (solo: just the host).
+export function everyoneReady(room) {
+  return room.players.length > 0 && room.players.every((p) => p.ready);
 }

@@ -39,7 +39,7 @@ describe('room:create', () => {
     const view = await update;
     expect(view.code).toBe(res.code);
     expect(view.hostId).toBe(res.playerId);
-    expect(view.players).toEqual([{ id: res.playerId, name: 'Chelsea', connected: true }]);
+    expect(view.players).toEqual([{ id: res.playerId, name: 'Chelsea', connected: true, ready: false }]);
     expect(JSON.stringify(view)).not.toContain(res.playerToken);
   });
 

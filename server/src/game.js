@@ -12,6 +12,13 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
   const joins = createRateLimiter({ limit: JOINS_PER_MINUTE, windowMs: 60_000, now });
   const broadcastRoom = (room) => io.to(room.code).emit('room:update', roomView(room));
 
+  // The room and player this socket sits in, or {} if none.
+  function seat(socket) {
+    const room = rooms.get(socket.data.code);
+    const player = room?.players.find((p) => p.id === socket.data.playerId);
+    return player ? { room, player } : {};
+  }
+
   function enter(socket, room, player) {
     socket.data.code = room.code;
     socket.data.playerId = player.id;
@@ -64,6 +71,16 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       enter(socket, result.room, result.player);
       reply({ code, playerId: result.player.id, playerToken: result.player.token });
       broadcastRoom(result.room);
+    });
+
+    handle('player:ready', (payload, reply) => {
+      const { room, player } = seat(socket);
+      if (!player) return reply({ error: 'not-in-room' });
+      if (room.phase !== 'lobby') return reply({ error: 'room:started' });
+      player.ready = payload.ready;
+      player.codeWordHash = payload.ready ? payload.codeWordHash : null;
+      reply({ ok: true });
+      broadcastRoom(room);
     });
 
     socket.on('disconnect', () => leave(socket));

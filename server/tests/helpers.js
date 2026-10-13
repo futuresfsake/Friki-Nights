@@ -40,3 +40,20 @@ export function once(socket, event) {
 export function request(socket, event, payload) {
   return socket.timeout(2000).emitWithAck(event, payload);
 }
+
+// Resolves with the first `event` payload that passes `test` (2 s timeout).
+export function waitFor(socket, event, test = () => true) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      socket.off(event, check);
+      reject(new Error(`timed out waiting for ${event}`));
+    }, 2000);
+    function check(payload) {
+      if (!test(payload)) return;
+      clearTimeout(timer);
+      socket.off(event, check);
+      resolve(payload);
+    }
+    socket.on(event, check);
+  });
+}

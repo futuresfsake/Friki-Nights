@@ -370,6 +370,13 @@
         line-height: 2;
         font-size: 18px;
       }
+      #lobby .hint {
+        font-size: 13px;
+        color: #8f8676;
+      }
+      #lobby .badge.ready {
+        color: #9fbf8f;
+      }
       #lobby .badge {
         margin-left: 10px;
         font-size: 11px;
@@ -458,7 +465,13 @@
         <button id="copy-code" type="button">COPY</button>
         <p>Send this code to whoever is coming in with you — or go in alone.</p>
         <ul id="room-players"></ul>
-        <button id="start-button" type="button">ENTER THE HOUSE</button>
+        <form id="ready-form">
+          <input id="code-word" type="password" maxlength="40" autocomplete="off" aria-label="Secret code word" placeholder="secret code word" />
+          <p class="hint">Agree on one out loud. Later, it may be the only way to tell a friend from something pretending to be one.</p>
+          <button id="ready-button" type="submit">READY</button>
+        </form>
+        <button id="start-button" type="button" disabled>ENTER THE HOUSE</button>
+        <p class="hint" id="start-hint"></p>
         <p class="error" id="room-error"></p>
       </section>
       <section id="screen-connecting">
