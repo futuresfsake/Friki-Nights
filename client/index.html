@@ -345,6 +345,10 @@
         color: #d0705f;
         font-style: italic;
       }
+      #join-code {
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+      }
       #lobby .room-code {
         font-family: 'Courier New', monospace;
         font-size: clamp(40px, 12vw, 64px);
@@ -441,6 +445,11 @@
         <h1>FRIKI NIGHTS</h1>
         <h2>WHO GOES IN FIRST?</h2>
         <button id="create-button" type="button">CREATE A ROOM</button>
+        <p>— or —</p>
+        <form id="join-form">
+          <input id="join-code" maxlength="6" autocomplete="off" spellcheck="false" aria-label="Room code" placeholder="ROOM CODE" />
+          <button type="submit">JOIN</button>
+        </form>
         <p class="error" id="choice-error"></p>
       </section>
       <section id="screen-room" hidden>

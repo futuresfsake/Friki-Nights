@@ -4,6 +4,10 @@ import { showScreen } from './lobby.js';
 const ERRORS = {
   'bad-name': 'That name is empty. Go back and pick another.',
   'already-in-room': 'You are already in a room.',
+  'room:notfound': 'No room with that code. Check it and try again.',
+  'room:full': 'That room is full (4 players).',
+  'room:started': 'They have already gone in without you.',
+  'too-many-attempts': 'Too many tries. Wait a minute and try again.',
   timeout: "The house didn't answer. Try again.",
   unknown: 'Something went wrong. Try again.',
 };
@@ -64,17 +68,28 @@ export function createRoomLobby(socket) {
   }
 
   return {
-    // Resolves once we are in a room (created by us).
+    // Resolves once we are in a room, created by us or joined by code.
     choose(name) {
       showScreen('screen-choice');
       $('choice-error').textContent = '';
+      const create = $('create-button');
+      const joinForm = $('join-form');
+      const codeInput = $('join-code');
+      const busy = (on) => {
+        for (const b of [create, ...joinForm.querySelectorAll('button')]) b.disabled = on;
+      };
       return new Promise((resolve) => {
-        const create = $('create-button');
-        create.onclick = async () => {
-          create.disabled = true;
-          const ok = await enter(await request(socket, 'room:create', { name }));
-          create.disabled = false;
+        const attempt = async (event, payload) => {
+          busy(true);
+          const ok = await enter(await request(socket, event, payload));
+          busy(false);
           if (ok) resolve();
+        };
+        create.onclick = () => attempt('room:create', { name });
+        joinForm.onsubmit = (e) => {
+          e.preventDefault();
+          const code = codeInput.value.replace(/\s/g, '').toUpperCase();
+          if (code) attempt('room:join', { code, name });
         };
       });
     },

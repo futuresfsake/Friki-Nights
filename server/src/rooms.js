@@ -1,4 +1,5 @@
 import { randomBytes, randomInt } from 'node:crypto';
+import { MAX_PLAYERS } from '../../shared/constants.js';
 import { ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from '../../shared/events.js';
 
 // All rooms live in memory (no database). A player's `id` is public (sent to the
@@ -26,6 +27,14 @@ export function createRooms({ random = randomInt } = {}) {
       room.hostId = player.id;
       rooms.set(room.code, room);
       return { room, player };
+    },
+    // Returns { room, player } or { error }.
+    join(code, name) {
+      const room = rooms.get(code);
+      if (!room) return { error: 'room:notfound' };
+      if (room.players.length >= MAX_PLAYERS) return { error: 'room:full' };
+      if (room.phase !== 'lobby') return { error: 'room:started' };
+      return { room, player: addPlayer(room, name) };
     },
     get: (code) => rooms.get(code) ?? null,
     remove: (code) => rooms.delete(code),
