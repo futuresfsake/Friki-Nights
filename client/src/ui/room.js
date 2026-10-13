@@ -1,3 +1,4 @@
+import { hashCodeWord } from '../net/codeWord.js';
 import { request, saveSeat } from '../net/room.js';
 import { showScreen } from './lobby.js';
 
@@ -7,6 +8,7 @@ const ERRORS = {
   'room:notfound': 'No room with that code. Check it and try again.',
   'room:full': 'That room is full (4 players).',
   'room:started': 'They have already gone in without you.',
+  'not-in-room': 'You are not in a room any more.',
   'too-many-attempts': 'Too many tries. Wait a minute and try again.',
   timeout: "The house didn't answer. Try again.",
   unknown: 'Something went wrong. Try again.',
@@ -26,6 +28,10 @@ export function createRoomLobby(socket) {
   });
 
   $('copy-code').onclick = () => copyCode();
+  $('ready-form').onsubmit = (e) => {
+    e.preventDefault();
+    toggleReady();
+  };
 
   function render() {
     if (!view || !me) return;
@@ -37,9 +43,42 @@ export function createRoomLobby(socket) {
         li.textContent = p.name;
         if (p.id === view.hostId) li.append(badge('HOST'));
         if (p.id === me) li.append(badge('YOU'));
+        li.append(badge(p.ready ? 'READY' : 'NOT READY', p.ready ? 'ready' : ''));
         return li;
       }),
     );
+    const ready = self()?.ready ?? false;
+    $('ready-button').textContent = ready ? 'NOT READY' : 'READY';
+    $('code-word').disabled = ready;
+    const host = view.hostId === me;
+    const all = view.players.every((p) => p.ready);
+    $('start-button').hidden = !host;
+    $('start-button').disabled = !all;
+    $('start-hint').textContent = !all
+      ? 'Waiting until everyone is ready…'
+      : host
+        ? view.players.length === 1
+          ? 'You are going in alone.'
+          : 'Everyone is ready.'
+        : 'Waiting for the host to go in…';
+  }
+
+  const self = () => view?.players.find((p) => p.id === me);
+
+  async function toggleReady() {
+    const error = $('room-error');
+    error.textContent = '';
+    const word = $('code-word').value;
+    const ready = !self()?.ready;
+    if (ready && !word.trim()) {
+      error.textContent = 'Choose a code word first.';
+      return;
+    }
+    $('ready-button').disabled = true;
+    const payload = ready ? { ready, codeWordHash: await hashCodeWord(word) } : { ready };
+    const res = await request(socket, 'player:ready', payload);
+    $('ready-button').disabled = false;
+    if (res.error) error.textContent = ERRORS[res.error] ?? ERRORS.unknown;
   }
 
   async function copyCode() {
@@ -106,9 +145,9 @@ export function createRoomLobby(socket) {
   };
 }
 
-function badge(text) {
+function badge(text, extra = '') {
   const span = document.createElement('span');
-  span.className = 'badge';
+  span.className = `badge ${extra}`;
   span.textContent = text;
   return span;
 }

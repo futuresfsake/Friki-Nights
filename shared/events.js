@@ -21,4 +21,9 @@ export function isRoomCode(code) {
 export const schemas = {
   'room:create': z.object({ name: rawName }).strict(),
   'room:join': z.object({ code: roomCode, name: rawName }).strict(),
+  // The code word itself never leaves the browser: only its SHA-256, as hex.
+  'player:ready': z.union([
+    z.object({ ready: z.literal(true), codeWordHash: z.string().regex(/^[0-9a-f]{64}$/) }).strict(),
+    z.object({ ready: z.literal(false) }).strict(),
+  ]),
 };
