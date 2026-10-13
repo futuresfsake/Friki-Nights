@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import express from 'express';
 import { Server } from 'socket.io';
 import { accessGuard } from './access.js';
+import { attachGame } from './game.js';
 
 export const MAX_MESSAGE_BYTES = 16 * 1024;
 
@@ -33,6 +34,7 @@ export function createGameServer({ clientOrigin, accessPhrase, now }) {
   });
 
   io.use(accessGuard(accessPhrase, { now }));
+  const game = attachGame(io);
 
-  return { app, http, io };
+  return { app, http, io, game };
 }

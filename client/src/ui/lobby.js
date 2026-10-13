@@ -11,7 +11,7 @@ const MESSAGES = {
   unreachable: "Can't reach the house. Check your connection and try again.",
 };
 
-function show(id) {
+export function showScreen(id) {
   for (const s of document.querySelectorAll('#lobby section')) s.hidden = s.id !== id;
   document.getElementById('lobby').classList.remove('hidden');
 }
@@ -41,7 +41,7 @@ export async function connectWithAccess() {
 }
 
 function askPhrase(error) {
-  show('screen-access');
+  showScreen('screen-access');
   const form = document.getElementById('access-form');
   const input = document.getElementById('access-input');
   document.getElementById('access-error').textContent = error;
@@ -58,7 +58,7 @@ function askPhrase(error) {
 
 // Right phrase but the server was unreachable or rate-limited: just offer a retry.
 function askRetry(error) {
-  show('screen-retry');
+  showScreen('screen-retry');
   document.getElementById('retry-error').textContent = error;
   return new Promise((resolve) => {
     document.getElementById('retry-button').onclick = resolve;
@@ -68,7 +68,7 @@ function askRetry(error) {
 // Asks for a display name, pre-filled with the last one used. Resolves with the
 // cleaned name (the server cleans it again).
 export function askName() {
-  show('screen-name');
+  showScreen('screen-name');
   const form = document.getElementById('name-form');
   const input = document.getElementById('name-input');
   input.maxLength = NAME_MAX_LENGTH;

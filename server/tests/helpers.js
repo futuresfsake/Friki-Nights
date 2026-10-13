@@ -35,3 +35,8 @@ export async function startServer(options = {}) {
 export function once(socket, event) {
   return new Promise((resolve) => socket.once(event, resolve));
 }
+
+// Emits and waits for the server's acknowledgement.
+export function request(socket, event, payload) {
+  return socket.timeout(2000).emitWithAck(event, payload);
+}

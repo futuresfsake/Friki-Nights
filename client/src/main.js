@@ -36,6 +36,7 @@ import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
+import { createRoomLobby } from './ui/room.js';
 import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
@@ -136,6 +137,9 @@ let socket = null;
 let playerName = null;
 connectWithAccess().then(async (s) => {
   playerName = await askName();
+  const room = createRoomLobby(s);
+  await room.choose(playerName);
+  await room.waitForStart();
   socket = s;
   hideLobby();
 });
