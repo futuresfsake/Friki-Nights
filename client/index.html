@@ -345,6 +345,33 @@
         color: #d0705f;
         font-style: italic;
       }
+      #lobby .room-code {
+        font-family: 'Courier New', monospace;
+        font-size: clamp(40px, 12vw, 64px);
+        letter-spacing: 0.25em;
+        color: #e8e0cc;
+        user-select: all;
+      }
+      #lobby .row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      #lobby ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        width: 100%;
+        line-height: 2;
+        font-size: 18px;
+      }
+      #lobby .badge {
+        margin-left: 10px;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: #8f8676;
+      }
       @keyframes pulse {
         50% {
           opacity: 0.35;
@@ -409,6 +436,21 @@
           <input id="name-input" maxlength="20" autocomplete="nickname" aria-label="Your name" placeholder="your name" />
           <button type="submit">CONTINUE</button>
         </form>
+      </section>
+      <section id="screen-choice" hidden>
+        <h1>FRIKI NIGHTS</h1>
+        <h2>WHO GOES IN FIRST?</h2>
+        <button id="create-button" type="button">CREATE A ROOM</button>
+        <p class="error" id="choice-error"></p>
+      </section>
+      <section id="screen-room" hidden>
+        <h2>ROOM CODE</h2>
+        <div class="room-code" id="room-code"></div>
+        <button id="copy-code" type="button">COPY</button>
+        <p>Send this code to whoever is coming in with you — or go in alone.</p>
+        <ul id="room-players"></ul>
+        <button id="start-button" type="button">ENTER THE HOUSE</button>
+        <p class="error" id="room-error"></p>
       </section>
       <section id="screen-connecting">
         <h1>FRIKI NIGHTS</h1>

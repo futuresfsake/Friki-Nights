@@ -15,7 +15,7 @@
 | M3-S02 | Game server bootstrap | Must | M | ✅ |
 | M3-S03 | Access phrase | Must | S | ✅ |
 | M3-S04 | Display name | Must | S | ✅ |
-| M3-S05 | Create room with code | Must | M | ⬜ |
+| M3-S05 | Create room with code | Must | M | ✅ |
 | M3-S06 | Join room | Must | M | ⬜ |
 | M3-S07 | Ready screen and code word | Must | M | ⬜ |
 | M3-S08 | Host starts the night for everyone | Must | S | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 4 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 5 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -89,7 +89,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S05 · Create room with code
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** FR-02, US-01
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** FR-02, US-01
 
 > As a player, I want to create a room and get a short code, so that my partner or friends can join me — or I can just start alone.
 
