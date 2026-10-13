@@ -1,6 +1,7 @@
 import { isRoomCode, schemas } from '../../shared/events.js';
 import { cleanName } from '../../shared/names.js';
 import { clientIp, createRateLimiter } from './rateLimit.js';
+import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
 import { createRooms, everyoneReady, removePlayer, roomView } from './rooms.js';
 
@@ -96,6 +97,19 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       reply({ ok: true });
       io.to(room.code).emit('night:start', nightStartView(room));
       broadcastRoom(room);
+    });
+
+    // Moves are checked and passed on to the others; an impossible one is answered
+    // with where the server last saw the player.
+    handle('player:move', (move) => {
+      const { room, player } = seat(socket);
+      if (room?.phase !== 'playing') return;
+      const at = room.night.players.get(player.id);
+      if (!acceptMove(room.night.map, at, move, now())) {
+        socket.emit('player:correct', { x: at.x, z: at.z });
+        return;
+      }
+      socket.to(room.code).emit('player:state', { id: player.id, ...move });
     });
 
     socket.on('disconnect', () => leave(socket));
