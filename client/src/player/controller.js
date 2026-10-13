@@ -85,6 +85,11 @@ export function createController(camera, domElement, map, { onStep, extraSolid }
     controls,
     update,
     keys,
+    // Puts the player on their spawn point (from the server's night:start).
+    placeAt(x, z) {
+      pin = null;
+      camera.position.set(x, EYE_HEIGHT, z);
+    },
     // Crawl under a bed; returns where the player stood, to crawl back out to.
     hideAt(spot) {
       const stood = new THREE.Vector3(camera.position.x, EYE_HEIGHT, camera.position.z);

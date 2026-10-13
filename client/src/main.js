@@ -47,7 +47,7 @@ import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateC
 import { createWindows } from './world/windows.js';
 
 const FOG_COLOR = 0x050507;
-const PLAYER_ID = 'local'; // single player until M3 gives each player a server id
+let PLAYER_ID = 'local'; // replaced by our server id when the night starts
 
 const renderer = new THREE.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(PIXEL_RATIO);
@@ -139,7 +139,11 @@ connectWithAccess().then(async (s) => {
   playerName = await askName();
   const room = createRoomLobby(s);
   await room.choose(playerName);
-  await room.waitForStart();
+  const start = await room.waitForStart();
+  PLAYER_ID = room.playerId;
+  const me = start.players.find((p) => p.id === PLAYER_ID);
+  player.placeAt(me.x, me.z);
+  hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
   socket = s;
   hideLobby();
 });
