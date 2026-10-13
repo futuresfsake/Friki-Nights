@@ -20,7 +20,7 @@
 | M3-S07 | Ready screen and code word | Must | M | ✅ |
 | M3-S08 | Host starts the night for everyone | Must | S | ✅ |
 | M3-S09 | Send movement and server speed check | Must | M | ✅ |
-| M3-S10 | Partner model and interpolation | Must | L | ⬜ |
+| M3-S10 | Partner model and interpolation | Must | L | ✅ |
 | M3-S11 | Server-authoritative interactions | Must | L | ⬜ |
 | M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
 | M3-S13 | Exit together | Must | S | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 9 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 10 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -145,7 +145,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S10 · Partner model and interpolation
 
-**Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** FR-06, US-05, NFR-03
+**Priority:** Must · **Size:** L · **Status:** ✅ · **Traces:** FR-06, US-05, NFR-03
 
 > As a player, I want to see my teammates walking smoothly, so that I always know where they are.
 
@@ -153,6 +153,9 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 - Low-poly partner figure with their own flashlight cone and name
 - Rendered 100 ms behind with interpolation; no teleporting at 250 ms delay and 2% loss
 - Partner footsteps placed in 3D
+
+**Built:** `net/interpolate.js` (100 ms buffer, clock-offset from the least-delayed packet, ≤150 ms extrapolation through gaps), `net/partners.js` (one figure per teammate, footsteps every stride via `footstepAt`), `world/partnerModel.js` (box figure, torch that follows their pitch, name sprite drawn with `fillText`). `player:move` now carries `light` so teammates see whether your flashlight is on.
+**Tests:** no step larger than 2.5 frames of walking at 250 ms delay ±40 ms jitter and 2% loss; gaps; out-of-order packets; one footstep per stride; leaving removes the figure.
 
 ### M3-S11 · Server-authoritative interactions
 

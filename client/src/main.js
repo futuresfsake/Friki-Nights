@@ -18,6 +18,7 @@ import {
   doorSlam,
   flashlightClick,
   footstep,
+  footstepAt,
   glassBang,
   fuseClunk,
   knocks,
@@ -36,6 +37,7 @@ import { createEndScreen } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
 import { createMoveSender } from './net/moves.js';
+import { createPartners } from './net/partners.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createRoomLobby } from './ui/room.js';
 import { createNoteReader } from './ui/notes.js';
@@ -44,6 +46,7 @@ import { buildHouse } from './world/builder.js';
 import { createDoors } from './world/doors.js';
 import { createFuseBox } from './world/fuseBox.js';
 import { createItems, itemName } from './world/items.js';
+import { createPartnerModel } from './world/partnerModel.js';
 import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 import { createWindows } from './world/windows.js';
 
@@ -78,6 +81,10 @@ const beds = createBeds(map, scene);
 const items = createItems(map, scene);
 const fuseBox = createFuseBox(map, scene, night.fusesNeeded);
 const windows = createWindows(map, scene);
+const partners = createPartners(scene, {
+  makeModel: createPartnerModel,
+  onStep: (x, z, running) => audio && footstepAt(audio, x, z, running),
+});
 
 // Door and bed cells, so collision can ask "is a closed door or a bed here?" in constant time.
 const objectCells = new Map();
@@ -147,8 +154,11 @@ connectWithAccess().then(async (s) => {
   const me = start.players.find((p) => p.id === PLAYER_ID);
   player.placeAt(me.x, me.z);
   hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
+  for (const p of start.players) if (p.id !== PLAYER_ID) partners.add(p);
   socket = s;
   moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
+  socket.on('player:state', (state) => partners.push(state, performance.now()));
+  socket.on('room:update', (view) => partners.keep(view.players.map((p) => p.id)));
   // The server refused a move (too fast, or into a wall): go back to where it saw us.
   socket.on('player:correct', ({ x, z }) => player.placeAt(x, z));
   hideLobby();
@@ -380,11 +390,12 @@ renderer.setAnimationLoop(() => {
     playTime += dt;
     checkExit();
     look.setFromQuaternion(camera.quaternion);
-    moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x });
+    moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x, light: flashlight.state.on });
     const cell = cellAt(camera.position.x, camera.position.z);
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
   scares.update();
+  partners.update(performance.now(), dt);
   doors.update(dt);
   items.update(time);
   fuseBox?.update(dt);

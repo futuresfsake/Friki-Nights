@@ -32,12 +32,14 @@ export const schemas = {
   ]),
   'night:begin': z.object({}).strict(),
   // Sent up to MOVE_RATE times a second; t is the sender's clock in ms, for smoothing.
+  // light: their flashlight is on, so teammates see the beam.
   'player:move': z
     .object({
       x: coord,
       z: coord,
       yaw: z.number().finite().min(-10).max(10),
       pitch: z.number().finite().min(-2).max(2),
+      light: z.boolean(),
       t: z.number().finite().nonnegative(),
     })
     .strict(),

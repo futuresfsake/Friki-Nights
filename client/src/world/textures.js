@@ -264,3 +264,22 @@ export function handTexture() {
     speckle(g, s, rand, 200, 0.2);
   });
 }
+
+// A teammate's name floating over their head. Drawn with fillText, so the name is
+// never parsed as HTML.
+export function nameTagTexture(name) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 64;
+  const g = canvas.getContext('2d');
+  g.font = '28px Georgia, serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.shadowColor = '#000';
+  g.shadowBlur = 6;
+  g.fillStyle = '#e8e0cc';
+  g.fillText(name, 128, 32, 240);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}

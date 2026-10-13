@@ -34,27 +34,35 @@ export function startDrone(audio) {
 }
 
 // Short filtered noise burst; random pitch so no two steps sound identical.
-export function footstep(audio, running) {
-  const { ctx, master, noiseSource } = audio;
+// out: where it plays (default: straight to the ears, for the player's own steps).
+// barefoot: a softer, wetter slap instead of a shoe on floorboards.
+export function footstep(audio, running, { out = audio.master, barefoot = false, loudness = 1 } = {}) {
+  const { ctx, noiseSource } = audio;
   const t = ctx.currentTime;
   const src = noiseSource();
   src.playbackRate.value = 0.85 + Math.random() * 0.3;
 
   const filter = ctx.createBiquadFilter();
   filter.type = 'bandpass';
-  filter.frequency.value = 180 + Math.random() * 120; // soft thud on wooden floorboards
-  filter.Q.value = 1.4;
+  filter.frequency.value = barefoot ? 110 + Math.random() * 60 : 180 + Math.random() * 120; // soft thud on wooden floorboards
+  filter.Q.value = barefoot ? 0.9 : 1.4;
 
   const gain = ctx.createGain();
   // Kept quiet so the player's own steps don't drown out the house.
-  const peak = running ? 0.14 : 0.07;
+  const peak = (running ? 0.14 : 0.07) * loudness;
   gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(peak, t + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  gain.gain.linearRampToValueAtTime(peak, t + (barefoot ? 0.006 : 0.015));
+  gain.gain.exponentialRampToValueAtTime(0.001, t + (barefoot ? 0.09 : 0.12));
 
-  src.connect(filter).connect(gain).connect(master);
+  src.connect(filter).connect(gain).connect(out);
   src.start(t, Math.random() * 1.5);
   src.stop(t + 0.16);
+}
+
+// Someone else's footstep, placed in 3D (a teammate, or something pretending to be one).
+export function footstepAt(audio, x, z, running, options = {}) {
+  // Louder at the source than our own steps: distance and HRTF take most of it away.
+  footstep(audio, running, { loudness: 4, ...options, out: audio.panner(x, 0.1, z) });
 }
 
 // Three dull knocks from somewhere in the house, placed in 3D.

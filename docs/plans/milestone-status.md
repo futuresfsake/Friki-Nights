@@ -2,7 +2,7 @@
 
 Live progress tracker. Update this file whenever a story or milestone changes state. The stories themselves (features, acceptance criteria, tasks) live in [`milestones/`](milestones/).
 
-**Last updated:** 2026-10-13
+**Last updated:** 2026-10-14
 **Current milestone:** M3 — Multiplayer (in progress)
 **Deadline:** personal date, flexible — target is the full game (M1–M8)
 
@@ -12,13 +12,13 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
 | M2 | Interactions + first scares | ✅ Done | 19 / 19 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
-| M3 | Multiplayer | 🔨 In progress | 9 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
+| M3 | Multiplayer | 🔨 In progress | 10 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started | 0 / 16 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| | **Total** | | **40 / 130** | | |
+| | **Total** | | **41 / 130** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -59,3 +59,4 @@ Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 | 2026-10-12 | M2 started on `m2-interactions`: S01 shared map format and S02 night state done; S03 interaction and S04 doors built, awaiting playtest |
 | 2026-10-12 | Look changed from an old house to abandoned cells: concrete-block walls. New story M2-S19: beds (`C`) to hide under, built now; they become real escapes when The Waiting One arrives (M5). Jump scares stay in planned order. 130 stories |
 | 2026-10-12 | S03, S04, S19 accepted on automated tests (owner asked for continuous, non-gated work). Workflow from here: one branch per story, merged into `main` and pushed when tests + build pass |
+| 2026-10-14 | M3-S10 partner model and interpolation done |
