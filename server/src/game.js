@@ -1,7 +1,8 @@
 import { isRoomCode, schemas } from '../../shared/events.js';
 import { cleanName } from '../../shared/names.js';
 import { clientIp, createRateLimiter } from './rateLimit.js';
-import { createRooms, removePlayer, roomView } from './rooms.js';
+import { startNight, nightStartView } from './night.js';
+import { createRooms, everyoneReady, removePlayer, roomView } from './rooms.js';
 
 // Room and game events for every connected socket. socket.data holds which room and
 // player this socket is ({ code, playerId }) once it has created or joined one.
@@ -80,6 +81,20 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       player.ready = payload.ready;
       player.codeWordHash = payload.ready ? payload.codeWordHash : null;
       reply({ ok: true });
+      broadcastRoom(room);
+    });
+
+    // Host only, once everyone (solo: just the host) is ready.
+    handle('night:begin', (_payload, reply) => {
+      const { room, player } = seat(socket);
+      if (!player) return reply({ error: 'not-in-room' });
+      if (room.hostId !== player.id) return reply({ error: 'not-host' });
+      if (room.phase !== 'lobby') return reply({ error: 'room:started' });
+      if (!everyoneReady(room)) return reply({ error: 'not-ready' });
+      room.phase = 'playing';
+      room.night = startNight(room);
+      reply({ ok: true });
+      io.to(room.code).emit('night:start', nightStartView(room));
       broadcastRoom(room);
     });
 

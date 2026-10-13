@@ -3,7 +3,8 @@
 
 export const BATTERY_PICKUP = 40;
 
-export function createNightState(map) {
+// playerCount (1–4) lets puzzles scale with the room size.
+export function createNightState(map, { playerCount = 1 } = {}) {
   const state = {
     doors: {},
     items: {},
@@ -16,6 +17,7 @@ export function createNightState(map) {
     completed: false,
     players: {},
     notesRead: new Set(),
+    playerCount,
   };
 
   for (const o of map.objects) {

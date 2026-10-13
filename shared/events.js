@@ -26,4 +26,5 @@ export const schemas = {
     z.object({ ready: z.literal(true), codeWordHash: z.string().regex(/^[0-9a-f]{64}$/) }).strict(),
     z.object({ ready: z.literal(false) }).strict(),
   ]),
+  'night:begin': z.object({}).strict(),
 };

@@ -9,6 +9,7 @@
 export default {
   id: 'night1',
   name: 'Foyer and Parlor',
+  intro: 'You wake on the cold foyer floor. The front door will not open. Somewhere in the walls, paper is tearing.',
   grid: [
     '###########W##X###############',
     '#N......#.........#.....B....#',

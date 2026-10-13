@@ -8,6 +8,8 @@ const ERRORS = {
   'room:notfound': 'No room with that code. Check it and try again.',
   'room:full': 'That room is full (4 players).',
   'room:started': 'They have already gone in without you.',
+  'not-host': 'Only the host can open the door.',
+  'not-ready': 'Not everyone is ready yet.',
   'not-in-room': 'You are not in a room any more.',
   'too-many-attempts': 'Too many tries. Wait a minute and try again.',
   timeout: "The house didn't answer. Try again.",
@@ -132,9 +134,18 @@ export function createRoomLobby(socket) {
         };
       });
     },
-    // Until the server starts nights (M3-S08), the room screen just lets us in.
+    // The host asks the server to start; everyone (host included) goes in on night:start.
     waitForStart() {
-      return new Promise((resolve) => ($('start-button').onclick = resolve));
+      const start = $('start-button');
+      start.onclick = async () => {
+        start.disabled = true;
+        const res = await request(socket, 'night:begin', {});
+        if (res.error) {
+          $('room-error').textContent = ERRORS[res.error] ?? ERRORS.unknown;
+          render();
+        }
+      };
+      return new Promise((resolve) => socket.once('night:start', resolve));
     },
     get view() {
       return view;

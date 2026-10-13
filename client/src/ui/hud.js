@@ -34,6 +34,11 @@ export function createHud() {
       overlay.classList.remove('hidden');
       prompt.classList.remove('show');
     },
+    // The night's title and short intro, shown on the overlay before entering.
+    setIntro(title, text) {
+      document.getElementById('overlay-night').textContent = title;
+      document.getElementById('overlay-intro').textContent = text;
+    },
     hideOverlay() {
       overlay.classList.add('hidden');
     },

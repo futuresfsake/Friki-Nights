@@ -241,6 +241,24 @@
         color: #e8e0cc;
         text-shadow: 0 0 24px rgba(179, 58, 46, 0.6);
       }
+      #overlay .night {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+        letter-spacing: 0.3em;
+        color: #b9a98f;
+      }
+      #overlay .intro {
+        max-width: 480px;
+        margin: 0;
+        font-size: 17px;
+        font-style: italic;
+        line-height: 1.6;
+      }
+      #overlay .night:empty,
+      #overlay .intro:empty {
+        display: none;
+      }
       #overlay .warning {
         max-width: 460px;
         font-size: 14px;
@@ -416,6 +434,8 @@
     </div>
     <div id="overlay">
       <h1>FRIKI NIGHTS</h1>
+      <h2 class="night" id="overlay-night"></h2>
+      <p class="intro" id="overlay-intro"></p>
       <p class="warning">
         Content warning: this game contains jump scares, loud sudden sounds, flickering lights, and
         darkness. Headphones recommended.

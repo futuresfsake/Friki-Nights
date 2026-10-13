@@ -61,7 +61,7 @@ export function parseMap(def) {
   }
 
   const eventTriggers = (meta.eventTriggers ?? []).map((t, i) => ({ ...t, id: `event-trigger-${i}` }));
-  const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
+  const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', intro: meta.intro ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
   validate(map, meta, counters);
   for (const obj of objects) if (DOOR_TYPES.has(obj.type)) obj.axis = doorAxis(map, obj);
   for (const obj of objects) if (obj.type === 'window') obj.facing = windowFacing(map, obj);
