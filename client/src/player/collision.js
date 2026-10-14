@@ -1,13 +1,16 @@
 import { CELL } from '../../../shared/constants.js';
 import { isSolid } from '../../../shared/mapParser.js';
+import { hitsProp } from '../../../shared/props.js';
 
 // Treats the player as a square of half-size r: cheap and good enough on a grid.
+// Solid furniture (map.props) blocks too.
 // extraSolid(cx, cz) lets moving things like closed doors block cells too.
 export function blocked(map, x, z, r, extraSolid = noExtra) {
   const minX = Math.floor((x - r) / CELL);
   const maxX = Math.floor((x + r) / CELL);
   const minZ = Math.floor((z - r) / CELL);
   const maxZ = Math.floor((z + r) / CELL);
+  if (map.props && hitsProp(map.props, x, z, r)) return true;
   for (let cz = minZ; cz <= maxZ; cz++) {
     for (let cx = minX; cx <= maxX; cx++) {
       if (isSolid(map, cx, cz) || extraSolid(cx, cz)) return true;

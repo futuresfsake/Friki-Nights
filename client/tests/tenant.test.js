@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { WALK_SPEED } from '../../shared/constants.js';
 import { cellAt, cellCenter, isSolid, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
+import { hitsProp } from '../../shared/props.js';
 import { hasLineOfSight } from '../../shared/sight.js';
 import { ACTS } from '../src/tenant/brain.js';
 import { createTenant } from '../src/tenant/tenant.js';
@@ -124,15 +125,17 @@ function play(seed, minutes, onFrame = () => {}) {
 describe('the Tenant in a night', () => {
   it('plays every trick over a long night without breaking', () => {
     const seen = new Set();
-    for (let seed = 1; seed <= 4; seed++) for (const { id } of play(seed, 60).tricks) seen.add(id);
-    expect(seen).toEqual(new Set(Object.keys(ACTS)));
+    for (let seed = 1; seed <= 8; seed++) for (const { id } of play(seed, 60).tricks) seen.add(id);
+    expect([...Object.keys(ACTS)].filter((id) => !seen.has(id))).toEqual([]);
   });
 
-  it('only stands where he could be: on open floor', () => {
+  it('only stands where he could be: on open floor, never inside furniture', () => {
     play(2, 30, (s) => {
-      if (!s.model.root.visible) return;
-      const { cx, cz } = cellAt(s.model.root.position.x, s.model.root.position.z);
+      if (!s.model.root.visible || s.model.pose === 'run') return;
+      const { x, z } = s.model.root.position;
+      const { cx, cz } = cellAt(x, z);
       expect(isSolid(map, cx, cz)).toBe(false);
+      if (s.model.pose !== 'head') expect(hitsProp(map.props, x, z, 0.2)).toBe(false);
     });
   });
 

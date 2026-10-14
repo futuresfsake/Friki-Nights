@@ -13,6 +13,7 @@ import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
   breathing,
+  clockTick,
   doorCreak,
   doorRattle,
   doorShut,
@@ -29,6 +30,7 @@ import {
   screamSting,
   startDrone,
   whispers,
+  woodCreak,
 } from './audio/sfx.js';
 import { overlapsCell } from './player/collision.js';
 import { addBattery } from './player/battery.js';
@@ -51,6 +53,7 @@ import { createDoors } from './world/doors.js';
 import { createFuseBox } from './world/fuseBox.js';
 import { createItems, itemName } from './world/items.js';
 import { createPartnerModel } from './world/partnerModel.js';
+import { createProps } from './world/props.js';
 import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 import { createWindows } from './world/windows.js';
 
@@ -85,6 +88,10 @@ const beds = createBeds(map, scene);
 const items = createItems(map, scene);
 const fuseBox = createFuseBox(map, scene, night.fusesNeeded);
 const windows = createWindows(map, scene);
+const props = createProps(map, scene, {
+  creak: (x, y, z) => audio && woodCreak(audio, x, y, z),
+  tick: (x, y, z, tock) => audio && clockTick(audio, x, y, z, tock),
+});
 const partners = createPartners(scene, {
   makeModel: createPartnerModel,
   onStep: (x, z, running) => audio && footstepAt(audio, x, z, running),
@@ -145,7 +152,7 @@ const flashlight = createFlashlight(camera, {
   onToggle: () => audio && flashlightClick(audio),
 });
 const interaction = createInteraction(camera, {
-  blockers: house.children,
+  blockers: [...house.children, ...props.meshes],
   targets: () => [...doors.panels, ...beds.meshes, ...items.targets(), ...(fuseBox?.targets ?? [])],
 });
 
@@ -446,6 +453,7 @@ renderer.setAnimationLoop(() => {
   items.update(time);
   fuseBox?.update(dt);
   windows.update(time);
+  props.update(time);
   updateCeilingLights(ceilingLights, time);
   if (effects.isBlackout(time)) {
     blackOutCeilingLights(ceilingLights);

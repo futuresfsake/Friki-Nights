@@ -348,3 +348,126 @@ export function grinTexture() {
     speckle(g, s, rand, 350, 0.15);
   });
 }
+
+// Dark, old furniture wood: vertical grain, scuffs.
+export function woodTexture() {
+  const rand = mulberry32(71);
+  return canvasTexture(32, (g, s) => {
+    g.fillStyle = '#3a2a1e';
+    g.fillRect(0, 0, s, s);
+    for (let x = 0; x < s; x++) {
+      g.fillStyle = `rgba(0,0,0,${0.08 + rand() * 0.18})`;
+      if (rand() < 0.5) g.fillRect(x, 0, 1, s);
+    }
+    stain(g, rand() * s, rand() * s, 8, 'rgba(15,8,4,0.5)');
+    speckle(g, s, rand, 120, 0.15);
+  });
+}
+
+// A threadbare rug: faded red field, border, a dark stain soaked into it.
+export function rugTexture() {
+  const rand = mulberry32(211);
+  return canvasTexture(64, (g, s) => {
+    g.fillStyle = '#4a1c18';
+    g.fillRect(0, 0, s, s);
+    g.strokeStyle = '#7a5a2c';
+    g.lineWidth = 3;
+    g.strokeRect(4, 4, s - 8, s - 8);
+    g.strokeStyle = 'rgba(122,90,44,0.6)';
+    g.lineWidth = 1;
+    g.strokeRect(9, 9, s - 18, s - 18);
+    // Diamond pattern in the middle.
+    g.fillStyle = 'rgba(120,84,40,0.5)';
+    g.beginPath();
+    g.moveTo(s / 2, 16);
+    g.lineTo(s - 16, s / 2);
+    g.lineTo(s / 2, s - 16);
+    g.lineTo(16, s / 2);
+    g.fill();
+    stain(g, s * 0.62, s * 0.4, 14, 'rgba(15,5,5,0.7)');
+    // Worn bare patches.
+    for (let i = 0; i < 6; i++) stain(g, rand() * s, rand() * s, 6, 'rgba(90,80,70,0.25)');
+    speckle(g, s, rand, 500, 0.2);
+  });
+}
+
+// Old blood soaked into the floor: an uneven dark pool with drag marks. Transparent.
+export function bloodTexture() {
+  const rand = mulberry32(307);
+  return canvasTexture(64, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    for (let i = 0; i < 9; i++) stain(g, s * (0.3 + rand() * 0.3), s * (0.3 + rand() * 0.3), 8 + rand() * 12, 'rgba(45,6,6,0.85)');
+    // Drag marks: as if someone was pulled away.
+    g.fillStyle = 'rgba(40,5,5,0.6)';
+    for (let k = 0; k < 4; k++) {
+      let x = s * 0.5 + (k - 1.5) * 4;
+      for (let y = s * 0.55; y < s - 2; y++) {
+        x += (rand() - 0.5) * 1.2;
+        if (rand() < 0.85) g.fillRect(Math.round(x), Math.round(y), 2, 1);
+      }
+    }
+  });
+}
+
+// A faded portrait of a couple; someone has scratched out both their eyes.
+export function portraitTexture(seed = 1) {
+  const rand = mulberry32(400 + seed);
+  return canvasTexture(64, (g, s) => {
+    const bg = g.createLinearGradient(0, 0, 0, s);
+    bg.addColorStop(0, '#3a3424');
+    bg.addColorStop(1, '#1e1a12');
+    g.fillStyle = bg;
+    g.fillRect(0, 0, s, s);
+    for (const cx of [s * 0.35, s * 0.66]) {
+      // Shoulders and head.
+      g.fillStyle = '#16120c';
+      g.beginPath();
+      g.ellipse(cx, s * 0.95, 13, 20, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#9a8c70';
+      g.beginPath();
+      g.ellipse(cx, s * 0.45, 8, 10, 0, 0, Math.PI * 2);
+      g.fill();
+      // Eyes gouged out with something sharp.
+      g.strokeStyle = 'rgba(230,220,200,0.85)';
+      for (const ex of [cx - 3, cx + 3]) {
+        g.beginPath();
+        for (let i = 0; i < 4; i++) {
+          g.moveTo(ex - 2 + rand() * 1, s * 0.42 - 2 + rand());
+          g.lineTo(ex + 2 - rand() * 1, s * 0.44 + 2 - rand());
+        }
+        g.stroke();
+      }
+    }
+    speckle(g, s, rand, 400, 0.2);
+    stain(g, s * rand(), s * 0.2, 12, 'rgba(20,15,5,0.5)');
+  });
+}
+
+// Grandfather clock face: yellowed dial, numerals as ticks, hands stopped at 3:33.
+export function clockFaceTexture() {
+  return canvasTexture(32, (g, s) => {
+    g.fillStyle = '#1a1208';
+    g.fillRect(0, 0, s, s);
+    g.fillStyle = '#c8bb92';
+    g.beginPath();
+    g.arc(s / 2, s / 2, s * 0.44, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#2a2014';
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      g.fillRect(Math.round(s / 2 + Math.sin(a) * s * 0.36), Math.round(s / 2 - Math.cos(a) * s * 0.36), 1, 1);
+    }
+    g.strokeStyle = '#120c06';
+    g.lineWidth = 1;
+    for (const [a, len] of [
+      [((3 + 33 / 60) / 12) * Math.PI * 2, 0.22],
+      [(33 / 60) * Math.PI * 2, 0.34],
+    ]) {
+      g.beginPath();
+      g.moveTo(s / 2, s / 2);
+      g.lineTo(s / 2 + Math.sin(a) * s * len, s / 2 - Math.cos(a) * s * len);
+      g.stroke();
+    }
+  });
+}

@@ -49,4 +49,53 @@ export default {
   ],
   eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
   fuseBoxKey: 'house',
+  // Furniture and clutter (shared/props.js). Kept clear of doorways and the paths
+  // between puzzle pieces; the reachability test walks around every solid one.
+  props: [
+    // Dormitory
+    { type: 'wardrobe', x: 4, z: 1, side: 'n' },
+    { type: 'fallenChair', x: 3, z: 3, rot: 30 },
+    { type: 'chains', x: 3, z: 4 },
+    { type: 'bloodstain', x: 5, z: 4, rot: 20 },
+    { type: 'papers', x: 5, z: 6 },
+    { type: 'bucket', x: 7, z: 7, dx: 0.5, dz: 0.5 },
+    { type: 'stool', x: 6, z: 3, dx: 0.3 },
+    // Foyer
+    { type: 'clock', x: 9, z: 1, side: 'n' },
+    { type: 'portrait', x: 9, z: 3, side: 'w' },
+    { type: 'bench', x: 9, z: 5, side: 'w' },
+    { type: 'portrait', x: 16, z: 1, side: 'n' },
+    { type: 'rug', x: 13, z: 4 },
+    { type: 'roundTable', x: 15, z: 3, dz: 0.3 },
+    { type: 'coatRack', x: 17, z: 6, dx: 0.45, dz: 0.4 },
+    // Parlor
+    { type: 'bookshelf', x: 20, z: 1, side: 'n' },
+    { type: 'bookshelf', x: 22, z: 1, side: 'n' },
+    { type: 'rockingChair', x: 21, z: 3, rot: 300 }, // facing the door,
+    { type: 'fireplace', x: 28, z: 4, side: 'e' },
+    { type: 'armchair', x: 26, z: 4, rot: 90, dx: 0.2 },
+    { type: 'rug', x: 24, z: 4, rot: 90 },
+    { type: 'roundTable', x: 24, z: 6 },
+    { type: 'chair', x: 23, z: 6, rot: 90, dx: 0.3 },
+    { type: 'portrait', x: 19, z: 6, side: 'w' },
+    { type: 'papers', x: 26, z: 6 },
+    // Hall
+    { type: 'wheelchair', x: 4, z: 10, rot: 200 },
+    { type: 'chains', x: 9, z: 9 },
+    { type: 'bloodstain', x: 11, z: 10, rot: 70 },
+    { type: 'bench', x: 17, z: 9, side: 'n' },
+    { type: 'chains', x: 20, z: 10 },
+    { type: 'crates', x: 24, z: 9, side: 'n' },
+    { type: 'stool', x: 27, z: 10 },
+    // Cells
+    { type: 'bucket', x: 3, z: 13, dx: 0.4 },
+    { type: 'chair', x: 5, z: 13, rot: 270, dx: -0.3 }, // facing the wall
+    { type: 'papers', x: 9, z: 14 },
+    { type: 'bucket', x: 15, z: 12, dx: 0.4, dz: -0.3 },
+    { type: 'chair', x: 19, z: 13, rot: 90, dx: 0.3 }, // facing the wall
+    { type: 'bloodstain', x: 18, z: 13 },
+    { type: 'fallenChair', x: 22, z: 13, rot: 100 },
+    { type: 'chains', x: 25, z: 13 },
+    { type: 'portrait', x: 27, z: 12, side: 'e' },
+  ],
 };
