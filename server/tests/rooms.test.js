@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from '../../shared/events.js';
-import { createRooms } from '../src/rooms.js';
-import { once, request, startServer } from './helpers.js';
+import { createRooms, markIdle, ROOM_EXPIRY_MS } from '../src/rooms.js';
+import { once, request, startServer, waitFor } from './helpers.js';
 
 let server;
 afterEach(() => server?.stop());
@@ -52,13 +52,48 @@ describe('room:create', () => {
     expect(await request(socket, 'room:create', { name: 'A' })).toEqual({ error: 'already-in-room' });
   });
 
-  it('deletes the room when its only player leaves', async () => {
-    server = await startServer();
+  it('deletes an empty room 5 minutes after its last player leaves, never reusing the code', async () => {
+    let t = 0;
+    server = await startServer({ now: () => t });
     const socket = server.client();
-    await request(socket, 'room:create', { name: 'A' });
-    expect(server.game.rooms.size).toBe(1);
+    const { code } = await request(socket, 'room:create', { name: 'A' });
     socket.disconnect();
     await new Promise((r) => setTimeout(r, 50));
+    // Still there, but nobody can join a room everyone left.
+    expect(server.game.rooms.size).toBe(1);
+    expect(await request(server.client(), 'room:join', { code, name: 'B' })).toEqual({ error: 'room:notfound' });
+    t = ROOM_EXPIRY_MS - 1;
+    server.game.sweep();
+    expect(server.game.rooms.size).toBe(1);
+    t = ROOM_EXPIRY_MS;
+    server.game.sweep();
     expect(server.game.rooms.size).toBe(0);
+  });
+
+  it('keeps a room alive while anyone is still connected', () => {
+    const rooms = createRooms();
+    const { room } = rooms.create('A');
+    rooms.join(room.code, 'B');
+    room.players[0].connected = false;
+    markIdle(room, 0);
+    expect(rooms.sweep(ROOM_EXPIRY_MS * 10)).toEqual([]);
+    room.players[1].connected = false;
+    markIdle(room, 1000);
+    expect(rooms.sweep(1000 + ROOM_EXPIRY_MS)).toEqual([room.code]);
+  });
+
+  it('keeps a seat (disconnected) for a player who drops during the night', async () => {
+    server = await startServer();
+    const a = server.client();
+    const b = server.client();
+    const { code } = await request(a, 'room:create', { name: 'A' });
+    await request(b, 'room:join', { code, name: 'B' });
+    for (const s of [a, b]) await request(s, 'player:ready', { ready: true, codeWordHash: 'c'.repeat(64) });
+    await request(a, 'night:begin', {});
+    const update = waitFor(a, 'room:update', (v) => v.players.some((p) => !p.connected));
+    b.disconnect();
+    const view = await update;
+    expect(view.players).toHaveLength(2);
+    expect(view.players[1]).toMatchObject({ name: 'B', connected: false });
   });
 });

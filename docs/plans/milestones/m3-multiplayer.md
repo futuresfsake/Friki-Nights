@@ -25,7 +25,7 @@
 | M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
 | M3-S13 | Exit together | Must | S | ⬜ |
 | M3-S14 | Disconnect pause and rejoin | Must | M | ⬜ |
-| M3-S15 | Room expiry and cleanup | Must | S | ⬜ |
+| M3-S15 | Room expiry and cleanup | Must | S | ✅ |
 | M3-S16 | Validation and rate limits | Must | M | ⬜ |
 | M3-S17 | "Waking the house…" screen | Should | S | ⬜ |
 | M3-S18 | Solo play | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ⬜ |
 
-**22 stories · 10 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 11 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -203,13 +203,16 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S15 · Room expiry and cleanup
 
-**Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** Game flow, Security
+**Priority:** Must · **Size:** S · **Status:** ✅ · **Traces:** Game flow, Security
 
 > As the owner, I want empty rooms deleted, so that the server stays clean and codes can't be reused.
 
 **Acceptance criteria**
 - Room deleted 5 min after all players leave
 - **Test:** expiry with fake timers
+
+**Built:** `rooms.sweep(now)` runs every 30 s and deletes rooms with nobody connected for 5 min (`ROOM_EXPIRY_MS`); an idle room can't be joined. During a night a dropped player keeps their seat (`connected: false`) for rejoin (S14). **Tests:** expiry with a fake clock, rooms with someone connected survive, seat kept on drop.
+
 
 ### M3-S16 · Validation and rate limits
 

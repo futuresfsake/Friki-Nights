@@ -3,11 +3,12 @@ import { cleanName } from '../../shared/names.js';
 import { clientIp, createRateLimiter } from './rateLimit.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
-import { createRooms, everyoneReady, removePlayer, roomView } from './rooms.js';
+import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './rooms.js';
 
 // Room and game events for every connected socket. socket.data holds which room and
 // player this socket is ({ code, playerId }) once it has created or joined one.
 export const JOINS_PER_MINUTE = 5;
+const SWEEP_MS = 30_000;
 
 export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
   // Every join attempt counts, right or wrong: this is what makes guessing codes slow.
@@ -27,16 +28,26 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     socket.join(room.code);
   }
 
+  // In the lobby a player who leaves is gone. Once the night has started they keep
+  // their seat (marked disconnected) so they can come back. Either way, a room with
+  // nobody connected is swept away after ROOM_EXPIRY_MS.
   function leave(socket) {
     const { code, playerId } = socket.data;
     socket.data.code = socket.data.playerId = undefined;
     const room = rooms.get(code);
     if (!room) return;
     socket.leave(code);
-    removePlayer(room, playerId);
-    if (room.players.length === 0) rooms.remove(room.code);
-    else broadcastRoom(room);
+    if (room.phase === 'lobby') removePlayer(room, playerId);
+    else {
+      const player = room.players.find((p) => p.id === playerId);
+      if (player) player.connected = false;
+    }
+    markIdle(room, now());
+    if (room.idleSince === null) broadcastRoom(room);
   }
+
+  const sweeper = setInterval(() => rooms.sweep(now()), SWEEP_MS);
+  sweeper.unref?.();
 
   io.on('connection', (socket) => {
     // Every event is validated first; a bad payload is ignored, never trusted.
@@ -115,5 +126,5 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     socket.on('disconnect', () => leave(socket));
   });
 
-  return { rooms };
+  return { rooms, sweep: () => rooms.sweep(now()), stop: () => clearInterval(sweeper) };
 }
