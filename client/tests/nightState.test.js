@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseMap } from '../../shared/mapParser.js';
-import { apply, BATTERY_PICKUP, blocksMovement, createNightState } from '../../shared/nightState.js';
+import { addPlayer, apply, applyEvent, BATTERY_PICKUP, blocksMovement, createNightState } from '../../shared/nightState.js';
 
 // key-2-1 (house), note-4-1, battery-6-1, fuse-1-3, fuse-3-3, fuseBox-5-3,
 // door-4-2 (locked, house), door-4-4 (normal), exit-7-3
@@ -35,7 +35,7 @@ describe('night state — doors', () => {
 
   it('keeps a locked door shut without the key', () => {
     const s = createNightState(map);
-    expect(act(s, 'door-4-2')).toEqual([{ type: 'denied', reason: 'locked', targetId: 'door-4-2' }]);
+    expect(act(s, 'door-4-2')).toEqual([{ playerId: 'p1', type: 'denied', reason: 'locked', targetId: 'door-4-2' }]);
     expect(blocksMovement(s, 'door-4-2')).toBe(true);
   });
 
@@ -164,7 +164,7 @@ describe('night state — scripted slams', () => {
   it('slams an open door shut; it opens again normally', () => {
     const s = createNightState(map);
     act(s, 'door-4-4');
-    expect(apply(s, { type: 'slam-door', playerId: 'p1', targetId: 'door-4-4' })).toEqual([{ type: 'door-slammed', targetId: 'door-4-4' }]);
+    expect(apply(s, { type: 'slam-door', playerId: 'p1', targetId: 'door-4-4' })).toEqual([{ playerId: 'p1', type: 'door-slammed', targetId: 'door-4-4' }]);
     expect(blocksMovement(s, 'door-4-4')).toBe(true);
     expect(types(act(s, 'door-4-4'))).toEqual(['door-opened']);
   });
@@ -172,5 +172,36 @@ describe('night state — scripted slams', () => {
   it('does nothing to a door that is already shut', () => {
     const s = createNightState(map);
     expect(apply(s, { type: 'slam-door', playerId: 'p1', targetId: 'door-4-4' })).toEqual([]);
+  });
+});
+
+describe('night state — a client copy kept in step by events', () => {
+  // Same "network", same seed every run.
+  function rng(seed) {
+    return () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  }
+  const snapshot = (s) => JSON.stringify({ ...s, notesRead: [...s.notesRead].sort() });
+
+  it('always matches the server after any sequence of actions by several players', () => {
+    const ids = [...map.objects.map((o) => o.id), 'nothing-0-0'];
+    for (let seed = 1; seed <= 30; seed++) {
+      const random = rng(seed);
+      const server = createNightState(map, { playerCount: 3 });
+      const copy = createNightState(map, { playerCount: 3 });
+      for (let i = 0; i < 200; i++) {
+        const playerId = `p${1 + Math.floor(random() * 3)}`;
+        const roll = random();
+        const action =
+          roll < 0.05
+            ? { type: 'reach-exit', playerId }
+            : roll < 0.1
+              ? { type: 'slam-door', playerId, targetId: 'door-4-4' }
+              : { type: 'interact', playerId, targetId: ids[Math.floor(random() * ids.length)] };
+        for (const event of apply(server, action)) applyEvent(copy, event);
+        // The server also adds players it hears from; the copy learns of them via events.
+        for (const id of Object.keys(server.players)) addPlayer(copy, id);
+        expect(snapshot(copy)).toBe(snapshot(server));
+      }
+    }
   });
 });

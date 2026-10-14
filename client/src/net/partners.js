@@ -31,6 +31,8 @@ export function createPartners(scene, { makeModel, onStep }) {
       for (const id of [...partners.keys()]) if (!ids.includes(id)) remove(id);
     },
     remove,
+    // Where a teammate is drawn right now, or null.
+    positionOf: (id) => partners.get(id)?.spot ?? null,
     // viewer: our own { x, z }, so name tags fade with distance.
     update(localNow, dt, viewer = null) {
       for (const p of partners.values()) {

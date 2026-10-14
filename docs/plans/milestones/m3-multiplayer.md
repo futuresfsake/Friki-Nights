@@ -21,7 +21,7 @@
 | M3-S08 | Host starts the night for everyone | Must | S | ✅ |
 | M3-S09 | Send movement and server speed check | Must | M | ✅ |
 | M3-S10 | Partner model and interpolation | Must | L | ✅ |
-| M3-S11 | Server-authoritative interactions | Must | L | ⬜ |
+| M3-S11 | Server-authoritative interactions | Must | L | ✅ |
 | M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
 | M3-S13 | Exit together | Must | S | ⬜ |
 | M3-S14 | Disconnect pause and rejoin | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ✅ |
 
-**22 stories · 12 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 13 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -159,7 +159,7 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S11 · Server-authoritative interactions
 
-**Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** FR-07, US-07
+**Priority:** Must · **Size:** L · **Status:** ✅ · **Traces:** FR-07, US-07
 
 > As a player, I want doors, items, and the fuse box to be the same on every screen, so that we can solve puzzles together.
 
@@ -168,6 +168,9 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 - Client sends `interact { targetId }`; server checks distance (≤ 2 m) and state, then broadcasts `world:update`
 - Change appears on every screen in < 500 ms
 - **Test:** two requests for the same key within 50 ms → exactly one player gets it
+
+**Built:** `server/src/interact.js`: `interact { targetId }` checks the player is within reach (2 m + ¾ cell of the object's cell centre; crawling out from under a bed always works) and never closes a door on anyone in the doorway, then runs `nightState.apply` and broadcasts `world:update { events }` (refusals go only to the asker). Scripted slams use `door:slam`. Every event names its `playerId`; clients keep a copy of the night updated only by `applyEvent`. Notes, hiding, batteries and event-triggered scares only happen to whoever caused them; teammates see "Ana picked up: …". Reaching the exit is still local until S13. **Tests:** a client copy matches the server after 6,000 random actions by 3 players; door opens for everyone; out of reach; two grabs of one key 20 ms apart → exactly one owner; doorway blocked; slams; bad payloads.
+
 
 ### M3-S12 · Shared and per-player scare triggers
 

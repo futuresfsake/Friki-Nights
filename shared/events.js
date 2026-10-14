@@ -15,6 +15,8 @@ const roomCode = z
   .transform((s) => s.replace(/\s/g, '').toUpperCase());
 
 const coord = z.number().finite().min(-1000).max(1000);
+// Object ids from the map parser: door-12-5, fuseBox-28-9, ...
+const objectId = z.string().max(40).regex(/^[a-zA-Z]+-\d{1,3}-\d{1,3}$/);
 
 export const MOVE_RATE = 15; // Hz
 
@@ -43,4 +45,8 @@ export const schemas = {
       t: z.number().finite().nonnegative(),
     })
     .strict(),
+  // "Use" whatever the crosshair is on; the server checks distance and state.
+  interact: z.object({ targetId: objectId }).strict(),
+  // A scripted scare on this client wants a door slammed shut for everyone (JS-02).
+  'door:slam': z.object({ targetId: objectId }).strict(),
 };
