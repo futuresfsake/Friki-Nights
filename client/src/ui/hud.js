@@ -11,7 +11,9 @@ export function createHud() {
   const prompt = document.getElementById('prompt');
   const promptText = document.getElementById('prompt-text');
   const toast = document.getElementById('toast');
+  const subtitle = document.getElementById('subtitle');
   let toastTimer = null;
+  let subtitleTimer = null;
 
   return {
     setBattery(level) {
@@ -28,6 +30,13 @@ export function createHud() {
       toast.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove('show'), TOAST_SECONDS * 1000);
+    },
+    // A line of heard speech ("[whispering] …"), separate from toasts so both can show.
+    subtitle(text, seconds = 3.5) {
+      subtitle.textContent = text;
+      subtitle.classList.add('show');
+      clearTimeout(subtitleTimer);
+      subtitleTimer = setTimeout(() => subtitle.classList.remove('show'), seconds * 1000);
     },
     showOverlay(paused) {
       overlayPrompt.textContent = paused ? 'PAUSED — CLICK TO RESUME' : 'CLICK TO ENTER';

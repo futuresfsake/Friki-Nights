@@ -27,8 +27,9 @@
 | M5-S14 | JS-03 Lights out, figure appears | Must | S | ⬜ |
 | M5-S15 | Partner-themed small scares | Should | M | ⬜ |
 | M5-S16 | Breathing sound | Should | S | ⬜ |
+| M5-S17 | The Tenant: the man who trolls you | Should | L | ✅ |
 
-**16 stories · 0 done** (13 Must · 3 Should · 0 Could)
+**17 stories · 1 done** (13 Must · 4 Should · 0 Could)
 
 ## Out of scope
 
@@ -205,3 +206,28 @@ HUNT mode is built here but only switched on in Nights 4–5 (M7). Final chase J
 **Acceptance criteria**
 - Filtered noise with slow in/out envelope, PannerNode placed behind the listener
 - Used by the director and later JS-07
+
+### M5-S17 · The Tenant: the man who trolls you
+
+**Priority:** Should · **Size:** L · **Status:** ✅ · **Traces:** Horror design §1 (per-player scares, "use the partner") · **Pulled forward** by the owner on 2026-10-14, built before the rest of M5
+
+> As a player, I want a real, scary person in the house who toys with me unpredictably, so that I never know what's coming next.
+
+The Tenant is a gaunt, too-tall man with a grin stretched ear to ear, pinprick eyes, and a head that twitches to new angles. He **never hurts anyone** (catching is The Waiting One's job). He wants you turning round. **Each player has their own Tenant that only they see and hear**, and he never changes shared night state, so screens can't disagree.
+
+**Tricks** (`client/src/tenant/acts.js`), each with random variants:
+- **peek**: stands far off where you're not looking yet. When you see him he vanishes, waves, walks at you anyway, or is closer every time you look back
+- **cross**: walks slowly across a room ahead, head turned to watch you; sometimes stops and stares
+- **follow**: footsteps behind yours, a beat late; stop and there's one more step. Turn round: usually nothing
+- **name**: whispers your name (or your teammate's) with a subtitle
+- **giggle**: a chuckle close by in the dark
+- **doorTrap**: holds the next door you open shut, giggles behind it and runs off; or knocks back on a door you close
+- **breathe** (big): breathing behind you that stays behind you; turn in time and he's there
+- **lightsOut** (big): the light dies, running steps, and when it's back he's in front of you, finger to his lips. Or nothing's there and the laugh is behind you
+- **rush** (big, after 4 min): sprints at you from the end of a hall
+- **bedVisit**: while you hide under a bed, bare feet stop in front of you. He leaves, whispers that he knows, or his head comes down to the floor to look
+
+**Pacing** (`client/src/tenant/brain.js`): 35–70 s of peace first; random gaps with 15% "double taps" (3–8 s) and 10% long silences (90–150 s); never the same trick twice in a row; big tricks ≥150 s apart, also from the map's jump scares; nothing while a note or pause is open.
+
+**Tests:** brain pacing and variety; sight and spot finding; an hour-long simulated night per seed with a restless player (every trick fires, he's only ever on open floor and in sight when he appears, gone when a trick ends, uses both names); door trap (held, knocks back, ignores exit and locked doors, expires).
+

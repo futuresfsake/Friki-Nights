@@ -446,3 +446,102 @@ export function flashlightClick(audio) {
   osc.start(t);
   osc.stop(t + 0.04);
 }
+
+// Slow breathing right next to you: noise through a soft band-pass, swelling in
+// (filter rising) and out (falling), placed in 3D. Returns stop() to cut it short.
+export function breathing(audio, x, y, z, seconds = 6) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const src = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.Q.value = 0.8;
+  const gain = ctx.createGain();
+  src.connect(filter).connect(gain).connect(out);
+
+  const t0 = ctx.currentTime + 0.05;
+  gain.gain.setValueAtTime(0, t0);
+  let t = t0;
+  while (t < t0 + seconds) {
+    const inhale = 1 + Math.random() * 0.4;
+    const exhale = 1.3 + Math.random() * 0.5;
+    filter.frequency.setValueAtTime(500, t);
+    filter.frequency.linearRampToValueAtTime(1100, t + inhale);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.35, t + inhale * 0.8);
+    gain.gain.linearRampToValueAtTime(0.05, t + inhale);
+    filter.frequency.linearRampToValueAtTime(420, t + inhale + exhale);
+    gain.gain.linearRampToValueAtTime(0.45, t + inhale + 0.2);
+    gain.gain.linearRampToValueAtTime(0, t + inhale + exhale);
+    t += inhale + exhale + 0.2 + Math.random() * 0.4;
+  }
+  src.start(t0, Math.random());
+  src.stop(t);
+  return {
+    // Where it comes from can follow the player around.
+    moveTo(nx, ny, nz) {
+      if (out.positionX) {
+        out.positionX.value = nx;
+        out.positionY.value = ny;
+        out.positionZ.value = nz;
+      } else out.setPosition(nx, ny, nz);
+    },
+    stop() {
+      const now = ctx.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.08);
+      try {
+        src.stop(now + 0.1);
+      } catch {
+        // already stopped
+      }
+    },
+  };
+}
+
+// A low, wet chuckle: a buzzy voice through "eh" formants in 5–8 breathy pulses,
+// each a little lower than the last, placed in 3D.
+export function giggle(audio, x, y, z, loudness = 1) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t0 = ctx.currentTime + 0.05;
+  const pulses = 5 + Math.floor(Math.random() * 4);
+  const gap = 0.1 + Math.random() * 0.04;
+  const end = t0 + pulses * gap + 0.2;
+
+  const voice = ctx.createOscillator();
+  voice.type = 'sawtooth';
+  const pitch = 150 + Math.random() * 40;
+  voice.frequency.setValueAtTime(pitch * 1.15, t0);
+  voice.frequency.exponentialRampToValueAtTime(pitch * 0.7, end);
+  const breath = noiseSource();
+  const breathGain = ctx.createGain();
+  breathGain.gain.value = 0.5;
+  const envelope = ctx.createGain();
+  envelope.gain.setValueAtTime(0, t0);
+  for (const [f, q] of [
+    [560, 6],
+    [1750, 9],
+  ]) {
+    const formant = ctx.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.value = f;
+    formant.Q.value = q;
+    voice.connect(formant).connect(envelope);
+    breath.connect(breathGain).connect(formant);
+  }
+  envelope.connect(out);
+
+  for (let i = 0; i < pulses; i++) {
+    const t = t0 + i * gap + Math.random() * 0.015;
+    const peak = 0.55 * loudness * (1 - i / (pulses + 2));
+    envelope.gain.setValueAtTime(0, t);
+    envelope.gain.linearRampToValueAtTime(peak, t + 0.02);
+    envelope.gain.exponentialRampToValueAtTime(0.001, t + gap * 0.85);
+  }
+  voice.start(t0);
+  voice.stop(end);
+  breath.start(t0, Math.random());
+  breath.stop(end);
+}

@@ -283,3 +283,68 @@ export function nameTagTexture(name) {
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
 }
+
+// The Tenant: a gaunt grey face, sunken eyes with pinprick pupils that stare straight
+// at you, and a grin stretched far too wide, full of yellowed teeth.
+export function grinTexture() {
+  const rand = mulberry32(613);
+  return canvasTexture(64, (g, s) => {
+    const skin = g.createRadialGradient(s / 2, s * 0.42, 4, s / 2, s / 2, s * 0.62);
+    skin.addColorStop(0, '#d2cbbd');
+    skin.addColorStop(0.65, '#a59d8f');
+    skin.addColorStop(1, '#4a443d');
+    g.fillStyle = skin;
+    g.fillRect(0, 0, s, s);
+    // Hollow cheeks and a heavy brow.
+    stain(g, s * 0.22, s * 0.6, 10, 'rgba(50,40,36,0.45)');
+    stain(g, s * 0.78, s * 0.6, 10, 'rgba(50,40,36,0.45)');
+    g.fillStyle = 'rgba(40,32,30,0.35)';
+    g.fillRect(s * 0.18, s * 0.26, s * 0.64, 3);
+    // Eyes sit at slightly different heights, which reads as "wrong" before you know why.
+    for (const [ex, ey] of [
+      [s * 0.34, s * 0.37],
+      [s * 0.66, s * 0.39],
+    ]) {
+      stain(g, ex, ey, 10, 'rgba(25,15,15,0.85)');
+      g.fillStyle = '#0b0708';
+      g.beginPath();
+      g.ellipse(ex, ey, 5, 4, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#f4f0dc';
+      g.fillRect(Math.round(ex), Math.round(ey), 1, 1);
+    }
+    // The grin: ear to ear, lips pulled back from two rows of teeth.
+    const left = s * 0.1;
+    const right = s * 0.9;
+    const top = s * 0.62;
+    g.fillStyle = '#120708';
+    g.beginPath();
+    g.moveTo(left, top - 4);
+    g.quadraticCurveTo(s / 2, top + 6, right, top - 4);
+    g.quadraticCurveTo(s / 2, top + 22, left, top - 4);
+    g.fill();
+    g.fillStyle = '#5a1c1c';
+    g.fillRect(left + 3, top - 2, 3, 2);
+    g.fillRect(right - 6, top - 2, 3, 2);
+    for (let x = left + 5; x < right - 5; x += 3) {
+      const curve = Math.sin(((x - left) / (right - left)) * Math.PI);
+      const upper = top - 2 + curve * 5;
+      const lower = top + 3 + curve * 9;
+      g.fillStyle = rand() < 0.15 ? '#8a7a4a' : '#d6cba0';
+      g.fillRect(Math.round(x), Math.round(upper), 2, 3);
+      g.fillStyle = rand() < 0.2 ? '#7a6a40' : '#cbbf92';
+      g.fillRect(Math.round(x), Math.round(lower), 2, 3);
+    }
+    // Thin dark veins under the skin.
+    g.strokeStyle = 'rgba(60,50,70,0.35)';
+    for (let i = 0; i < 6; i++) {
+      g.beginPath();
+      let x = rand() * s;
+      let y = rand() * s * 0.3;
+      g.moveTo(x, y);
+      for (let k = 0; k < 4; k++) g.lineTo((x += (rand() - 0.5) * 10), (y += rand() * 6));
+      g.stroke();
+    }
+    speckle(g, s, rand, 350, 0.15);
+  });
+}

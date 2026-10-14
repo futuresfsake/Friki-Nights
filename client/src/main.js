@@ -12,6 +12,7 @@ import { windowHandScare } from './scares/windowHand.js';
 import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
+  breathing,
   doorCreak,
   doorRattle,
   doorShut,
@@ -21,6 +22,7 @@ import {
   footstepAt,
   glassBang,
   fuseClunk,
+  giggle,
   knocks,
   pickupClink,
   powerOn,
@@ -40,6 +42,8 @@ import { createMoveSender } from './net/moves.js';
 import { createPartners } from './net/partners.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createRoomLobby } from './ui/room.js';
+import { createTenantModel } from './tenant/model.js';
+import { createTenant } from './tenant/tenant.js';
 import { createNoteReader } from './ui/notes.js';
 import { createBeds } from './world/beds.js';
 import { buildHouse } from './world/builder.js';
@@ -93,6 +97,11 @@ const objectBlocks = (cx, cz) => {
   const id = objectCells.get(`${cx},${cz}`);
   return !!id && blocksMovement(night, id);
 };
+// Closed doors block sight; beds are low enough to see over.
+const doorBlocks = (cx, cz) => {
+  const id = objectCells.get(`${cx},${cz}`);
+  return !!id && doors.has(id) && blocksMovement(night, id);
+};
 
 const hud = createHud();
 const inventory = createInventory();
@@ -126,7 +135,10 @@ let ended = false;
 let audio = null;
 
 const player = createController(camera, document.body, map, {
-  onStep: (running) => audio && footstep(audio, running),
+  onStep: (running) => {
+    if (audio) footstep(audio, running);
+    tenant?.onStep(running);
+  },
   extraSolid: objectBlocks,
 });
 const flashlight = createFlashlight(camera, {
@@ -138,6 +150,17 @@ const interaction = createInteraction(camera, {
 });
 
 let nextKnockAt = 20;
+let tenant = null; // the man in the walls; created once we know the player's name
+// His sounds, each silent until audio exists.
+const tenantSounds = {
+  step: (x, z, running, loudness) => audio && footstepAt(audio, x, z, running, { barefoot: true, loudness: 4 * loudness }),
+  giggle: (x, z, loudness) => audio && giggle(audio, x, 1.65, z, loudness),
+  whisper: (x, z, seconds) => audio && whispers(audio, x, 1.6, z, seconds),
+  breathing: (x, z, seconds) => (audio ? breathing(audio, x, 1.5, z, seconds) : null),
+  knocks: (x, z) => audio && knocks(audio, x, 1.2, z),
+  rattle: (x, z) => audio && doorRattle(audio, x, 1.2, z),
+  sting: () => audio && screamSting(audio),
+};
 let hiding = null; // { bedId, stood } while under a bed
 
 // Connected game server; the lobby covers the game until the server lets us in.
@@ -155,6 +178,18 @@ connectWithAccess().then(async (s) => {
   player.placeAt(me.x, me.z);
   hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
   for (const p of start.players) if (p.id !== PLAYER_ID) partners.add(p);
+  tenant = createTenant({
+    scene,
+    map,
+    model: createTenantModel(),
+    sounds: tenantSounds,
+    effects,
+    hud,
+    now: () => clock.elapsedTime,
+    blocked: doorBlocks,
+    name: me.name,
+    partnerNames: () => start.players.filter((p) => p.id !== PLAYER_ID).map((p) => p.name),
+  });
   socket = s;
   moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
   socket.on('player:state', (state) => partners.push(state, performance.now()));
@@ -219,6 +254,7 @@ function interact(id) {
     hud.toast('Step out of the doorway first.');
     return;
   }
+  if (obj && tenant?.interceptDoor(obj, night.doors[id])) return;
   for (const event of apply(night, { type: 'interact', playerId: PLAYER_ID, targetId: id })) {
     handleEvent(event);
   }
@@ -350,6 +386,7 @@ function slamDoor(id, then) {
 
 function fireScare(trigger) {
   scares.playScare(trigger.scare, trigger);
+  tenant?.noteScare(trigger.scare.startsWith('JS-'));
 }
 
 // Stepping into the open exit's doorway leaves the house.
@@ -384,12 +421,21 @@ renderer.setAnimationLoop(() => {
   if (player.controls.isLocked && !reader.isOpen()) {
     player.update(dt);
     flashlight.update(dt, time);
+    look.setFromQuaternion(camera.quaternion);
+    tenant?.update(dt, {
+      time: playTime,
+      x: camera.position.x,
+      z: camera.position.z,
+      yaw: look.y,
+      hiding: hiding ? beds.get(hiding.bedId) : null,
+      flashlightOn: flashlight.state.on,
+    });
+    if (tenant) flashlight.spot.intensity *= tenant.lightFactor();
     hud.setBattery(flashlight.state.battery);
     hud.setPrompt(describe(interaction.lookTarget()));
     maybeKnock(time);
     playTime += dt;
     checkExit();
-    look.setFromQuaternion(camera.quaternion);
     moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x, light: flashlight.state.on });
     const cell = cellAt(camera.position.x, camera.position.z);
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
