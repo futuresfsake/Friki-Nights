@@ -545,3 +545,44 @@ export function giggle(audio, x, y, z, loudness = 1) {
   breath.start(t0, Math.random());
   breath.stop(end);
 }
+
+// One tick of the grandfather clock, placed in 3D. tock: the deeper second beat.
+export function clockTick(audio, x, y, z, tock = false) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t = ctx.currentTime;
+  const src = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = tock ? 1400 : 2100;
+  filter.Q.value = 6;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.35, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+  src.connect(filter).connect(gain).connect(out);
+  src.start(t, Math.random());
+  src.stop(t + 0.05);
+}
+
+// Old wood creaking under a slow weight: the rocking chair.
+export function woodCreak(audio, x, y, z) {
+  const { ctx, panner } = audio;
+  const out = panner(x, y, z);
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = 'sawtooth';
+  const base = 180 + Math.random() * 60;
+  osc.frequency.setValueAtTime(base, t);
+  osc.frequency.linearRampToValueAtTime(base * 0.8, t + 0.35);
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 900;
+  filter.Q.value = 12;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
+  gain.gain.linearRampToValueAtTime(0, t + 0.4);
+  osc.connect(filter).connect(gain).connect(out);
+  osc.start(t);
+  osc.stop(t + 0.42);
+}

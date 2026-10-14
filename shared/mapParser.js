@@ -1,4 +1,5 @@
 import { CELL, MAX_PLAYERS } from './constants.js';
+import { PROPS, placeProp } from './props.js';
 
 // One ASCII grid per night, parsed the same way by client and server.
 //   # wall   . floor   (space) wall   P player spawn (1–4)   S ceiling light
@@ -63,9 +64,28 @@ export function parseMap(def) {
   const eventTriggers = (meta.eventTriggers ?? []).map((t, i) => ({ ...t, id: `event-trigger-${i}` }));
   const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', intro: meta.intro ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
   validate(map, meta, counters);
+  map.props = parseProps(map, meta.props ?? []);
   for (const obj of objects) if (DOOR_TYPES.has(obj.type)) obj.axis = doorAxis(map, obj);
   for (const obj of objects) if (obj.type === 'window') obj.facing = windowFacing(map, obj);
   return map;
+}
+
+// Furniture from the map's `props` list (see props.js). Solid props may not sit on an
+// object, a spawn, or a door; nothing may sit in a doorway.
+function parseProps(map, list) {
+  const taken = new Set([...map.objects, ...map.spawns].map((o) => `${o.x},${o.z}`));
+  const doors = new Set(map.objects.filter((o) => DOOR_TYPES.has(o.type)).map((o) => `${o.x},${o.z}`));
+  return list.map((entry) => {
+    const at = `${entry.x},${entry.z}`;
+    const name = `prop "${entry.type}" at ${at}`;
+    if (!PROPS[entry.type]) throw new Error(`Unknown ${name}`);
+    if (isSolid(map, entry.x, entry.z)) throw new Error(`${name} is inside a wall`);
+    if (doors.has(at)) throw new Error(`${name} blocks a doorway`);
+    if (PROPS[entry.type].solid && taken.has(at)) throw new Error(`${name} sits on an object or spawn`);
+    const prop = placeProp(entry, (cx, cz) => isSolid(map, cx, cz));
+    if (!prop) throw new Error(`${name} needs a wall to stand against`);
+    return prop;
+  });
 }
 
 function makeObject(ch, x, z, meta, counters) {

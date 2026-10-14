@@ -1,6 +1,10 @@
 import { CELL } from '../../../shared/constants.js';
 import { cellAt, cellCenter, isSolid } from '../../../shared/mapParser.js';
+import { hitsProp } from '../../../shared/props.js';
 import { angleOff, hasLineOfSight } from '../../../shared/sight.js';
+
+const BODY = 0.3; // he needs this much room to stand (no standing inside a wardrobe)
+const inProp = (map, x, z) => hitsProp(map.props ?? [], x, z, BODY);
 
 // Where the Tenant can stand. Pure functions of the map, so they're testable.
 // from: the player's { x, z }; yaw: where they look; blocked(cx, cz): closed doors.
@@ -16,6 +20,7 @@ export function findSpot(map, from, yaw, { minDist, maxDist, minAngle = 0, maxAn
     for (let cx = here.cx - reach; cx <= here.cx + reach; cx++) {
       if (isSolid(map, cx, cz) || blocked(cx, cz)) continue;
       const c = cellCenter(cx, cz);
+      if (inProp(map, c.x, c.z)) continue;
       const d = Math.hypot(c.x - from.x, c.z - from.z);
       if (d < minDist || d > maxDist) continue;
       const a = angleOff(from.x, from.z, yaw, c.x, c.z);
@@ -37,7 +42,7 @@ export function spotToward(map, from, yaw, turn, distance, blocked = () => false
     const x = from.x + dirX * d;
     const z = from.z + dirZ * d;
     const { cx, cz } = cellAt(x, z);
-    if (isSolid(map, cx, cz) || blocked(cx, cz)) continue;
+    if (isSolid(map, cx, cz) || blocked(cx, cz) || inProp(map, x, z)) continue;
     if (hasLineOfSight(map, from.x, from.z, x, z, blocked)) return { x, z, distance: d };
   }
   return null;
@@ -56,7 +61,7 @@ export function crossingPath(map, from, spot, halfWidth = 1.8, blocked = () => f
     const b = { x: spot.x + px * w, z: spot.z + pz * w };
     const open = (p) => {
       const { cx, cz } = cellAt(p.x, p.z);
-      return !isSolid(map, cx, cz) && !blocked(cx, cz);
+      return !isSolid(map, cx, cz) && !blocked(cx, cz) && !inProp(map, p.x, p.z);
     };
     if (open(a) && open(b) && hasLineOfSight(map, a.x, a.z, b.x, b.z, blocked)) return { from: a, to: b };
   }

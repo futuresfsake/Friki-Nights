@@ -11,14 +11,14 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | ID | Milestone | State | Stories done | Branch | Story file |
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
-| M2 | Interactions + first scares | ✅ Done | 19 / 19 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
+| M2 | Interactions + first scares | ✅ Done | 20 / 20 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
 | M3 | Multiplayer | 🔨 In progress | 11 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started (S17 pulled forward) | 1 / 17 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| | **Total** | | **43 / 131** | | |
+| | **Total** | | **44 / 132** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -28,14 +28,14 @@ Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done ·
 | Milestone | Must | Should | Could | Total |
 | --- | --- | --- | --- | --- |
 | M1 | 9 | 3 | 0 | 12 |
-| M2 | 15 | 3 | 1 | 19 |
+| M2 | 15 | 4 | 1 | 20 |
 | M3 | 20 | 2 | 0 | 22 |
 | M4 | 7 | 3 | 1 | 11 |
 | M5 | 13 | 4 | 0 | 17 |
 | M6 | 6 | 3 | 1 | 10 |
 | M7 | 22 | 3 | 0 | 25 |
 | M8 | 11 | 4 | 0 | 15 |
-| **Total** | **103** | **25** | **3** | **131** |
+| **Total** | **103** | **26** | **3** | **132** |
 
 ## Current milestone: M3
 
@@ -62,3 +62,4 @@ Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 | 2026-10-14 | M3-S10 partner model and interpolation done |
 | 2026-10-14 | New story M5-S17 "The Tenant" (a man who trolls each player unpredictably), pulled forward at the owner's request and built on `m5-s17-tenant`. 131 stories |
 | 2026-10-14 | M3-S15 room expiry done |
+| 2026-10-14 | M2-S20 furniture and clutter (new, owner request) |

@@ -1,4 +1,5 @@
 import { cellAt, cellCenter, isSolid } from '../../../shared/mapParser.js';
+import { hitsProp } from '../../../shared/props.js';
 import { angleOff, hasLineOfSight } from '../../../shared/sight.js';
 import { TRICKS } from './acts.js';
 import { createBrain } from './brain.js';
@@ -39,7 +40,7 @@ export function createTenant({ scene, map, model, sounds, effects, hud, now, blo
   const at = () => ({ x: model.root.position.x, z: model.root.position.z });
   const isOpen = (p) => {
     const { cx, cz } = cellAt(p.x, p.z);
-    return !isSolid(map, cx, cz) && !blocked(cx, cz);
+    return !isSolid(map, cx, cz) && !blocked(cx, cz) && !hitsProp(map.props ?? [], p.x, p.z, 0.3);
   };
   const canSee = (p) => hasLineOfSight(map, player.x, player.z, p.x, p.z, blocked);
   const lookingAt = (p, maxAngle) => angleOff(player.x, player.z, player.yaw, p.x, p.z) < maxAngle;

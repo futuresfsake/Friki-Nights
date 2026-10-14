@@ -28,8 +28,9 @@
 | M2-S17 | Night 1 notes (story text) | Should | S | ✅ |
 | M2-S18 | JS-06 Window hand | Could | M | ✅ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
+| M2-S20 | Furniture and clutter in every room | Should | M | ✅ |
 
-**19 stories · 19 done · 0 testing** (15 Must · 3 Should · 1 Could)
+**20 stories · 20 done · 0 testing** (15 Must · 4 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -397,3 +398,17 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - [x] Unit tests: hide and leave, one per bed, nothing else while hiding, beds block movement
 
 **Tests:** unit, playtest
+
+### M2-S20 · Furniture and clutter in every room
+
+**Priority:** Should · **Size:** M · **Status:** ✅ · **Added** 2026-10-14 at the owner's request
+
+> As a player, I want rooms full of old furniture and clutter, so that the house feels real, lived-in, and wrong.
+
+**Acceptance criteria**
+- Maps list props as `{ type, x, z, side?, rot?, dx?, dz? }`; 22 types in `shared/props.js` (wardrobe with its door ajar onto black, bookshelves with missing books, a grandfather clock stopped at 3:33 that still ticks, fireplace, rocking chair that rocks on its own, coat rack that looks like a man, wheelchair, chains, portraits with scratched-out eyes, blood, papers, rugs, ...)
+- Solid props block players (box collision) and the crosshair; floor decals don't
+- Parser refuses props in doorways, on objects or spawns, inside walls, or with no wall to lean on
+- The Tenant never stands inside furniture
+
+**Tests:** a fine-grid walk of Night 1 with real collision reaches every puzzle piece and bed; spawns are clear; placement and validation; every prop builds and animates (stub canvas).
