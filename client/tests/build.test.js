@@ -11,7 +11,9 @@ beforeAll(() => {
       set: (target, key, value) => ((target[key] = value), true),
     },
   );
-  globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ctx }) };
+  const canvas = () => ({ width: 720, height: 440, getContext: () => ctx });
+  globalThis.document = { createElement: canvas };
+  globalThis.mapRoot = { querySelector: () => canvas(), classList: { add() {}, remove() {} } };
 });
 
 describe('3D builders', () => {
@@ -45,5 +47,34 @@ describe('3D builders', () => {
     const p = createPartnerModel('Ana');
     p.pose({ x: 1, z: 2, yaw: 1, pitch: 0.2, light: false }, 2, 0.016);
     p.dispose();
+  });
+
+  it('lets you take the house map off the wall, once', async () => {
+    const THREE = await import('three');
+    const { parseMap } = await import('../../shared/mapParser.js');
+    const night1 = (await import('../../shared/maps/night1.js')).default;
+    const { createProps, HOUSE_MAP_ID } = await import('../src/world/props.js');
+    const scene = new THREE.Scene();
+    const props = createProps(parseMap(night1), scene);
+    expect(props.targets().map((m) => m.userData.targetId)).toEqual([HOUSE_MAP_ID]);
+    const before = scene.children.length;
+    props.take(HOUSE_MAP_ID);
+    expect(props.targets()).toEqual([]);
+    expect(scene.children.length).toBe(before - 1);
+  });
+
+  it('draws the house map with a ghost dot', async () => {
+    const { parseMap } = await import('../../shared/mapParser.js');
+    const night1 = (await import('../../shared/maps/night1.js')).default;
+    const { createHouseMapView } = await import('../src/ui/houseMap.js');
+    const { createReveal } = await import('../src/ui/mapReveal.js');
+    const view = createHouseMapView(parseMap(night1), { root: globalThis.mapRoot });
+    const reveal = createReveal(parseMap(night1));
+    reveal.visit(12, 6);
+    view.open();
+    view.draw({ player: { x: 25, z: 13, yaw: 0 }, reveal, ghost: { x: 20, z: 13 } });
+    expect(view.isOpen()).toBe(true);
+    view.close();
+    expect(view.isOpen()).toBe(false);
   });
 });

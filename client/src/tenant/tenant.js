@@ -19,7 +19,23 @@ const FLICKER_STEP = 0.06;
 //
 // sounds: { step, giggle, whisper, breathing, knocks, rattle, sting } bound to audio
 // (each may do nothing before audio exists).
-export function createTenant({ scene, map, model, sounds, effects, hud, now, blocked = () => false, name, partnerNames = () => [], random = Math.random }) {
+const GHOST_CHANCE = 0.35; // each time the house map is opened, once he's been around a while
+const GHOST_SPEED = 1.6; // m/s
+
+export function createTenant({
+  scene,
+  map,
+  model,
+  sounds,
+  effects,
+  hud,
+  now,
+  blocked = () => false,
+  name,
+  partnerNames = () => [],
+  random = Math.random,
+  onGhostArrived = () => {},
+}) {
   const brain = createBrain({ random });
   scene.add(model.root);
   model.root.visible = false;
@@ -35,6 +51,7 @@ export function createTenant({ scene, map, model, sounds, effects, hud, now, blo
   let flickerUntil = -Infinity;
   let trap = null; // { until, holding } armed by the doorTrap trick
   let lastPos = null;
+  let ghost = null; // { x, z, wait } a second dot on the house map, coming for yours
 
   const later = (seconds, fn, keep = false) => timers.push({ at: time + seconds, fn, keep });
   const at = () => ({ x: model.root.position.x, z: model.root.position.z });
@@ -167,6 +184,29 @@ export function createTenant({ scene, map, model, sounds, effects, hud, now, blo
     act = actId = null;
   }
 
+  // The ghost dot walks your way on the map. If it reaches you, the map is snatched
+  // shut and something laughs right behind you.
+  function moveGhost(dt) {
+    if (ghost.wait > 0) {
+      ghost.wait -= dt;
+      return;
+    }
+    const dx = player.x - ghost.x;
+    const dz = player.z - ghost.z;
+    const len = Math.hypot(dx, dz);
+    if (len < 0.8) {
+      ghost = null;
+      onGhostArrived();
+      const behind = k.toward(Math.PI, 0.8) ?? player;
+      sounds.giggle(behind.x, behind.z, 1);
+      k.shake(0.3, 0.04);
+      return;
+    }
+    const step = Math.min(len, GHOST_SPEED * dt);
+    ghost.x += (dx / len) * step;
+    ghost.z += (dz / len) * step;
+  }
+
   // The other side of a door from where the player stands.
   function otherSide(obj, distance = 1.3) {
     const c = cellCenter(obj.x, obj.z);
@@ -188,6 +228,7 @@ export function createTenant({ scene, map, model, sounds, effects, hud, now, blo
       for (const t of due) t.fn();
 
       if (trap && !trap.holding && time > trap.until) trap = null;
+      if (ghost) moveGhost(dt);
       if (act && act.update(dt)) finish();
       if (!act) {
         const id = brain.decide(time, { hiding: !!hiding, available });
@@ -247,6 +288,19 @@ export function createTenant({ scene, map, model, sounds, effects, hud, now, blo
       }
       later(leaveAt + 1, () => (trap = null), true);
       return true;
+    },
+    // The house map was unfolded: sometimes there's another dot on it.
+    onMapOpen() {
+      if (ghost || time < 60 || random() > GHOST_CHANCE) return;
+      const spot = k.find({ minDist: 7, maxDist: 13, minAngle: 1.5, sight: false });
+      if (spot) ghost = { x: spot.x, z: spot.z, wait: 1 + random() * 2 };
+    },
+    onMapClose() {
+      ghost = null;
+    },
+    // Where the extra dot is, or null (it only appears after a moment).
+    get ghost() {
+      return ghost && ghost.wait <= 0 ? { x: ghost.x, z: ghost.z } : null;
     },
     // Also what the doorTrap trick does; a map trigger could set one too.
     armDoorTrap: (seconds) => k.armDoorTrap(seconds),

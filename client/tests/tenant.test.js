@@ -232,3 +232,42 @@ describe('the door trap', () => {
     expect(s.tenant.interceptDoor(door, { open: false, locked: false })).toBe(false);
   });
 });
+
+describe('the ghost on the house map', () => {
+  it('sometimes puts a second dot on your map that walks to yours, then snatches the map', () => {
+    let arrived = 0;
+    let appeared = 0;
+    for (let seed = 1; seed <= 20; seed++) {
+      const s = setup(seed);
+      const t0 = 100;
+      const at = cellCenter(12, 6);
+      const frame = (t) => s.tenant.update(0.05, { time: t, x: at.x, z: at.z, yaw: 0, hiding: null, flashlightOn: true });
+      frame(t0);
+      // Hold still with the map open (no tricks running in this short window).
+      s.tenant.onMapOpen();
+      let seen = false;
+      for (let t = t0; t < t0 + 20; t += 0.05) {
+        s.tick(t);
+        frame(t);
+        if (s.tenant.ghost) seen = true;
+      }
+      if (seen) appeared++;
+      if (s.heard.some((h) => h.kind === 'giggle')) arrived++;
+    }
+    // About a third of the time, and when it comes, it reaches you.
+    expect(appeared).toBeGreaterThan(2);
+    expect(appeared).toBeLessThan(15);
+    expect(arrived).toBeGreaterThanOrEqual(appeared);
+  });
+
+  it('never appears early in the night, and is gone when the map is folded', () => {
+    const s = setup(1);
+    s.tenant.update(0.05, { time: 10, x: 25, z: 13, yaw: 0, hiding: null, flashlightOn: true });
+    for (let i = 0; i < 50; i++) s.tenant.onMapOpen();
+    for (let t = 10; t < 20; t += 0.05) s.tenant.update(0.05, { time: t, x: 25, z: 13, yaw: 0, hiding: null, flashlightOn: true });
+    expect(s.tenant.ghost).toBeNull();
+    s.tenant.onMapClose();
+    expect(s.tenant.ghost).toBeNull();
+  });
+});
+

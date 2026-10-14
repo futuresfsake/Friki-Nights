@@ -53,7 +53,9 @@ import { createDoors } from './world/doors.js';
 import { createFuseBox } from './world/fuseBox.js';
 import { createItems, itemName } from './world/items.js';
 import { createPartnerModel } from './world/partnerModel.js';
-import { createProps } from './world/props.js';
+import { createProps, HOUSE_MAP_ID } from './world/props.js';
+import { createHouseMapView } from './ui/houseMap.js';
+import { createReveal } from './ui/mapReveal.js';
 import { blackOutCeilingLights, createCeilingLights, switchOnHallLights, updateCeilingLights } from './world/lights.js';
 import { createWindows } from './world/windows.js';
 
@@ -111,6 +113,9 @@ const doorBlocks = (cx, cz) => {
 };
 
 const hud = createHud();
+const houseMap = createHouseMapView(map);
+const reveal = createReveal(map);
+let hasMap = false;
 const inventory = createInventory();
 const reader = createNoteReader();
 const endScreen = createEndScreen({ onPlayAgain: () => location.reload() });
@@ -153,7 +158,7 @@ const flashlight = createFlashlight(camera, {
 });
 const interaction = createInteraction(camera, {
   blockers: [...house.children, ...props.meshes],
-  targets: () => [...doors.panels, ...beds.meshes, ...items.targets(), ...(fuseBox?.targets ?? [])],
+  targets: () => [...doors.panels, ...beds.meshes, ...items.targets(), ...(fuseBox?.targets ?? []), ...props.targets()],
 });
 
 let nextKnockAt = 20;
@@ -196,6 +201,7 @@ connectWithAccess().then(async (s) => {
     blocked: doorBlocks,
     name: me.name,
     partnerNames: () => start.players.filter((p) => p.id !== PLAYER_ID).map((p) => p.name),
+    onGhostArrived: () => closeMap(),
   });
   socket = s;
   moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
@@ -220,6 +226,7 @@ player.controls.addEventListener('unlock', () => {
   if (ended) return;
   // Esc while reading puts the note down; the browser also leaves pointer lock, so pause.
   reader.close();
+  closeMap();
   hud.showOverlay(true);
   inventory.hide();
 });
@@ -241,6 +248,22 @@ addEventListener('keyup', (e) => {
 });
 addEventListener('blur', () => inventory.hide());
 
+// M unfolds the house map (once you've taken it) and folds it away. The house doesn't
+// wait while you read it.
+addEventListener('keydown', (e) => {
+  if (e.code !== 'KeyM' || e.repeat || !player.controls.isLocked || reader.isOpen()) return;
+  if (houseMap.isOpen()) return closeMap();
+  if (!hasMap) return hud.toast("You don't have a map. There was one pinned up in the foyer.");
+  houseMap.open();
+  tenant?.onMapOpen();
+});
+
+function closeMap() {
+  if (!houseMap.isOpen()) return;
+  houseMap.close();
+  tenant?.onMapClose();
+}
+
 addEventListener('keydown', (e) => {
   if (e.code !== 'KeyE' || e.repeat || !player.controls.isLocked) return;
   if (reader.isOpen()) {
@@ -255,6 +278,13 @@ addEventListener('keydown', (e) => {
 });
 
 function interact(id) {
+  if (id === HOUSE_MAP_ID) {
+    props.take(id);
+    hasMap = true;
+    hud.toast('You take the map down. Press M to read it.');
+    if (audio) pickupClink(audio);
+    return;
+  }
   const obj = doors.get(id)?.obj;
   // Never close a door on the player standing in its doorway.
   if (obj && night.doors[id]?.open && overlapsCell(camera.position.x, camera.position.z, PLAYER_RADIUS, obj.x, obj.z)) {
@@ -322,6 +352,7 @@ function handleEvent(event) {
       break;
     case 'night-complete':
       ended = true;
+      closeMap();
       player.controls.unlock();
       hud.setPrompt(null);
       endScreen.show({
@@ -360,6 +391,7 @@ function describe(id) {
   if (hiding) return 'Crawl out';
   if (!id) return null;
   if (beds.has(id)) return 'Hide under bed';
+  if (id === HOUSE_MAP_ID) return 'Take the map';
   if (id === fuseBox?.obj.id) {
     const box = night.fuseBox;
     if (box.locked) return 'Open fuse box';
@@ -445,6 +477,10 @@ renderer.setAnimationLoop(() => {
     checkExit();
     moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x, light: flashlight.state.on });
     const cell = cellAt(camera.position.x, camera.position.z);
+    reveal.visit(cell.cx, cell.cz);
+    if (houseMap.isOpen()) {
+      houseMap.draw({ player: { x: camera.position.x, z: camera.position.z, yaw: look.y }, reveal, ghost: tenant?.ghost });
+    }
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
   scares.update();
