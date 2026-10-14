@@ -49,6 +49,30 @@ export default {
   ],
   eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
   fuseBoxKey: 'house',
+  // Named areas for the house map (inclusive cell ranges). Entering one marks it on
+  // your map.
+  rooms: [
+    { name: 'Dormitory', x0: 1, z0: 1, x1: 7, z1: 7 },
+    { name: 'Foyer', x0: 9, z0: 1, x1: 17, z1: 7 },
+    { name: 'Parlor', x0: 19, z0: 1, x1: 28, z1: 7 },
+    { name: 'Hall', x0: 1, z0: 9, x1: 28, z1: 10 },
+    { name: 'Cell 1', x0: 1, z0: 12, x1: 3, z1: 15 },
+    { name: 'Cell 2', x0: 5, z0: 12, x1: 7, z1: 15 },
+    { name: 'Cell 3', x0: 9, z0: 12, x1: 11, z1: 15 },
+    { name: 'Cell 4', x0: 13, z0: 12, x1: 15, z1: 15 },
+    { name: 'Cell 5', x0: 17, z0: 12, x1: 19, z1: 15 },
+    { name: 'Cell 6', x0: 21, z0: 12, x1: 23, z1: 15 },
+    { name: 'Cell 7', x0: 25, z0: 12, x1: 27, z1: 15 },
+  ],
+  // Scribbles A. left on the map he drew (house map, M2-S21). Each ≤ 40 characters.
+  mapNotes: [
+    { x: 4, z: 6, text: 'under the beds' },
+    { x: 23, z: 2, text: 'locked. key sleeps west' },
+    { x: 26, z: 9, text: 'the box →' },
+    { x: 26, z: 13, text: 'the last one' },
+    { x: 13, z: 1, text: 'OUT (when the lights live)' },
+    { x: 19, z: 13, text: 'he sits here' },
+  ],
   // Furniture and clutter (shared/props.js). Kept clear of doorways and the paths
   // between puzzle pieces; the reachability test walks around every solid one.
   props: [
@@ -62,6 +86,7 @@ export default {
     { type: 'stool', x: 6, z: 3, dx: 0.3 },
     // Foyer
     { type: 'clock', x: 9, z: 1, side: 'n' },
+    { type: 'houseMap', x: 10, z: 7, side: 's' }, // the map, pinned by the door south
     { type: 'portrait', x: 9, z: 3, side: 'w' },
     { type: 'bench', x: 9, z: 5, side: 'w' },
     { type: 'portrait', x: 16, z: 1, side: 'n' },

@@ -29,8 +29,9 @@
 | M2-S18 | JS-06 Window hand | Could | M | ✅ |
 | M2-S19 | Abandoned cell walls and hiding under beds | Should | M | ✅ |
 | M2-S20 | Furniture and clutter in every room | Should | M | ✅ |
+| M2-S21 | The house map | Should | M | ✅ |
 
-**20 stories · 20 done · 0 testing** (15 Must · 4 Should · 1 Could)
+**21 stories · 21 done · 0 testing** (15 Must · 5 Should · 1 Could)
 
 ## Night 1 puzzle chain (single player)
 
@@ -412,3 +413,18 @@ Multiplayer and server authority (M3), The Waiting One and Scare Director (M5), 
 - The Tenant never stands inside furniture
 
 **Tests:** a fine-grid walk of Night 1 with real collision reaches every puzzle piece and bed; spawns are clear; placement and validation; every prop builds and animates (stub canvas).
+
+### M2-S21 · The house map
+
+**Priority:** Should · **Size:** M · **Status:** ✅ · **Added** 2026-10-14 at the owner's request
+
+> As a player, I want a map of the house, so that I can find my way, and so the house has one more way to scare me.
+
+**Acceptance criteria**
+- A map drawn by A. is pinned on the foyer wall; E takes it (each player takes their own copy), M unfolds and folds it
+- Ink-on-paper drawing: walls, doors (locked ×, exit ▲), room names, A.'s red scribbles (`mapNotes`, ≤ 40 chars); rooms you've entered are pencil-shaded; a red dot with a direction tick is you
+- The game does not pause while the map is open
+- The Tenant: 35% of the time (after the first minute) a second, darker dot appears and walks to yours; when it arrives the map is snatched shut and something laughs right behind you
+- Maps define `rooms` (named, non-overlapping cell rectangles); text drawn with `fillText` only
+
+**Tests:** every Night 1 floor cell (except doorways) is in a room; reveal on first entry; validation; the map is in the foyer; taking it removes it; drawing with a ghost (stub canvas); the ghost appears about a third of the time, always reaches you, never in the first minute, and vanishes when the map is folded.

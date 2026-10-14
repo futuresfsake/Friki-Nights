@@ -181,6 +181,39 @@
         color: #6b6152;
         text-align: right;
       }
+      /* The house map: you can still hear (and be reached by) the house behind it. */
+      #housemap {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        padding: 16px;
+      }
+      #housemap.show {
+        display: flex;
+      }
+      #housemap .paper {
+        width: min(760px, 100%);
+        padding: 14px 18px 10px;
+        background: radial-gradient(ellipse at 40% 40%, #d6ccb0, #b5a888 75%, #8f8266);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
+        transform: rotate(0.8deg);
+        opacity: 0.96;
+      }
+      #housemap canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      #housemap .hint {
+        margin: 6px 0 0;
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        color: #6b6152;
+        text-align: right;
+      }
       #end {
         position: fixed;
         inset: 0;
@@ -439,6 +472,9 @@
     <div id="note">
       <div class="paper"><p id="note-text"></p><p class="hint">E — PUT IT DOWN</p></div>
     </div>
+    <div id="housemap">
+      <div class="paper"><canvas width="720" height="440"></canvas><p class="hint">M — FOLD IT AWAY</p></div>
+    </div>
     <div id="end">
       <h2 id="end-title"></h2>
       <dl>
@@ -459,7 +495,7 @@
       </p>
       <p class="prompt" id="overlay-prompt">CLICK TO ENTER</p>
       <p class="keys">
-        WASD move · Shift run · Mouse look · F flashlight · E interact · Tab inventory · Esc pause
+        WASD move · Shift run · Mouse look · F flashlight · E interact · Tab inventory · M map · Esc pause
       </p>
     </div>
     <div id="lobby">

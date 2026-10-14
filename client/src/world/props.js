@@ -239,10 +239,14 @@ const BUILDERS = {
   houseMap(g, m, def) {
     const sheet = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), m.paper);
     sheet.position.set(0, 1.45, 0.01);
+    sheet.userData.targetId = HOUSE_MAP_ID;
     g.add(sheet);
     box(g, 0.02, 0.02, 0.03, m.brass, 0, 1.45 + def.h / 2 - 0.03, 0.02);
   },
 };
+
+// The crosshair id of the map pinned on the wall (M2-S21).
+export const HOUSE_MAP_ID = 'house-map';
 
 // Seeded so every player sees the same books and papers.
 function seeded(seed) {
@@ -258,6 +262,7 @@ export function createProps(map, scene, events = {}) {
   const animated = [];
   const meshes = [];
   const clocks = [];
+  const targets = new Map(); // crosshair id → { group, mesh } for props you can use
   map.props.forEach((p, i) => {
     const g = new THREE.Group();
     g.position.set(p.x, 0, p.z);
@@ -269,6 +274,7 @@ export function createProps(map, scene, events = {}) {
     }
     if (p.type === 'clock') clocks.push(p);
     if (p.solid) g.traverse((o) => o.isMesh && meshes.push(o));
+    g.traverse((o) => o.userData.targetId && targets.set(o.userData.targetId, { group: g, mesh: o }));
     scene.add(g);
   });
 
@@ -277,6 +283,16 @@ export function createProps(map, scene, events = {}) {
     // Solid props' meshes, so the crosshair can't use things through a wardrobe (rugs
     // and papers are left out: a key lying on a rug must still be pickable).
     meshes,
+    // Usable props still in the world (the house map until someone takes it).
+    targets: () => [...targets.values()].map((t) => t.mesh),
+    has: (id) => targets.has(id),
+    // Takes a usable prop out of the world (only on this player's screen).
+    take(id) {
+      const t = targets.get(id);
+      if (!t) return;
+      scene.remove(t.group);
+      targets.delete(id);
+    },
     update(time) {
       for (const fn of animated) fn(time);
       // The clock ticks once a second, tick… tock…

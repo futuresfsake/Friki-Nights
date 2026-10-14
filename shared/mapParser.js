@@ -28,6 +28,7 @@ const OBJECT_TYPES = {
 const DOOR_TYPES = new Set(['door', 'exit']);
 
 export const NOTE_MAX_LENGTH = 280;
+export const MAP_NOTE_MAX_LENGTH = 40;
 
 export function parseMap(def) {
   const rows = Array.isArray(def) ? def : def.grid;
@@ -65,9 +66,32 @@ export function parseMap(def) {
   const map = { id: meta.id ?? 'unnamed', name: meta.name ?? '', intro: meta.intro ?? '', width, height, solid, lights, spawns, objects, eventTriggers };
   validate(map, meta, counters);
   map.props = parseProps(map, meta.props ?? []);
+  map.rooms = parseRooms(map, meta.rooms ?? []);
+  map.mapNotes = (meta.mapNotes ?? []).map((n) => {
+    if (isSolid(map, n.x, n.z)) throw new Error(`Map note "${n.text}" is inside a wall`);
+    if (typeof n.text !== 'string' || n.text.length > MAP_NOTE_MAX_LENGTH) throw new Error(`Map note at ${n.x},${n.z} is missing or too long`);
+    return { x: n.x, z: n.z, text: n.text };
+  });
   for (const obj of objects) if (DOOR_TYPES.has(obj.type)) obj.axis = doorAxis(map, obj);
   for (const obj of objects) if (obj.type === 'window') obj.facing = windowFacing(map, obj);
   return map;
+}
+
+// Named rectangles of cells (inclusive), for the house map. They may not overlap.
+function parseRooms(map, list) {
+  const owner = new Map();
+  return list.map((r) => {
+    if (!(r.x0 <= r.x1 && r.z0 <= r.z1 && r.x0 >= 0 && r.z0 >= 0 && r.x1 < map.width && r.z1 < map.height)) {
+      throw new Error(`Room "${r.name}" has a bad rectangle`);
+    }
+    for (let z = r.z0; z <= r.z1; z++) {
+      for (let x = r.x0; x <= r.x1; x++) {
+        if (owner.has(`${x},${z}`)) throw new Error(`Rooms "${owner.get(`${x},${z}`)}" and "${r.name}" overlap`);
+        owner.set(`${x},${z}`, r.name);
+      }
+    }
+    return { name: r.name, x0: r.x0, z0: r.z0, x1: r.x1, z1: r.z1 };
+  });
 }
 
 // Furniture from the map's `props` list (see props.js). Solid props may not sit on an
