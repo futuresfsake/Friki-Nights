@@ -1,7 +1,7 @@
 import { isRoomCode, schemas } from '../../shared/events.js';
 import { cleanName } from '../../shared/names.js';
 import { clientIp, createRateLimiter } from './rateLimit.js';
-import { interact, slamDoor } from './interact.js';
+import { atExit, interact, slamDoor } from './interact.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
 import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './rooms.js';
@@ -42,9 +42,23 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     else {
       const player = room.players.find((p) => p.id === playerId);
       if (player) player.connected = false;
+      if (player && room.night?.atExit?.size) checkExit(room, playerId, false);
     }
     markIdle(room, now());
     if (room.idleSince === null) broadcastRoom(room);
+  }
+
+  // Everyone waiting at the exit hears who they're waiting for; when nobody is
+  // missing, the night is complete for all.
+  function checkExit(room, playerId, at) {
+    const connected = room.players.filter((p) => p.connected).map((p) => p.id);
+    const result = atExit(room.night, connected, playerId, at);
+    if (result.complete) {
+      io.to(room.code).emit('world:update', { events: result.complete });
+      return;
+    }
+    const names = room.players.filter((p) => result.waitingFor.includes(p.id)).map((p) => p.name);
+    io.to(room.code).emit('exit:waiting', { waiting: [...room.night.atExit], missing: names });
   }
 
   const sweeper = setInterval(() => rooms.sweep(now()), SWEEP_MS);
@@ -135,6 +149,12 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     };
     handle('interact', worldAction(interact));
     handle('door:slam', worldAction(slamDoor));
+
+    handle('exit:at', ({ at }) => {
+      const { room, player } = seat(socket);
+      if (room?.phase !== 'playing') return;
+      checkExit(room, player.id, at);
+    });
 
     socket.on('disconnect', () => leave(socket));
   });

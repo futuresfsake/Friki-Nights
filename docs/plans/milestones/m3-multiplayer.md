@@ -23,7 +23,7 @@
 | M3-S10 | Partner model and interpolation | Must | L | ✅ |
 | M3-S11 | Server-authoritative interactions | Must | L | ✅ |
 | M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
-| M3-S13 | Exit together | Must | S | ⬜ |
+| M3-S13 | Exit together | Must | S | ✅ |
 | M3-S14 | Disconnect pause and rejoin | Must | M | ⬜ |
 | M3-S15 | Room expiry and cleanup | Must | S | ✅ |
 | M3-S16 | Validation and rate limits | Must | M | ⬜ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ✅ |
 
-**22 stories · 13 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 14 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -184,13 +184,16 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S13 · Exit together
 
-**Priority:** Must · **Size:** S · **Status:** ⬜ · **Traces:** Game flow step 9
+**Priority:** Must · **Size:** S · **Status:** ✅ · **Traces:** Game flow step 9
 
 > As a player, I want the night to end only when everyone reaches the exit, so that nobody is left behind.
 
 **Acceptance criteria**
 - Players at the exit wait ("Waiting for <name>…")
 - Night completes when every player is in the exit zone (solo: immediately)
+
+**Built:** Clients send `exit:at { at }` when they step into or out of the open exit's doorway; the server checks its own copy of their position and that the exit is open. Everyone at the exit gets `exit:waiting { missing }` ("Waiting for Ana…"); once every connected player is there, `night-complete` goes to all. A teammate who drops doesn't keep the others waiting. **Tests:** solo ends at once; two players wait then finish together; stepping back out; false claims and a sealed exit are ignored; a dropped player.
+
 
 ### M3-S14 · Disconnect pause and rejoin
 
