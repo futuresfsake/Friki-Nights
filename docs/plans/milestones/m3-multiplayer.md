@@ -22,7 +22,7 @@
 | M3-S09 | Send movement and server speed check | Must | M | ✅ |
 | M3-S10 | Partner model and interpolation | Must | L | ✅ |
 | M3-S11 | Server-authoritative interactions | Must | L | ✅ |
-| M3-S12 | Shared and per-player scare triggers | Must | M | ⬜ |
+| M3-S12 | Shared and per-player scare triggers | Must | M | ✅ |
 | M3-S13 | Exit together | Must | S | ✅ |
 | M3-S14 | Disconnect pause and rejoin | Must | M | ⬜ |
 | M3-S15 | Room expiry and cleanup | Must | S | ✅ |
@@ -34,7 +34,7 @@
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ✅ |
 
-**22 stories · 14 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 15 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -174,13 +174,15 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S12 · Shared and per-player scare triggers
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** Horror design §1
+**Priority:** Must · **Size:** M · **Status:** ✅ · **Traces:** Horror design §1
 
 > As a player, I want some scares to happen only to me, so that we end up asking "Did you see that?!"
 
 **Acceptance criteria**
 - Trigger tiles are checked on the server; `scare:play` goes to one, some, or all players
 - Each trigger in the map says `target: 'self' | 'all'`
+
+**Built:** `server/src/scares.js` runs the night's triggers (`shared/triggers.js`) on the server: tile triggers after every accepted `player:move`, event triggers after every `world:update`. `onlyIf` is checked against the server's night (`stateCheck`). `scare:play { triggerId, playerId }` goes to the player's own channel (`target: 'self'`, the default) or the whole room (`'all'`); the client looks the trigger's params up by id in its copy of the map. A `once` scare now fires once per room, not once per browser. Night 1: the window hand (JS-06) is `'all'` and only shakes players within 8 m; the slam, the face and the whispers are `'self'`. **Tests:** self scare reaches only the walker; all scare reaches everyone, once; `onlyIf` on server state; JS-01 only for whoever took the key; refused moves fire nothing; bad `target` rejected by the parser.
 
 ### M3-S13 · Exit together
 

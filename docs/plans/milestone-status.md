@@ -12,13 +12,13 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
 | M2 | Interactions + first scares | ✅ Done | 21 / 21 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
-| M3 | Multiplayer | 🔨 In progress | 14 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
+| M3 | Multiplayer | 🔨 In progress | 15 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started (S17 pulled forward) | 1 / 17 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| | **Total** | | **48 / 133** | | |
+| | **Total** | | **49 / 133** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -67,3 +67,4 @@ Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 | 2026-10-14 | M3-S22 player colours and name tags done |
 | 2026-10-14 | M3-S11 server-authoritative interactions done |
 | 2026-10-14 | M3-S13 exit together done |
+| 2026-10-14 | M3-S12 server-side scare triggers (self / all) done |

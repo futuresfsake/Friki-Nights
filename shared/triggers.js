@@ -6,6 +6,20 @@
 // `onlyIf` holds conditions checked by the caller's check(onlyIf, playerId), e.g.
 // { doorOpen: 'door-8-4', hasKey: 'house' }; a trigger whose check fails doesn't fire
 // (and a `once` trigger stays armed).
+// `target` says who the scare plays for: 'self' (default: whoever stepped on it or
+// caused the event) or 'all' (everyone in the room). The server runs these (M3-S12).
+
+export const TARGETS = ['self', 'all'];
+
+// The usual check for `onlyIf`, against a nightState: { doorOpen, hasKey }.
+export function stateCheck(state) {
+  return (c, playerId) =>
+    (!c.doorOpen || !!state.doors[c.doorOpen]?.open) && (!c.hasKey || !!state.players[playerId]?.keys.includes(c.hasKey));
+}
+
+export function targetOf(trigger) {
+  return trigger.target ?? 'self';
+}
 
 export function createTriggers(map, { check = () => true } = {}) {
   const tiles = new Map();

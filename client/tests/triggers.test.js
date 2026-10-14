@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseMap } from '../../shared/mapParser.js';
-import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
+import { createTriggers, enterCell, onEvent, stateCheck, targetOf } from '../../shared/triggers.js';
 
 const map = parseMap({
   grid: ['######', '#PT.T#', '######'],
@@ -49,6 +49,13 @@ describe('event triggers', () => {
     expect(() => parseMap({ ...base, triggers: [{ once: true }] })).toThrow(/has no scare/);
     expect(() => parseMap({ ...base, triggers: [{ scare: 'x' }], eventTriggers: [{ scare: 'x' }] })).toThrow(/needs a "when"/);
   });
+
+  it("accepts target 'self' or 'all' only, and defaults to 'self'", () => {
+    const base = { grid: ['#PT#'], keys: [], lockedDoors: [], notes: [] };
+    expect(() => parseMap({ ...base, triggers: [{ scare: 'x', target: 'near' }] })).toThrow(/target "near"/);
+    expect(targetOf(parseMap({ ...base, triggers: [{ scare: 'x', target: 'all' }] }).objects.find((o) => o.type === 'trigger'))).toBe('all');
+    expect(targetOf({ scare: 'x' })).toBe('self');
+  });
 });
 
 describe('Night 1 scares', () => {
@@ -81,6 +88,18 @@ describe('conditional triggers', () => {
   it('rejects a slam trigger that names a missing door', () => {
     const def = { grid: ['#PT#'], keys: [], lockedDoors: [], notes: [], triggers: [{ scare: 'JS-02', door: 'door-9-9' }] };
     expect(() => parseMap(def)).toThrow(/not a door/);
+  });
+});
+
+describe('stateCheck', () => {
+  it('reads doorOpen and hasKey from a night state', () => {
+    const state = { doors: { 'door-1-1': { open: false } }, players: { p1: { keys: ['house'] } } };
+    const check = stateCheck(state);
+    expect(check({ hasKey: 'house' }, 'p1')).toBe(true);
+    expect(check({ hasKey: 'house' }, 'p2')).toBe(false);
+    expect(check({ doorOpen: 'door-1-1' }, 'p1')).toBe(false);
+    state.doors['door-1-1'].open = true;
+    expect(check({ doorOpen: 'door-1-1', hasKey: 'house' }, 'p1')).toBe(true);
   });
 });
 

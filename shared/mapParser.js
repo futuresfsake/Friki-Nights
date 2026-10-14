@@ -1,5 +1,6 @@
 import { CELL, MAX_PLAYERS } from './constants.js';
 import { PROPS, placeProp } from './props.js';
+import { TARGETS } from './triggers.js';
 
 // One ASCII grid per night, parsed the same way by client and server.
 //   # wall   . floor   (space) wall   P player spawn (1–4)   S ceiling light
@@ -157,6 +158,7 @@ function validate(map, meta, counters) {
   const boxes = map.objects.filter((o) => o.type === 'fuseBox');
   for (const t of [...map.objects.filter((o) => o.type === 'trigger'), ...map.eventTriggers]) {
     if (typeof t.scare !== 'string') throw new Error(`${t.id} has no scare`);
+    if (t.target !== undefined && !TARGETS.includes(t.target)) throw new Error(`${t.id} has target "${t.target}"; use ${TARGETS.join(' or ')}`);
   }
   for (const t of map.objects.filter((o) => o.type === 'trigger' && o.window)) {
     if (!map.objects.some((o) => o.id === t.window && o.type === 'window')) throw new Error(`${t.id} uses "${t.window}", which is not a window`);
