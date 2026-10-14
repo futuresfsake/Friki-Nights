@@ -3,7 +3,6 @@ import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
-import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
@@ -81,11 +80,8 @@ const map = parseMap(night1);
 const night = createNightState(map);
 const names = new Map(); // player id → display name, for "Ana picked up …"
 const pendingSlams = new Map(); // door id → what our scare does once the server slams it
-// Conditions a trigger's `onlyIf` may ask about.
-const triggers = createTriggers(map, {
-  check: (c, playerId) =>
-    (!c.doorOpen || night.doors[c.doorOpen]?.open) && (!c.hasKey || night.players[playerId]?.keys.includes(c.hasKey)),
-});
+// Scripted scares by trigger id; the server decides when one plays and for whom (M3-S12).
+const triggerById = new Map([...map.objects.filter((o) => o.type === 'trigger'), ...map.eventTriggers].map((t) => [t.id, t]));
 const house = buildHouse(map);
 scene.add(house);
 const ceilingLights = createCeilingLights(map, scene);
@@ -226,6 +222,11 @@ connectWithAccess().then(async (s) => {
       handleEvent(event);
     }
   });
+  // A scripted scare, for us alone or for everyone in the room.
+  socket.on('scare:play', ({ triggerId }) => {
+    const trigger = triggerById.get(triggerId);
+    if (trigger) fireScare(trigger);
+  });
   // The server refused a move (too fast, or into a wall): go back to where it saw us.
   socket.on('player:correct', ({ x, z }) => player.placeAt(x, z));
   hideLobby();
@@ -317,9 +318,8 @@ function interact(id) {
 
 const actorSpot = new THREE.Vector3();
 function handleEvent(event) {
-  // Did we do this, or a teammate? Scares tied to events only hit whoever did it.
+  // Did we do this, or a teammate?
   const mine = !event.playerId || event.playerId === PLAYER_ID;
-  if (mine) for (const trigger of onEvent(triggers, event)) fireScare(trigger);
   const door = doors.get(event.targetId);
   const at = door ? cellCenter(door.obj.x, door.obj.z) : null;
   // Personal things (a note opening, crawling under a bed, a battery) only happen to
@@ -522,7 +522,6 @@ renderer.setAnimationLoop(() => {
     if (houseMap.isOpen()) {
       houseMap.draw({ player: { x: camera.position.x, z: camera.position.z, yaw: look.y }, reveal, ghost: tenant?.ghost });
     }
-    for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
   scares.update();
   partners.update(performance.now(), dt, camera.position);

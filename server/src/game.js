@@ -4,6 +4,7 @@ import { clientIp, createRateLimiter } from './rateLimit.js';
 import { atExit, interact, slamDoor } from './interact.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
+import { scaresOnEvents, scaresOnMove } from './scares.js';
 import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './rooms.js';
 
 // Room and game events for every connected socket. socket.data holds which room and
@@ -15,6 +16,18 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
   // Every join attempt counts, right or wrong: this is what makes guessing codes slow.
   const joins = createRateLimiter({ limit: JOINS_PER_MINUTE, windowMs: 60_000, now });
   const broadcastRoom = (room) => io.to(room.code).emit('room:update', roomView(room));
+  // Each player's sockets also sit in a channel of their own, for things only they get.
+  const playerChannel = (playerId) => `player:${playerId}`;
+
+  function playScares(room, scares) {
+    for (const { to, ...scare } of scares) io.to(to === 'all' ? room.code : playerChannel(to)).emit('scare:play', scare);
+  }
+
+  // World events go to everyone, and may set off event-triggered scares.
+  function broadcastWorld(room, events) {
+    io.to(room.code).emit('world:update', { events });
+    playScares(room, scaresOnEvents(room.night, events));
+  }
 
   // The room and player this socket sits in, or {} if none.
   function seat(socket) {
@@ -27,6 +40,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     socket.data.code = room.code;
     socket.data.playerId = player.id;
     socket.join(room.code);
+    socket.join(playerChannel(player.id));
   }
 
   // In the lobby a player who leaves is gone. Once the night has started they keep
@@ -38,6 +52,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     const room = rooms.get(code);
     if (!room) return;
     socket.leave(code);
+    socket.leave(playerChannel(playerId));
     if (room.phase === 'lobby') removePlayer(room, playerId);
     else {
       const player = room.players.find((p) => p.id === playerId);
@@ -54,7 +69,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     const connected = room.players.filter((p) => p.connected).map((p) => p.id);
     const result = atExit(room.night, connected, playerId, at);
     if (result.complete) {
-      io.to(room.code).emit('world:update', { events: result.complete });
+      broadcastWorld(room, result.complete);
       return;
     }
     const names = room.players.filter((p) => result.waitingFor.includes(p.id)).map((p) => p.name);
@@ -136,6 +151,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
         return;
       }
       socket.to(room.code).emit('player:state', { id: player.id, ...move });
+      playScares(room, scaresOnMove(room.night, player.id));
     });
 
     // Doors, items, notes, beds, the fuse box: the server decides, everyone sees the
@@ -145,7 +161,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       if (room?.phase !== 'playing') return;
       const { events, denied } = fn(room.night, player.id, targetId);
       if (denied) socket.emit('world:update', { events: [denied] });
-      else if (events.length) io.to(room.code).emit('world:update', { events });
+      else if (events.length) broadcastWorld(room, events);
     };
     handle('interact', worldAction(interact));
     handle('door:slam', worldAction(slamDoor));

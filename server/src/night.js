@@ -3,6 +3,7 @@ import { EYE_HEIGHT } from '../../shared/constants.js';
 import { cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { addPlayer, createNightState } from '../../shared/nightState.js';
+import { createNightTriggers } from './scares.js';
 
 // Nights the server can run, parsed once from the same files the client uses.
 const MAPS = new Map([night1].map((def) => [def.id, parseMap(def)]));
@@ -23,7 +24,7 @@ export function startNight(room, { nightId = FIRST_NIGHT, seed = randomInt(2 ** 
     const spawn = cellCenter(map.spawns[slot].x, map.spawns[slot].z);
     players.set(p.id, { slot, x: spawn.x, z: spawn.z, y: EYE_HEIGHT, yaw: 0, pitch: 0 });
   });
-  return { id: nightId, map, state, seed, players };
+  return { id: nightId, map, state, seed, players, triggers: createNightTriggers(map, state) };
 }
 
 // Sent to everyone when the night starts (and to a player who rejoins it).
