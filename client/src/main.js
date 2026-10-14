@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
-import { apply, applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
+import { applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
@@ -214,6 +214,11 @@ connectWithAccess().then(async (s) => {
   moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
   socket.on('player:state', (state) => partners.push(state, performance.now()));
   socket.on('room:update', (view) => partners.keep(view.players.map((p) => p.id)));
+  // At the exit: who are we still waiting for?
+  socket.on('exit:waiting', ({ waiting, missing }) => {
+    if (!waiting.includes(PLAYER_ID) || !missing.length) return;
+    hud.subtitle(`Waiting for ${missing.join(', ')}…`, 60);
+  });
   // What happened in the house, decided by the server: copy it, then show it.
   socket.on('world:update', ({ events }) => {
     for (const event of events) {
@@ -459,12 +464,17 @@ function fireScare(trigger) {
   tenant?.noteScare(trigger.scare.startsWith('JS-'));
 }
 
-// Stepping into the open exit's doorway leaves the house.
+// Standing in the open exit's doorway: wait there for everyone (M3-S13). The server
+// ends the night once all connected players are in it.
+let atExit = false;
 function checkExit() {
-  if (!exitDoor || ended || !night.doors[exitDoor.id].open) return;
+  if (!exitDoor || ended || !socket) return;
   const { cx, cz } = cellAt(camera.position.x, camera.position.z);
-  if (cx !== exitDoor.x || cz !== exitDoor.z) return;
-  for (const event of apply(night, { type: 'reach-exit', playerId: PLAYER_ID })) handleEvent(event);
+  const here = night.doors[exitDoor.id].open && cx === exitDoor.x && cz === exitDoor.z;
+  if (here === atExit) return;
+  atExit = here;
+  socket.emit('exit:at', { at: here });
+  if (!here) hud.subtitle('', 0.01);
 }
 
 // Knocks come from a random direction a few metres away, so the player turns to look.

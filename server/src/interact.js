@@ -56,3 +56,21 @@ function inCell(p, obj) {
     Math.floor((p.z + r) / CELL) >= obj.z
   );
 }
+
+// Exit together (M3-S13): a player standing in the open exit's doorway waits there.
+// Returns { complete: events } once every connected player is waiting, otherwise
+// { waitingFor: [ids of connected players not there yet] }. at: true to arrive,
+// false to step back out.
+export function atExit(night, connectedIds, playerId, at) {
+  night.atExit ??= new Set();
+  const exit = night.map.objects.find((o) => o.type === 'exit');
+  const me = night.players.get(playerId);
+  const standing = exit && me && inCell(me, exit) && night.state.exitOpen;
+  if (at && standing) night.atExit.add(playerId);
+  else night.atExit.delete(playerId);
+  const waitingFor = connectedIds.filter((id) => !night.atExit.has(id));
+  if (night.atExit.size && waitingFor.length === 0 && !night.state.completed) {
+    return { complete: apply(night.state, { type: 'reach-exit', playerId }) };
+  }
+  return { waitingFor };
+}

@@ -49,4 +49,7 @@ export const schemas = {
   interact: z.object({ targetId: objectId }).strict(),
   // A scripted scare on this client wants a door slammed shut for everyone (JS-02).
   'door:slam': z.object({ targetId: objectId }).strict(),
+  // Standing in (at: true) or stepping out of (false) the open exit; the night ends
+  // when every connected player is there.
+  'exit:at': z.object({ at: z.boolean() }).strict(),
 };
