@@ -32,9 +32,9 @@
 | M3-S19 | Network delay testing | Must | M | ⬜ |
 | M3-S20 | Real-distance test Cebu ↔ Europe | Must | S | ⬜ |
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
-| M3-S22 | Player colors and name tags | Should | S | ⬜ |
+| M3-S22 | Player colors and name tags | Should | S | ✅ |
 
-**22 stories · 11 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 12 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 
@@ -285,10 +285,12 @@ Voice (M4), The Waiting One (M5), night select and saving (M6).
 
 ### M3-S22 · Player colors and name tags
 
-**Priority:** Should · **Size:** S · **Status:** ⬜
+**Priority:** Should · **Size:** S · **Status:** ✅
 
 > As a player, I want each teammate to have their own color and name tag, so that I can tell who is who in the dark.
 
 **Acceptance criteria**
 - 4 distinct colors (clothing tint + flashlight tint), assigned in join order
 - Name above each teammate, fading with distance; `textContent` only
+
+**Built:** `PLAYER_COLORS` in `shared/constants.js` (red, blue, green, amber), by seat in join order: jacket colour, a faint flashlight tint, a swatch on the name tag and in the lobby list. Name tags are fully visible up to 6 m and fade out by 16 m (walls still hide them). **Tests:** four distinct seat colours, seat passed to the model, fade curve.

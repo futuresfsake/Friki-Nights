@@ -1,3 +1,4 @@
+import { PLAYER_COLORS } from '../../../shared/constants.js';
 import { hashCodeWord } from '../net/codeWord.js';
 import { request, saveSeat } from '../net/room.js';
 import { showScreen } from './lobby.js';
@@ -40,9 +41,14 @@ export function createRoomLobby(socket) {
     $('room-code').textContent = view.code;
     const list = $('room-players');
     list.replaceChildren(
-      ...view.players.map((p) => {
+      ...view.players.map((p, seat) => {
         const li = document.createElement('li');
         li.textContent = p.name;
+        // Your colour in the house: seats go in join order, like the spawn points.
+        const swatch = document.createElement('span');
+        swatch.className = 'swatch';
+        swatch.style.background = `#${PLAYER_COLORS[seat % PLAYER_COLORS.length].cloth.toString(16).padStart(6, '0')}`;
+        li.prepend(swatch);
         if (p.id === view.hostId) li.append(badge('HOST'));
         if (p.id === me) li.append(badge('YOU'));
         li.append(badge(p.ready ? 'READY' : 'NOT READY', p.ready ? 'ready' : ''));

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { PLAYER_COLORS } from '../../../shared/constants.js';
 import { nameTagTexture } from './textures.js';
 
 const HIP = 0.9;
@@ -6,10 +7,20 @@ const SHOULDER = 1.42;
 const SWING = 0.55; // radians of leg/arm swing at walking pace
 const FLASHLIGHT_INTENSITY = 22; // a bit dimmer than our own, so ours stays the main light
 
+const TAG_FULL = 6; // metres: name tag fully visible up to here...
+const TAG_GONE = 16; // ...and faded out by here
+
+// How visible a name tag is at this distance (1 near, 0 far).
+export function tagOpacity(distance) {
+  return Math.max(0, Math.min(1, (TAG_GONE - distance) / (TAG_GONE - TAG_FULL)));
+}
+
 // A low-poly teammate: boxes for limbs, their own flashlight, and their name overhead.
+// Their seat (join order) picks the jacket colour and torch tint (M3-S22).
 // Built facing local -z, like the camera, so rotation.y = their yaw.
-export function createPartnerModel(name) {
-  const cloth = new THREE.MeshLambertMaterial({ color: 0x2c3442 });
+export function createPartnerModel(name, slot = 0) {
+  const color = PLAYER_COLORS[slot % PLAYER_COLORS.length];
+  const cloth = new THREE.MeshLambertMaterial({ color: color.cloth });
   const trousers = new THREE.MeshLambertMaterial({ color: 0x24221f });
   const skin = new THREE.MeshLambertMaterial({ color: 0x9c8a78 });
   const metal = new THREE.MeshLambertMaterial({ color: 0x55585c });
@@ -47,14 +58,14 @@ export function createPartnerModel(name) {
   const torch = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.03, 0.18, 6), metal);
   torch.rotation.x = Math.PI / 2;
   aim.add(torch);
-  const spot = new THREE.SpotLight(0xfff1d6, FLASHLIGHT_INTENSITY, 18, Math.PI / 7, 0.45, 2);
+  const spot = new THREE.SpotLight(color.light, FLASHLIGHT_INTENSITY, 18, Math.PI / 7, 0.45, 2);
   spot.position.set(0, 0, -0.1);
   spot.target.position.set(0, -0.15, -4);
   aim.add(spot, spot.target);
   root.add(aim);
 
   const tag = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: nameTagTexture(name), transparent: true, opacity: 0.8, fog: false, depthWrite: false }),
+    new THREE.SpriteMaterial({ map: nameTagTexture(name, color.cloth), transparent: true, opacity: 0.8, fog: false, depthWrite: false }),
   );
   tag.scale.set(1, 0.25, 1);
   tag.position.y = 2.05;
@@ -64,8 +75,11 @@ export function createPartnerModel(name) {
 
   return {
     root,
-    // speed in m/s drives the walk cycle; pitch tilts head and flashlight.
-    pose({ x, z, yaw, pitch, light }, speed, dt) {
+    // speed in m/s drives the walk cycle; pitch tilts head and flashlight;
+    // distance (from us) fades the name tag.
+    pose({ x, z, yaw, pitch, light }, speed, dt, distance = 0) {
+      tag.material.opacity = 0.85 * tagOpacity(distance);
+      tag.visible = tag.material.opacity > 0.01;
       root.position.set(x, 0, z);
       root.rotation.y = yaw;
       head.rotation.x = pitch * 0.6;
@@ -81,6 +95,7 @@ export function createPartnerModel(name) {
       // The torch hand stays mostly steady, pointing ahead.
       arms[1].rotation.x = -Math.PI / 2.6 + pitch * 0.8;
     },
+    color,
     dispose() {
       root.traverse((o) => {
         o.geometry?.dispose();

@@ -267,7 +267,8 @@ export function handTexture() {
 
 // A teammate's name floating over their head. Drawn with fillText, so the name is
 // never parsed as HTML.
-export function nameTagTexture(name) {
+// color: their player colour, as a small swatch before the name.
+export function nameTagTexture(name, color = null) {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 64;
@@ -278,7 +279,13 @@ export function nameTagTexture(name) {
   g.shadowColor = '#000';
   g.shadowBlur = 6;
   g.fillStyle = '#e8e0cc';
-  g.fillText(name, 128, 32, 240);
+  g.fillText(name, 136, 32, 220);
+  if (color !== null) {
+    g.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+    g.beginPath();
+    g.arc(136 - Math.min(110, g.measureText(name).width / 2) - 14, 32, 7, 0, Math.PI * 2);
+    g.fill();
+  }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;

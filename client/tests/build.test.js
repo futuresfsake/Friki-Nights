@@ -42,11 +42,18 @@ describe('3D builders', () => {
     }
   });
 
-  it('builds a partner with a name tag', async () => {
+  it('builds a partner with a name tag in their seat colour', async () => {
+    const { PLAYER_COLORS } = await import('../../shared/constants.js');
     const { createPartnerModel } = await import('../src/world/partnerModel.js');
-    const p = createPartnerModel('Ana');
-    p.pose({ x: 1, z: 2, yaw: 1, pitch: 0.2, light: false }, 2, 0.016);
-    p.dispose();
+    const colors = new Set();
+    for (let slot = 0; slot < 4; slot++) {
+      const p = createPartnerModel('Ana', slot);
+      expect(p.color).toBe(PLAYER_COLORS[slot]);
+      colors.add(p.color.cloth);
+      p.pose({ x: 1, z: 2, yaw: 1, pitch: 0.2, light: false }, 2, 0.016, 3);
+      p.dispose();
+    }
+    expect(colors.size).toBe(4);
   });
 
   it('lets you take the house map off the wall, once', async () => {
