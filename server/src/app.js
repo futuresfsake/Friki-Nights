@@ -35,6 +35,8 @@ export function createGameServer({ clientOrigin, accessPhrase, now }) {
 
   io.use(accessGuard(accessPhrase, { now }));
   const game = attachGame(io, { now });
+  io.on('close', game.stop);
+  http.on('close', game.stop);
 
   return { app, http, io, game };
 }
