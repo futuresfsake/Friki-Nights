@@ -37,7 +37,7 @@ describe('Night 1 can be completed', () => {
       expect(events[0].type).not.toBe('denied');
     }
     expect(s.exitOpen).toBe(true);
-    expect(apply(s, { type: 'reach-exit', playerId: 'p1' })).toEqual([{ type: 'night-complete' }]);
+    expect(apply(s, { type: 'reach-exit', playerId: 'p1' })).toEqual([{ playerId: 'p1', type: 'night-complete' }]);
   });
 });
 

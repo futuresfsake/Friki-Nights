@@ -42,8 +42,13 @@ export function addPlayer(state, playerId) {
 }
 
 // Returns a list of events describing what happened, for the client to animate
-// and (from M3) the server to broadcast. Invalid actions return a single 'denied' event.
+// and the server to broadcast. Invalid actions return a single 'denied' event.
+// Every event names the player who caused it (playerId).
 export function apply(state, action) {
+  return run(state, action).map((e) => ({ playerId: action.playerId, ...e }));
+}
+
+function run(state, action) {
   const player = addPlayer(state, action.playerId);
   if (state.completed) return [denied('night-over')];
 
@@ -151,4 +156,58 @@ export function blocksMovement(state, objectId) {
   if (state.beds[objectId]) return true;
   const door = state.doors[objectId];
   return !!door && !door.open;
+}
+
+// Replays one event from the server onto a copy of the state (each client keeps one),
+// so the copy always matches the server's without re-running the rules. The events
+// carry everything needed; 'denied' changes nothing.
+export function applyEvent(state, event) {
+  const id = event.targetId;
+  const player = event.playerId ? addPlayer(state, event.playerId) : null;
+  switch (event.type) {
+    case 'door-opened':
+      state.doors[id].open = true;
+      break;
+    case 'door-closed':
+    case 'door-slammed':
+      state.doors[id].open = false;
+      break;
+    case 'door-unlocked':
+      state.doors[id].locked = false;
+      break;
+    case 'item-taken': {
+      const item = state.items[id];
+      item.taken = true;
+      if (item.type === 'key') player.keys.push(item.keyId);
+      if (item.type === 'fuse') player.fuses++;
+      break;
+    }
+    case 'note-read':
+      state.notesRead.add(id);
+      break;
+    case 'hid':
+      state.beds[id].occupant = event.playerId;
+      player.hidingIn = id;
+      break;
+    case 'left-hiding':
+      state.beds[id].occupant = null;
+      player.hidingIn = null;
+      break;
+    case 'fusebox-unlocked':
+      state.fuseBox.locked = false;
+      break;
+    case 'fuse-placed':
+      state.fuseBox.placed = event.placed;
+      player.fuses--;
+      break;
+    case 'power-on':
+      state.power = true;
+      break;
+    case 'exit-unlocked':
+      state.exitOpen = true;
+      break;
+    case 'night-complete':
+      state.completed = true;
+      break;
+  }
 }

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
-import { apply, blocksMovement, createNightState } from '../../shared/nightState.js';
+import { apply, applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { createTriggers, enterCell, onEvent } from '../../shared/triggers.js';
 import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
@@ -76,7 +76,11 @@ const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 6
 scene.add(camera); // the flashlight is a child of the camera, so the camera must be in the scene
 
 const map = parseMap(night1);
+// Our copy of the night. The server owns the real one (M3-S11); this copy only
+// changes through the events it sends (applyEvent), so it always matches.
 const night = createNightState(map);
+const names = new Map(); // player id → display name, for "Ana picked up …"
+const pendingSlams = new Map(); // door id → what our scare does once the server slams it
 // Conditions a trigger's `onlyIf` may ask about.
 const triggers = createTriggers(map, {
   check: (c, playerId) =>
@@ -189,7 +193,10 @@ connectWithAccess().then(async (s) => {
   const me = start.players.find((p) => p.id === PLAYER_ID);
   player.placeAt(me.x, me.z);
   hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
-  for (const p of start.players) if (p.id !== PLAYER_ID) partners.add(p);
+  for (const p of start.players) {
+    names.set(p.id, p.name);
+    if (p.id !== PLAYER_ID) partners.add(p);
+  }
   tenant = createTenant({
     scene,
     map,
@@ -207,6 +214,13 @@ connectWithAccess().then(async (s) => {
   moves = createMoveSender((move) => socket.volatile.emit('player:move', move));
   socket.on('player:state', (state) => partners.push(state, performance.now()));
   socket.on('room:update', (view) => partners.keep(view.players.map((p) => p.id)));
+  // What happened in the house, decided by the server: copy it, then show it.
+  socket.on('world:update', ({ events }) => {
+    for (const event of events) {
+      applyEvent(night, event);
+      handleEvent(event);
+    }
+  });
   // The server refused a move (too fast, or into a wall): go back to where it saw us.
   socket.on('player:correct', ({ x, z }) => player.placeAt(x, z));
   hideLobby();
@@ -292,20 +306,28 @@ function interact(id) {
     return;
   }
   if (obj && tenant?.interceptDoor(obj, night.doors[id])) return;
-  for (const event of apply(night, { type: 'interact', playerId: PLAYER_ID, targetId: id })) {
-    handleEvent(event);
-  }
+  // The server decides; the result comes back as world:update for everyone.
+  socket?.emit('interact', { targetId: id });
 }
 
+const actorSpot = new THREE.Vector3();
 function handleEvent(event) {
-  for (const trigger of onEvent(triggers, event)) fireScare(trigger);
+  // Did we do this, or a teammate? Scares tied to events only hit whoever did it.
+  const mine = !event.playerId || event.playerId === PLAYER_ID;
+  if (mine) for (const trigger of onEvent(triggers, event)) fireScare(trigger);
   const door = doors.get(event.targetId);
   const at = door ? cellCenter(door.obj.x, door.obj.z) : null;
+  // Personal things (a note opening, crawling under a bed, a battery) only happen to
+  // the player who did them.
+  if (!mine && ['hid', 'left-hiding', 'note-read', 'denied'].includes(event.type)) return;
   switch (event.type) {
-    case 'door-opened':
-      doors.open(event.targetId, camera.position);
+    case 'door-opened': {
+      // Swings away from whoever opened it.
+      const by = mine ? null : partners.positionOf(event.playerId);
+      doors.open(event.targetId, by ? actorSpot.set(by.x, camera.position.y, by.z) : camera.position);
       if (audio) doorCreak(audio, at.x, 1.2, at.z);
       break;
+    }
     case 'door-closed':
       doors.close(event.targetId);
       if (audio) doorShut(audio, at.x, 1.2, at.z);
@@ -325,6 +347,10 @@ function handleEvent(event) {
     case 'item-taken': {
       const item = items.get(event.targetId);
       items.remove(event.targetId);
+      if (!mine) {
+        hud.toast(`${names.get(event.playerId) ?? 'Someone'} picked up: ${itemName(item.obj)}`);
+        break;
+      }
       if (event.item === 'battery') flashlight.state.battery = addBattery(flashlight.state.battery, event.amount);
       hud.toast(`Picked up: ${itemName(item.obj)}`);
       if (audio) pickupClink(audio);
@@ -365,6 +391,9 @@ function handleEvent(event) {
     case 'door-slammed':
       doors.slam(event.targetId);
       if (audio) doorSlam(audio, at.x, 1.2, at.z);
+      // Our scare asked for this slam: now the lights die, the camera shakes.
+      pendingSlams.get(event.targetId)?.();
+      pendingSlams.delete(event.targetId);
       break;
     case 'door-unlocked':
       hud.toast('Unlocked.');
@@ -379,6 +408,8 @@ function handleEvent(event) {
         hud.toast(`Empty slots. It needs fuses (${box.placed}/${night.fusesNeeded}).`);
       }
       if (event.reason === 'bed-taken') hud.toast("Someone's already under there.");
+      if (event.reason === 'doorway-blocked') hud.toast("Someone's in the doorway.");
+      if (event.reason === 'already-taken') hud.toast("It's gone. Someone got to it first.");
       if (event.reason === 'exit-sealed') {
         hud.toast("It won't budge.");
         if (audio && at) doorRattle(audio, at.x, 1.2, at.z);
@@ -416,9 +447,9 @@ function slamDoor(id, then) {
       if (clock.elapsedTime - started < 5) setTimeout(attempt, 50);
       return;
     }
-    const events = apply(night, { type: 'slam-door', playerId: PLAYER_ID, targetId: id });
-    for (const event of events) handleEvent(event);
-    if (events.length) then();
+    // The server shuts it for everyone; our part of the scare plays when it does.
+    pendingSlams.set(id, then);
+    socket?.emit('door:slam', { targetId: id });
   };
   attempt();
 }

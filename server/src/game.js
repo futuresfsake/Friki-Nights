@@ -1,6 +1,7 @@
 import { isRoomCode, schemas } from '../../shared/events.js';
 import { cleanName } from '../../shared/names.js';
 import { clientIp, createRateLimiter } from './rateLimit.js';
+import { interact, slamDoor } from './interact.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
 import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './rooms.js';
@@ -122,6 +123,18 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       }
       socket.to(room.code).emit('player:state', { id: player.id, ...move });
     });
+
+    // Doors, items, notes, beds, the fuse box: the server decides, everyone sees the
+    // result (world:update). A refusal only goes back to the player who asked.
+    const worldAction = (fn) => ({ targetId }) => {
+      const { room, player } = seat(socket);
+      if (room?.phase !== 'playing') return;
+      const { events, denied } = fn(room.night, player.id, targetId);
+      if (denied) socket.emit('world:update', { events: [denied] });
+      else if (events.length) io.to(room.code).emit('world:update', { events });
+    };
+    handle('interact', worldAction(interact));
+    handle('door:slam', worldAction(slamDoor));
 
     socket.on('disconnect', () => leave(socket));
   });
