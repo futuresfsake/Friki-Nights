@@ -484,7 +484,7 @@ renderer.setAnimationLoop(() => {
     for (const trigger of enterCell(triggers, PLAYER_ID, cell.cx, cell.cz)) fireScare(trigger);
   }
   scares.update();
-  partners.update(performance.now(), dt);
+  partners.update(performance.now(), dt, camera.position);
   doors.update(dt);
   items.update(time);
   fuseBox?.update(dt);

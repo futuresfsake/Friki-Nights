@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { STEP_LENGTH, WALK_SPEED } from '../../shared/constants.js';
 import { advanceSteps, createPartners } from '../src/net/partners.js';
+import { tagOpacity } from '../src/world/partnerModel.js';
 
 function fakeScene() {
   const children = new Set();
@@ -59,5 +60,19 @@ describe('partners', () => {
   it('makes no footstep for a correction jump', () => {
     expect(advanceSteps(0.5, STEP_LENGTH * 3)).toEqual({ phase: 0, stepped: false });
     expect(advanceSteps(STEP_LENGTH - 0.1, 0.2).stepped).toBe(true);
+  });
+
+  it('builds each teammate in their own seat and fades their name with distance', () => {
+    const seats = [];
+    const distances = [];
+    const model = () => ({ root: {}, pose: (spot, speed, dt, d) => distances.push(d), dispose() {} });
+    const partners = createPartners(fakeScene(), { makeModel: (name, slot) => (seats.push(slot), model()), onStep: () => {} });
+    partners.add({ id: 'b', name: 'B', slot: 2, x: 3, z: 4 });
+    partners.update(0, 1 / 60, { x: 0, z: 0 });
+    expect(seats).toEqual([2]);
+    expect(distances[0]).toBeCloseTo(5);
+    expect(tagOpacity(2)).toBe(1);
+    expect(tagOpacity(11)).toBeCloseTo(0.5);
+    expect(tagOpacity(30)).toBe(0);
   });
 });

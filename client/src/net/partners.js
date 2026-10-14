@@ -17,9 +17,9 @@ export function createPartners(scene, { makeModel, onStep }) {
 
   return {
     // From night:start: who they are and where they spawn.
-    add({ id, name, x, z, yaw = 0 }) {
+    add({ id, name, slot = 0, x, z, yaw = 0 }) {
       if (partners.has(id)) return;
-      const model = makeModel(name);
+      const model = makeModel(name, slot);
       scene.add(model.root);
       partners.set(id, { model, interp: createInterpolator(), spot: { x, z, yaw, pitch: 0, light: true }, steps: 0 });
     },
@@ -31,7 +31,8 @@ export function createPartners(scene, { makeModel, onStep }) {
       for (const id of [...partners.keys()]) if (!ids.includes(id)) remove(id);
     },
     remove,
-    update(localNow, dt) {
+    // viewer: our own { x, z }, so name tags fade with distance.
+    update(localNow, dt, viewer = null) {
       for (const p of partners.values()) {
         const next = p.interp.sample(localNow) ?? p.spot;
         const moved = Math.hypot(next.x - p.spot.x, next.z - p.spot.z);
@@ -40,7 +41,7 @@ export function createPartners(scene, { makeModel, onStep }) {
         p.steps = step.phase;
         if (step.stepped) onStep(next.x, next.z, speed > WALK_SPEED * 1.3);
         p.spot = next;
-        p.model.pose(next, speed, dt);
+        p.model.pose(next, speed, dt, viewer ? Math.hypot(next.x - viewer.x, next.z - viewer.z) : 0);
       }
     },
     get size() {
