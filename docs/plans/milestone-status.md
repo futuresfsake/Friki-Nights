@@ -18,8 +18,8 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
-| MH | Horror overhaul (owner requests) | 🔨 In progress | 0 / 6 | `mh-…` | [MH](milestones/mh-horror-overhaul.md) |
-| | **Total** | | **49 / 139** | | |
+| MH | Horror overhaul (owner requests) | 🧪 Testing (all 7 built, awaiting playtest) | 0 / 7 | `mh-…` | [MH](milestones/mh-horror-overhaul.md) |
+| | **Total** | | **49 / 140** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -36,8 +36,8 @@ Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done ·
 | M6 | 6 | 3 | 1 | 10 |
 | M7 | 22 | 3 | 0 | 25 |
 | M8 | 11 | 4 | 0 | 15 |
-| MH | 6 | 0 | 0 | 6 |
-| **Total** | **109** | **27** | **3** | **139** |
+| MH | 7 | 0 | 0 | 7 |
+| **Total** | **110** | **27** | **3** | **140** |
 
 ## Current milestone: M3
 
@@ -71,3 +71,4 @@ Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 | 2026-10-14 | M3-S13 exit together done |
 | 2026-10-14 | M3-S12 server-side scare triggers (self / all) done |
 | 2026-10-15 | New milestone MH "Horror overhaul" from owner requests: full-body ghost with jump scares and a real scream (built, awaiting owner), real abandoned-house look instead of blocky textures, bigger house with a Ballroom wing, the "don't move" ballerina, scarier JS-01. 139 stories |
+| 2026-10-15 | MH built and pushed: S01 ghost + jump scares, S02 girl scream, S04 south wing (map 30×32), S07 more props, S05 Clara the ballerina, S06 scarier JS-01, S03 real-house textures. All 🧪, waiting on the owner's playtest. 140 stories |
