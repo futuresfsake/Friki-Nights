@@ -667,6 +667,59 @@ export function giggle(audio, x, y, z, loudness = 1) {
   breath.stop(end);
 }
 
+// Clara's music box: a little waltz in A minor on thin metal tines, every note a bit
+// out of tune, placed in 3D where she dances. It plays for `seconds`, slowing and
+// sagging flat at the end like a spring running down. Returns { stop() } to cut it dead.
+const WALTZ = [76, 72, 69, 72, 76, 79, 77, 74, 71, 74, 77, 81, 76, 72, 69, 72, 76, 75, 74, 71, 68, 71, 74, 76];
+export function musicBox(audio, x, y, z, seconds = 9) {
+  const { ctx, panner } = audio;
+  const out = ctx.createGain();
+  out.gain.value = 0.5;
+  out.connect(panner(x, y, z));
+  const t0 = ctx.currentTime + 0.05;
+  const oscs = [];
+  let t = t0;
+  for (let i = 0; t < t0 + seconds; i++) {
+    const left = (t0 + seconds - t) / seconds;
+    const winding = left < 0.25 ? 1 + (0.25 - left) * 4 : 1; // slows down at the end
+    const sag = left < 0.25 ? (0.25 - left) * 4 * -60 : 0; // and goes flat
+    const freq = 440 * 2 ** ((WALTZ[i % WALTZ.length] - 69) / 12);
+    for (const [mul, level, decay] of [
+      [1, 0.25, 1.2],
+      [2.76, 0.08, 0.3], // the tine's bright, inharmonic ping
+      [5.4, 0.03, 0.12],
+    ]) {
+      const osc = ctx.createOscillator();
+      osc.frequency.value = freq * mul;
+      osc.detune.value = (Math.random() - 0.5) * 40 + sag;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(level, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0005, t + decay);
+      osc.connect(g).connect(out);
+      osc.start(t);
+      osc.stop(t + decay + 0.05);
+      oscs.push(osc);
+    }
+    t += 0.3 * winding;
+  }
+  return {
+    stop() {
+      const now = ctx.currentTime;
+      out.gain.cancelScheduledValues(now);
+      out.gain.setValueAtTime(out.gain.value, now);
+      out.gain.linearRampToValueAtTime(0, now + 0.03);
+      for (const o of oscs) {
+        try {
+          o.stop(now + 0.05);
+        } catch {
+          // already stopped
+        }
+      }
+    },
+  };
+}
+
 // One tick of the grandfather clock, placed in 3D. tock: the deeper second beat.
 export function clockTick(audio, x, y, z, tock = false) {
   const { ctx, noiseSource, panner } = audio;

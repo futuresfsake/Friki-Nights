@@ -19,6 +19,7 @@ export const ACTS = {
   breathe: { weight: 3, big: true }, // breathing behind you; turn round and it screams in your face
   lightsOut: { weight: 3, big: true }, // the light dies; when it comes back, so does the ghost, in your face
   rush: { weight: 2, big: true, after: 150 }, // flies at you from the end of a hall and screams in your face
+  ballerina: { weight: 2, big: true }, // Clara dances; move and she screams in your face
   bedVisit: { weight: 1, hiding: true }, // stands by the bed you're hiding under
 };
 

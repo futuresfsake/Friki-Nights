@@ -41,14 +41,20 @@ function setup(seed = 1) {
     rattle: sound('rattle'),
     sting: sound('sting'),
     scream: sound('scream'),
+    musicBox: (...args) => {
+      heard.push({ kind: 'musicBox', args });
+      return { stop() {} };
+    },
   };
   let clock = 0;
   const model = fakeModel();
+  const ballerina = fakeModel();
   const effects = createEffects(rng(seed + 1));
   const tenant = createTenant({
     scene: { add() {} },
     map,
     model,
+    ballerina,
     sounds,
     effects,
     hud: { subtitle: (t) => said.push(t), toast: (t) => toasts.push(t) },
@@ -57,7 +63,7 @@ function setup(seed = 1) {
     partnerNames: () => ['Ana'],
     random: rng(seed),
   });
-  return { tenant, model, heard, said, toasts, effects, tick: (t) => (clock = t) };
+  return { tenant, model, ballerina, heard, said, toasts, effects, tick: (t) => (clock = t) };
 }
 
 // A restless player: walks around the night, turns round often, sometimes hides
@@ -272,3 +278,60 @@ describe('the ghost on the house map', () => {
   });
 });
 
+
+describe('Clara, the ballerina', () => {
+  // Summons her in front of a player standing at the spawn, then runs the night with the
+  // player walking between walkFrom and walkTo seconds after she appears, still otherwise.
+  function meet(walkFrom = Infinity, walkTo = Infinity) {
+    const s = setup(5);
+    const spawn = cellCenter(map.spawns[0].x, map.spawns[0].z);
+    const p = { x: spawn.x, z: spawn.z, yaw: 0 };
+    let t = 100;
+    const frame = (dt = 1 / 30) => {
+      t += dt;
+      s.tick(t);
+      s.tenant.update(dt, { time: t, x: p.x, z: p.z, yaw: p.yaw, hiding: null, flashlightOn: true });
+    };
+    frame();
+    for (let yaw = 0; yaw < Math.PI * 2 && !s.ballerina.root.visible; yaw += 0.5) {
+      p.yaw = yaw;
+      s.tenant.summon('ballerina');
+    }
+    expect(s.ballerina.root.visible).toBe(true);
+    expect(s.ballerina.pose).toBe('dance');
+    const start = t;
+    while (s.tenant.trick && t - start < 30) {
+      if (t - start >= walkFrom && t - start < walkTo) p.x += WALK_SPEED / 30;
+      frame();
+    }
+    return s;
+  }
+  const screamed = (s) => s.heard.some((h) => h.kind === 'scream');
+
+  it('dances to a music box and whispers to keep still', () => {
+    const s = meet();
+    expect(s.heard.some((h) => h.kind === 'musicBox')).toBe(true);
+    expect(s.said.some((line) => /move|still|watch/.test(line))).toBe(true);
+  });
+
+  it('curtsies and disappears if you stand still', () => {
+    const s = meet();
+    expect(s.ballerina.poses).toContain('curtsy');
+    expect(screamed(s)).toBe(false);
+    expect(s.ballerina.root.visible).toBe(false);
+    expect(s.tenant.trick).toBeNull();
+  });
+
+  it('screams in your face if you move', () => {
+    const s = meet(3);
+    expect(s.ballerina.poses).toContain('stop');
+    expect(s.ballerina.poses).not.toContain('curtsy');
+    expect(screamed(s)).toBe(true);
+    expect(s.ballerina.root.visible).toBe(false);
+  });
+
+  it('gives you a moment to stop walking when she appears', () => {
+    expect(screamed(meet(0, 0.5))).toBe(false); // stopped in time
+    expect(screamed(meet(0))).toBe(true); // kept walking
+  });
+});

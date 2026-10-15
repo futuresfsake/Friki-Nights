@@ -24,6 +24,7 @@ import {
   fuseClunk,
   giggle,
   knocks,
+  musicBox,
   pickupClink,
   powerOn,
   screamSting,
@@ -43,6 +44,7 @@ import { createMoveSender } from './net/moves.js';
 import { createPartners } from './net/partners.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createRoomLobby } from './ui/room.js';
+import { createBallerinaModel } from './tenant/ballerina.js';
 import { createTenantModel } from './tenant/model.js';
 import { createTenant } from './tenant/tenant.js';
 import { createNoteReader } from './ui/notes.js';
@@ -142,6 +144,12 @@ scares.register('JS-01', faceInFlashlight);
 scares.register('JS-02', doorSlamScare);
 scares.register('whisper', whisperScare);
 scares.register('JS-06', windowHandScare);
+// Clara dances in the Ballroom (MH-S05): the Tenant plays her, for this player only,
+// the first time they walk in.
+let metClara = false;
+scares.register('ballerina', () => {
+  if (!metClara) metClara = !!tenant?.summon('ballerina');
+});
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
 let audio = null;
@@ -173,6 +181,7 @@ const tenantSounds = {
   rattle: (x, z) => audio && doorRattle(audio, x, 1.2, z),
   sting: () => audio && screamSting(audio),
   scream: () => audio && ghostScream(audio),
+  musicBox: (x, z, seconds) => (audio ? musicBox(audio, x, 1.0, z, seconds) : null),
 };
 let hiding = null; // { bedId, stood } while under a bed
 
@@ -198,6 +207,7 @@ connectWithAccess().then(async (s) => {
     scene,
     map,
     model: createTenantModel(),
+    ballerina: createBallerinaModel(),
     sounds: tenantSounds,
     effects,
     hud,
