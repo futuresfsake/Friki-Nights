@@ -42,6 +42,17 @@ describe('3D builders', () => {
     }
   });
 
+  it('builds Clara the ballerina in every pose', async () => {
+    const { createBallerinaModel } = await import('../src/tenant/ballerina.js');
+    const model = createBallerinaModel();
+    for (const pose of ['dance', 'stop', 'curtsy', 'scream']) {
+      model.setPose(pose);
+      model.face(1, 1);
+      model.lookAt(3, -2);
+      for (let t = 0; t < 5; t += 0.1) model.update(0.1, t, 0);
+    }
+  });
+
   it('builds a partner with a name tag in their seat colour', async () => {
     const { PLAYER_COLORS } = await import('../../shared/constants.js');
     const { createPartnerModel } = await import('../src/world/partnerModel.js');

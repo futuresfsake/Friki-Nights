@@ -2,7 +2,7 @@ import { cellAt, cellCenter, isSolid } from '../../../shared/mapParser.js';
 import { hitsProp } from '../../../shared/props.js';
 import { angleOff, hasLineOfSight } from '../../../shared/sight.js';
 import { TRICKS } from './acts.js';
-import { createBrain } from './brain.js';
+import { ACTS, createBrain } from './brain.js';
 import { crossingPath, findSpot, spotToward } from './spots.js';
 
 const SEEN_ANGLE = 0.8; // radians off the view: inside the screen, not just the crosshair
@@ -17,7 +17,7 @@ const FLICKER_STEP = 0.06;
 // play a different trick on each of you: "Did you see that?!" Nothing he does changes
 // the shared night state, so he can't make players' screens disagree.
 //
-// sounds: { step, giggle, whisper, breathing, knocks, rattle, sting, scream } bound to audio
+// sounds: { step, giggle, whisper, breathing, knocks, rattle, sting, scream, musicBox } bound to audio
 // (each may do nothing before audio exists).
 const GHOST_CHANCE = 0.35; // each time the house map is opened, once he's been around a while
 const GHOST_SPEED = 1.6; // m/s
@@ -28,6 +28,7 @@ export function createTenant({
   scene,
   map,
   model,
+  ballerina = null, // Clara's model (ballerina.js); without it she never dances
   sounds,
   effects,
   hud,
@@ -39,8 +40,12 @@ export function createTenant({
   onGhostArrived = () => {},
 }) {
   const brain = createBrain({ random });
-  scene.add(model.root);
-  model.root.visible = false;
+  const ghostModel = model;
+  for (const m of [model, ballerina]) {
+    if (!m) continue;
+    scene.add(m.root);
+    m.root.visible = false;
+  }
 
   const player = { x: 0, z: 0, yaw: 0 };
   let time = 0;
@@ -67,7 +72,10 @@ export function createTenant({
 
   const k = {
     random,
-    model,
+    // Whoever is playing the trick: the ghost, or Clara.
+    get model() {
+      return model;
+    },
     player,
     get time() {
       return time;
@@ -156,6 +164,15 @@ export function createTenant({
         later(0.4, then);
       });
     },
+    // Switch who plays the trick ('ghost' or 'ballerina'); finish() switches back.
+    use(which) {
+      const next = which === 'ballerina' && ballerina ? ballerina : ghostModel;
+      if (next === model) return;
+      model.root.visible = false;
+      model = next;
+      lastPos = null;
+    },
+    musicBox: (p, seconds) => sounds.musicBox?.(p.x, p.z, seconds) ?? null,
     say: (text) => hud.subtitle(`[whispering] ${text}`),
     lines() {
       const n = name;
@@ -195,11 +212,13 @@ export function createTenant({
     if (k.toward(Math.PI, 0.9)) set.add('breathe');
     if (flashlightOn) set.add('lightsOut');
     if (k.find({ minDist: 9, maxDist: 16, maxAngle: 0.25 })) set.add('rush');
+    if (ballerina && k.find({ minDist: 4, maxDist: 9, maxAngle: 0.5 })) set.add('ballerina');
     return set;
   }
 
   function finish() {
     model.root.visible = false;
+    model = ghostModel;
     timers = timers.filter((t) => t.keep);
     brain.finished(time, actId);
     act = actId = null;
@@ -322,6 +341,21 @@ export function createTenant({
     // Where the extra dot is, or null (it only appears after a moment).
     get ghost() {
       return ghost && ghost.wait <= 0 ? { x: ghost.x, z: ghost.z } : null;
+    },
+    // A map trigger asks for a trick now (the Ballroom summons Clara). Whatever he was
+    // doing stops.
+    summon(id) {
+      if (!TRICKS[id] || (id === 'ballerina' && !ballerina)) return false;
+      if (act) {
+        model.root.visible = false;
+        model = ghostModel;
+        timers = timers.filter((t) => t.keep);
+        act = null;
+      }
+      if (ACTS[id]?.big) brain.noteScare(time, true);
+      actId = id;
+      act = TRICKS[id](k);
+      return true;
     },
     // Also what the doorTrap trick does; a map trigger could set one too.
     armDoorTrap: (seconds) => k.armDoorTrap(seconds),

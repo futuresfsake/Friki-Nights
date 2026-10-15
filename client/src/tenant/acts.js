@@ -475,4 +475,58 @@ export function bedVisit(k) {
   };
 }
 
-export const TRICKS = { peek, cross, follow, name, giggle, doorTrap, breathe, lightsOut, rush, bedVisit };
+// Clara, the ballerina, dances in front of you to a music box: "don't move". Stand still
+// (looking around is fine) until the music winds down and she curtsies and is gone.
+// Move, and the music stops dead, her head snaps to you, and she screams in your face.
+export const BALLERINA_GRACE = 0.8; // seconds to stop walking once she appears
+export const BALLERINA_MOVE = 0.3; // metres you may drift before it counts as moving
+export function ballerina(k) {
+  const end = ending(k);
+  const spot = k.find({ minDist: 4, maxDist: 9, maxAngle: 0.5 }) ?? k.find({ minDist: 3, maxDist: 10 });
+  if (!spot) {
+    end.now();
+    return { update: () => true };
+  }
+  k.use('ballerina');
+  k.show(spot.x, spot.z, 'dance');
+  const dance = between(k, 7, 10);
+  const music = k.musicBox(spot, dance + 2);
+  k.say(pickOne(k, ["don't move", `don't move, ${k.name}`, 'stay very still and watch me', 'shh. watch me dance', "if you move, i'll stop"]));
+  let t = 0;
+  let anchor = { x: k.player.x, z: k.player.z };
+  let state = 'dancing';
+
+  return {
+    update(dt) {
+      if (end.done) return true;
+      if (end.ending || state !== 'dancing') return false;
+      t += dt;
+      if (t < BALLERINA_GRACE) {
+        anchor = { x: k.player.x, z: k.player.z };
+        return false;
+      }
+      if (Math.hypot(k.player.x - anchor.x, k.player.z - anchor.z) > BALLERINA_MOVE) {
+        // You moved.
+        state = 'caught';
+        music?.stop();
+        k.model.setPose('stop');
+        k.model.face(k.player.x, k.player.z);
+        k.later(0.35, () => {
+          k.hide();
+          end.scare();
+        });
+        return false;
+      }
+      if (t > BALLERINA_GRACE + dance) {
+        state = 'curtsy';
+        music?.stop();
+        k.model.setPose('curtsy');
+        k.model.face(k.player.x, k.player.z);
+        k.later(1.2, () => end.vanish());
+      }
+      return false;
+    },
+  };
+}
+
+export const TRICKS = { peek, cross, follow, name, giggle, doorTrap, breathe, lightsOut, rush, ballerina, bedVisit };

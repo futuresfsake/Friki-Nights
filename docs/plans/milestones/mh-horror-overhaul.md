@@ -15,7 +15,7 @@
 | MH-S02 | A real (girl's) scream for the ghost's jump scares | Must | S | 🧪 built |
 | MH-S03 | A real abandoned house, not Minecraft blocks | Must | L | ⬜ |
 | MH-S04 | Bigger house: the south wing and the Ballroom | Must | L | 🧪 built |
-| MH-S05 | The ballerina: don't move | Must | M | ⬜ |
+| MH-S05 | The ballerina: don't move | Must | M | 🧪 built |
 | MH-S06 | JS-01 face in the flashlight, scarier | Must | M | ⬜ |
 | MH-S07 | More things in the house | Must | M | 🧪 built |
 
@@ -98,7 +98,7 @@ Proposed layout (Night 1 grid grows from 30×17 to 30×32):
 
 ### MH-S05 · The ballerina: don't move
 
-**Priority:** Must · **Size:** M · **Status:** ⬜
+**Priority:** Must · **Size:** M · **Status:** 🧪 built
 
 > As a player, I want to see a ballerina dancing who then disappears, and to know I must not move while she's there, so that I'm frozen in fear.
 
@@ -108,6 +108,8 @@ Proposed layout (Night 1 grid grows from 30×17 to 30×32):
 - A whisper: *"don't move…"* (subtitle). The player has a short moment (~0.6 s) to stop
 - **If you stay still** (looking around is allowed) until the music winds down (~7–10 s), she slows, curtsies, and disappears in a flicker of the light
 - **If you move** (more than ~0.3 m), the music stops dead, her head snaps to you, and she screams in your face (the MH-S01 jump scare, with her look)
+
+**Built:** `client/src/tenant/ballerina.js` (Clara's model: her body spins en pointe while her head stays turned to stare at you), the `ballerina` trick in `acts.js` (big, weight 2), `musicBox()` in `sfx.js`, and a `T` at the Ballroom door that summons her the first time each player walks in. Grace 0.8 s, 0.3 m of drift allowed, dance 7–10 s.
 
 **Look:** a pale, thin dancer in a grey, torn tutu and bodice, ribbons of her pointe shoes trailing, hair in a bun coming loose, the same empty eyes as the ghost; she glows faintly.
 
