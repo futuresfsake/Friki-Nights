@@ -9,7 +9,9 @@ export const WALK_SPEED = 2.2; // m/s
 export const RUN_SPEED = 4.0;
 export const STEP_LENGTH = 0.95; // metres per footstep
 
-export const PIXEL_RATIO = 0.5; // NFR-01: low resolution for the PS1 look and 60 fps
+// Full resolution (capped for 60 fps, NFR-01): the house should look real, not blocky.
+export const PIXEL_RATIO = 1;
+export const MAX_PIXEL_RATIO = 1.5;
 
 export const BATTERY_MAX = 100;
 export const BATTERY_DRAIN_PER_SECOND = 100 / 150; // full battery lasts 2.5 min

@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- |
 | MH-S01 | Full-body ghost with jump scares (replaces the tall man) | Must | L | 🧪 built, owner unsure: see open question |
 | MH-S02 | A real (girl's) scream for the ghost's jump scares | Must | S | 🧪 built |
-| MH-S03 | A real abandoned house, not Minecraft blocks | Must | L | ⬜ |
+| MH-S03 | A real abandoned house, not Minecraft blocks | Must | L | 🧪 built |
 | MH-S04 | Bigger house: the south wing and the Ballroom | Must | L | 🧪 built |
 | MH-S05 | The ballerina: don't move | Must | M | 🧪 built |
 | MH-S06 | JS-01 face in the flashlight, scarier | Must | M | 🧪 built |
@@ -60,7 +60,7 @@ What's built (`client/src/tenant/model.js`, `tenant.js`, `acts.js`, `world/textu
 
 ### MH-S03 · A real abandoned house, not Minecraft blocks
 
-**Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** Visual style (replaces the "abandoned cells / PS1" look)
+**Priority:** Must · **Size:** L · **Status:** 🧪 built · **Traces:** Visual style (replaces the "abandoned cells / PS1" look)
 
 > As a player, I want the walls and floors to look like a real abandoned house, so that it feels real and not like Minecraft.
 
@@ -75,6 +75,8 @@ Why it looks like Minecraft now: 64 px textures with nearest-pixel filtering and
 - Doors and windows match: panelled wooden doors, dirty glass, boarded-up windows
 - Update [visual style](../../design/visual-style.md) to the new look
 - Still 60 fps on the target machine (NFR-01)
+
+**Built:** wallpaper + wainscoting walls, floorboards, cracked plaster ceilings as 256 px/m textures mapped by world position (`builder.js`); every small texture drawn 4× bigger and smoothly filtered; full resolution with antialiasing; film grain; wooden door frames. Still to do: panelled doors and boarded windows in more detail, per-room wallpaper variety, and a 60 fps check on the owner's machine.
 
 ### MH-S04 · Bigger house: the south wing and the Ballroom
 
