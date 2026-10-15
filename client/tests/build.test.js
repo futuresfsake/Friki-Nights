@@ -34,7 +34,7 @@ describe('3D builders', () => {
   it('builds the Tenant in every pose', async () => {
     const { createTenantModel } = await import('../src/tenant/model.js');
     const model = createTenantModel();
-    for (const pose of ['stand', 'lean', 'walk', 'run', 'wave', 'shush', 'head']) {
+    for (const pose of ['stand', 'lean', 'walk', 'run', 'wave', 'shush', 'scream', 'head']) {
       model.setPose(pose);
       model.face(1, 1);
       model.lookAt(3, -2);

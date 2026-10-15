@@ -291,68 +291,119 @@ export function nameTagTexture(name, color = null) {
   return texture;
 }
 
-// The Tenant: a gaunt grey face, sunken eyes with pinprick pupils that stare straight
-// at you, and a grin stretched far too wide, full of yellowed teeth.
-export function grinTexture() {
-  const rand = mulberry32(613);
+// The Tenant's face: corpse-pale with a blue tinge, a fringe of wet black hair, eye
+// sockets that are just holes, black tears running out of them. screaming: the jaw
+// hangs open far past where a jaw should stop, ringed with broken teeth.
+export function ghostFaceTexture(screaming = false) {
+  const rand = mulberry32(screaming ? 617 : 613);
   return canvasTexture(64, (g, s) => {
-    const skin = g.createRadialGradient(s / 2, s * 0.42, 4, s / 2, s / 2, s * 0.62);
-    skin.addColorStop(0, '#d2cbbd');
-    skin.addColorStop(0.65, '#a59d8f');
-    skin.addColorStop(1, '#4a443d');
+    const skin = g.createRadialGradient(s / 2, s * 0.45, 4, s / 2, s / 2, s * 0.62);
+    skin.addColorStop(0, '#e4e6e0');
+    skin.addColorStop(0.6, '#a9b0ae');
+    skin.addColorStop(1, '#3c4244');
     g.fillStyle = skin;
     g.fillRect(0, 0, s, s);
-    // Hollow cheeks and a heavy brow.
-    stain(g, s * 0.22, s * 0.6, 10, 'rgba(50,40,36,0.45)');
-    stain(g, s * 0.78, s * 0.6, 10, 'rgba(50,40,36,0.45)');
-    g.fillStyle = 'rgba(40,32,30,0.35)';
-    g.fillRect(s * 0.18, s * 0.26, s * 0.64, 3);
-    // Eyes sit at slightly different heights, which reads as "wrong" before you know why.
+    // Hollow cheeks.
+    stain(g, s * 0.2, s * 0.62, 11, 'rgba(30,34,40,0.55)');
+    stain(g, s * 0.8, s * 0.62, 11, 'rgba(30,34,40,0.55)');
+    // Eyes: big empty sockets, one a little lower than the other.
     for (const [ex, ey] of [
-      [s * 0.34, s * 0.37],
-      [s * 0.66, s * 0.39],
+      [s * 0.33, s * 0.38],
+      [s * 0.67, s * 0.4],
     ]) {
-      stain(g, ex, ey, 10, 'rgba(25,15,15,0.85)');
-      g.fillStyle = '#0b0708';
+      stain(g, ex, ey, 13, 'rgba(10,8,12,0.9)');
+      g.fillStyle = '#000';
       g.beginPath();
-      g.ellipse(ex, ey, 5, 4, 0, 0, Math.PI * 2);
+      g.ellipse(ex, ey, screaming ? 7 : 6, screaming ? 8 : 5, 0, 0, Math.PI * 2);
       g.fill();
-      g.fillStyle = '#f4f0dc';
-      g.fillRect(Math.round(ex), Math.round(ey), 1, 1);
+      // Black tears down the cheeks.
+      for (let i = 0; i < 3; i++) {
+        const tx = ex - 4 + rand() * 8;
+        g.fillStyle = 'rgba(8,4,6,0.85)';
+        g.fillRect(Math.round(tx), Math.round(ey + 3), 1 + Math.round(rand()), Math.round(8 + rand() * 18));
+      }
+      // A pinprick of light at the bottom of each hole.
+      g.fillStyle = '#f8f8f0';
+      g.fillRect(Math.round(ex), Math.round(ey + 1), 1, 1);
     }
-    // The grin: ear to ear, lips pulled back from two rows of teeth.
-    const left = s * 0.1;
-    const right = s * 0.9;
-    const top = s * 0.62;
-    g.fillStyle = '#120708';
-    g.beginPath();
-    g.moveTo(left, top - 4);
-    g.quadraticCurveTo(s / 2, top + 6, right, top - 4);
-    g.quadraticCurveTo(s / 2, top + 22, left, top - 4);
-    g.fill();
-    g.fillStyle = '#5a1c1c';
-    g.fillRect(left + 3, top - 2, 3, 2);
-    g.fillRect(right - 6, top - 2, 3, 2);
-    for (let x = left + 5; x < right - 5; x += 3) {
-      const curve = Math.sin(((x - left) / (right - left)) * Math.PI);
-      const upper = top - 2 + curve * 5;
-      const lower = top + 3 + curve * 9;
-      g.fillStyle = rand() < 0.15 ? '#8a7a4a' : '#d6cba0';
-      g.fillRect(Math.round(x), Math.round(upper), 2, 3);
-      g.fillStyle = rand() < 0.2 ? '#7a6a40' : '#cbbf92';
-      g.fillRect(Math.round(x), Math.round(lower), 2, 3);
+    if (screaming) {
+      // The jaw unhinged: a black hole down to the chin and beyond.
+      const top = s * 0.58;
+      g.fillStyle = '#4a0c10';
+      g.beginPath();
+      g.ellipse(s / 2, s * 0.8, 15, 20, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#000';
+      g.beginPath();
+      g.ellipse(s / 2, s * 0.81, 12, 18, 0, 0, Math.PI * 2);
+      g.fill();
+      // Broken teeth, top and bottom, none of them the same length.
+      for (let x = s / 2 - 11; x < s / 2 + 11; x += 2.5) {
+        const edge = Math.sqrt(Math.max(0, 1 - ((x - s / 2) / 12) ** 2));
+        g.fillStyle = rand() < 0.25 ? '#8f8460' : '#d8d0b0';
+        g.fillRect(Math.round(x), Math.round(s * 0.81 - edge * 18), 2, 2 + Math.round(rand() * 4));
+        if (rand() < 0.6) g.fillRect(Math.round(x), Math.round(s * 0.81 + edge * 18 - 4), 2, 2 + Math.round(rand() * 3));
+      }
+      g.fillStyle = '#6a1218';
+      g.fillRect(s / 2 - 13, top + 2, 2, 6);
+    } else {
+      // Lips cracked and parted just enough to show the dark.
+      g.fillStyle = '#16090c';
+      g.beginPath();
+      g.moveTo(s * 0.32, s * 0.73);
+      g.quadraticCurveTo(s / 2, s * 0.69, s * 0.68, s * 0.74);
+      g.quadraticCurveTo(s / 2, s * 0.79, s * 0.32, s * 0.73);
+      g.fill();
+      g.fillStyle = 'rgba(70,20,26,0.6)';
+      g.fillRect(s * 0.44, s * 0.78, 2, 5);
     }
-    // Thin dark veins under the skin.
-    g.strokeStyle = 'rgba(60,50,70,0.35)';
-    for (let i = 0; i < 6; i++) {
+    // Dark veins under the skin.
+    g.strokeStyle = 'rgba(40,40,70,0.45)';
+    for (let i = 0; i < 8; i++) {
       g.beginPath();
       let x = rand() * s;
-      let y = rand() * s * 0.3;
+      let y = s * 0.15 + rand() * s * 0.5;
       g.moveTo(x, y);
       for (let k = 0; k < 4; k++) g.lineTo((x += (rand() - 0.5) * 10), (y += rand() * 6));
       g.stroke();
     }
+    // Wet black hair plastered over the top of the face, hanging in points.
+    g.fillStyle = '#060507';
+    g.fillRect(0, 0, s, s * 0.14);
+    for (let x = 0; x < s; x += 3) {
+      const side = Math.abs(x - s / 2) / (s / 2);
+      g.fillRect(x, 0, 3, Math.round(s * 0.14 + rand() * 6 + side * side * s * 0.5));
+    }
     speckle(g, s, rand, 350, 0.15);
+  });
+}
+
+// The Tenant's gown: a burial shroud gone grey, folds streaked with grime, dried
+// blood soaked into the chest and hem.
+export function shroudTexture() {
+  const rand = mulberry32(719);
+  return canvasTexture(64, (g, s) => {
+    g.fillStyle = '#c9c7bd';
+    g.fillRect(0, 0, s, s);
+    // Vertical folds.
+    for (let x = 0; x < s; x += 4 + Math.floor(rand() * 4)) {
+      g.fillStyle = `rgba(40,40,45,${0.1 + rand() * 0.2})`;
+      g.fillRect(x, 0, 1 + Math.round(rand()), s);
+    }
+    // Grime climbing up from the hem.
+    const grime = g.createLinearGradient(0, 0, 0, s);
+    grime.addColorStop(0, 'rgba(60,50,40,0)');
+    grime.addColorStop(0.7, 'rgba(60,50,40,0.25)');
+    grime.addColorStop(1, 'rgba(40,30,25,0.75)');
+    g.fillStyle = grime;
+    g.fillRect(0, 0, s, s);
+    stain(g, s * 0.3, s * 0.22, 9, 'rgba(90,15,15,0.7)');
+    stain(g, s * 0.36, s * 0.3, 5, 'rgba(70,10,10,0.8)');
+    for (let i = 0; i < 6; i++) stain(g, rand() * s, s * (0.75 + rand() * 0.25), 4 + rand() * 6, 'rgba(70,15,12,0.6)');
+    // Rips.
+    g.fillStyle = 'rgba(10,10,12,0.8)';
+    for (let i = 0; i < 5; i++) g.fillRect(Math.round(rand() * s), Math.round(s * 0.4 + rand() * s * 0.6), 1, 3 + Math.round(rand() * 8));
+    speckle(g, s, rand, 400, 0.2);
   });
 }
 

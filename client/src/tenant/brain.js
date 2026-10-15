@@ -16,9 +16,9 @@ export const ACTS = {
   name: { weight: 3 }, // whispers your name
   giggle: { weight: 3 }, // a chuckle somewhere close in the dark
   doorTrap: { weight: 3 }, // holds the next door shut, or knocks back on it
-  breathe: { weight: 3, big: true }, // breathing behind you; turn round and he's there
-  lightsOut: { weight: 2, big: true }, // the light dies; when it's back, so is he
-  rush: { weight: 1, big: true, after: 240 }, // sprints at you from the end of a hall
+  breathe: { weight: 3, big: true }, // breathing behind you; turn round and it screams in your face
+  lightsOut: { weight: 3, big: true }, // the light dies; when it comes back, so does the ghost, in your face
+  rush: { weight: 2, big: true, after: 150 }, // flies at you from the end of a hall and screams in your face
   bedVisit: { weight: 1, hiding: true }, // stands by the bed you're hiding under
 };
 
@@ -27,7 +27,7 @@ export const GAP = [18, 55]; // after a small trick
 export const BIG_GAP_AFTER = [40, 90]; // after a big one
 export const DOUBLE_TAP = { chance: 0.15, gap: [3, 8] };
 export const LONG_SILENCE = { chance: 0.1, gap: [90, 150] };
-export const BIG_SPACING = 150; // seconds between any two big scares (his or the map's)
+export const BIG_SPACING = 100; // seconds between any two big scares (his or the map's)
 const RECENT = 3;
 const RETRY = 3; // seconds until he looks again when no trick fits
 

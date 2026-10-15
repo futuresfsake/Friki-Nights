@@ -172,6 +172,7 @@ const tenantSounds = {
   knocks: (x, z) => audio && knocks(audio, x, 1.2, z),
   rattle: (x, z) => audio && doorRattle(audio, x, 1.2, z),
   sting: () => audio && screamSting(audio),
+  scream: () => audio && ghostScream(audio),
 };
 let hiding = null; // { bedId, stood } while under a bed
 

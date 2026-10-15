@@ -24,6 +24,12 @@ function ending(k) {
       ending = true;
       k.vanish(() => (done = true));
     },
+    // It's in your face, screaming, then gone.
+    scare() {
+      if (ending) return;
+      ending = true;
+      k.jumpscare(() => (done = true));
+    },
     after(seconds) {
       if (ending) return;
       ending = true;
@@ -66,8 +72,8 @@ export function peek(k) {
         if (plan === 'closer' && jumps) k.giggle(k.toward(Math.PI, 1));
         if (plan === 'approach' && reacting && k.bigAllowed()) {
           k.claimBig();
-          k.sting();
-          k.shake(0.35, 0.06);
+          end.scare();
+          return false;
         }
         end.vanish();
         return false;
@@ -102,6 +108,13 @@ export function peek(k) {
           // You looked away. Look back.
           const next = k.closerSpot(2.5);
           if (!next || jumps >= 3) {
+            if (k.bigAllowed()) {
+              // You looked away one time too many. Now it's where you're looking.
+              k.claimBig();
+              k.hide();
+              end.scare();
+              return false;
+            }
             k.hide();
             k.giggle(k.toward(Math.PI, 1.2));
             end.after(1.2);
@@ -183,6 +196,11 @@ export function follow(k) {
 
   function turned() {
     reacted = true;
+    if (reaction === 'show' && lastPoint && k.canSee(lastPoint) && k.bigAllowed()) {
+      k.claimBig();
+      end.scare();
+      return;
+    }
     if (reaction === 'show' && lastPoint && k.canSee(lastPoint)) {
       k.show(lastPoint.x, lastPoint.z, 'stand');
       k.model.face(k.player.x, k.player.z);
@@ -253,8 +271,8 @@ export function doorTrap(k) {
   return { update: () => true };
 }
 
-// Breathing just behind you, staying behind as you walk. Turn round in time and he's
-// right there. Don't, and he says something instead.
+// Breathing just behind you, staying behind as you walk. Turn round in time and it's
+// screaming in your face. Don't, and he says something instead.
 export function breathe(k) {
   const end = ending(k);
   const start = k.toward(Math.PI, 0.9);
@@ -281,12 +299,7 @@ export function breathe(k) {
       left -= dt;
       if (k.lookingAt(p, 0.6) && k.canSee(p)) {
         sound?.stop();
-        k.show(p.x, p.z, 'stand');
-        k.model.face(k.player.x, k.player.z);
-        k.sting();
-        k.shake(0.45, 0.07);
-        k.later(0.35, () => end.vanish());
-        end.after(1.2);
+        end.scare();
         return false;
       }
       if (left <= 0) {
@@ -303,12 +316,13 @@ export function breathe(k) {
 }
 
 // The light stutters and dies. Something runs at you in the dark. When the light
-// comes back he's standing right in front of you, finger to his lips. Or nothing is,
-// and the laugh is behind you.
+// comes back it's screaming in your face, or standing right in front of you, finger to
+// its lips (and then it lunges). Or nothing is, and the laugh is behind you.
 export function lightsOut(k) {
   const end = ending(k);
   const dark = between(k, 1.8, 2.6);
-  const shows = k.random() < 0.65;
+  const shows = k.random() < 0.85;
+  const screams = k.random() < 0.7;
   let shown = false;
   let stare = 0;
   const stareFor = between(k, 1.3, 2.2);
@@ -324,6 +338,10 @@ export function lightsOut(k) {
     }
   });
   k.later(0.6 + dark, () => {
+    if (shows && screams) {
+      end.scare();
+      return;
+    }
     const p = shows && k.toward(0, 1.8);
     if (p && p.distance > 1.2) {
       k.show(p.x, p.z, k.random() < 0.5 ? 'shush' : 'stand');
@@ -341,6 +359,11 @@ export function lightsOut(k) {
     update(dt) {
       if (end.done) return true;
       if (!shown || end.ending) return false;
+      // Out of nowhere, it lunges the last metre.
+      if (stare > stareFor * 0.6 && k.random() < dt * 1.5) {
+        end.scare();
+        return false;
+      }
       stare += dt;
       if (stare > stareFor || !k.lookingAt(k.at(), 1.0)) end.vanish();
       return false;
@@ -348,8 +371,8 @@ export function lightsOut(k) {
   };
 }
 
-// Appears at the far end of a hall, waits a moment so you see him, then sprints at
-// you. Gone a metre from your face.
+// Appears at the far end of a hall, waits a moment so you see it, then flies at you,
+// arms out, and screams in your face.
 export function rush(k) {
   const end = ending(k);
   const spot = k.find({ minDist: 9, maxDist: 16, maxAngle: 0.25 });
@@ -381,13 +404,7 @@ export function rush(k) {
       ran += step;
       k.stepToward(k.player, step);
       if (Math.floor(ran / 0.8) !== before) k.step(k.at(), true, 1.6);
-      if (k.distance() < 1.3) {
-        k.sting();
-        k.shake(0.5, 0.1);
-        k.blackout(0.3);
-        k.hide();
-        end.after(0.6);
-      }
+      if (k.distance() < 1.6) end.scare();
       return false;
     },
   };
