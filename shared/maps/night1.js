@@ -228,5 +228,37 @@ export default {
     { type: 'desk', x: 27, z: 29, rot: 270, dx: 0.2 }, // library
     { type: 'doll', x: 23, z: 29, rot: 0 },
     { type: 'cobweb', x: 19, z: 30, dx: -0.6, dz: 0.6 },
+    // Blood (MH-S08)
+    { type: 'bloodHands', x: 7, z: 3, side: 'e' }, // dormitory, by the door out
+    { type: 'bloodWriting', x: 3, z: 1, side: 'n', text: 'UNDER THE BED' },
+    { type: 'bloodDrip', x: 4, z: 5 },
+    { type: 'bloodWriting', x: 12, z: 1, side: 'n', text: 'NO WAY OUT' }, // foyer, over the front door wall
+    { type: 'bloodHands', x: 9, z: 6, side: 'w' },
+    { type: 'bloodTrail', x: 16, z: 5, rot: 60 },
+    { type: 'bloodHands', x: 19, z: 3, side: 'w' }, // parlor
+    { type: 'bloodDrip', x: 25, z: 2 },
+    { type: 'bloodTrail', x: 7, z: 10, rot: 90 }, // hall: dragged down towards the cells
+    { type: 'bloodTrail', x: 13, z: 9, rot: 90 },
+    { type: 'bloodHands', x: 20, z: 9, side: 'n' },
+    { type: 'bloodWriting', x: 20, z: 10, side: 's', text: 'SHE SEES YOU' },
+    { type: 'bloodDrip', x: 25, z: 10 },
+    { type: 'bloodHands', x: 15, z: 13, side: 'e' }, // cell 4, round the hole in the wall
+    { type: 'bloodTrail', x: 14, z: 14 },
+    { type: 'bloodWriting', x: 1, z: 13, side: 'w', text: 'HELP ME' },
+    { type: 'bloodHands', x: 25, z: 12, side: 'n' },
+    { type: 'bloodWriting', x: 12, z: 17, side: 'n', text: 'DONT LOOK AT HER' }, // gallery
+    { type: 'bloodHands', x: 22, z: 18, side: 's' },
+    { type: 'bloodTrail', x: 24, z: 17, rot: 90 },
+    { type: 'footprints', x: 9, z: 24 }, // ballroom: where she dances
+    { type: 'footprints', x: 6, z: 27 },
+    { type: 'bloodWriting', x: 9, z: 20, side: 'n', text: 'DONT MOVE' },
+    { type: 'bloodHands', x: 17, z: 27, side: 'e' },
+    { type: 'bloodDrip', x: 9, z: 25 },
+    { type: 'bloodWriting', x: 1, z: 25, side: 'w', text: 'SHE DANCES FOREVER' },
+    { type: 'bloodHands', x: 27, z: 20, side: 'n' }, // kitchen
+    { type: 'bloodTrail', x: 24, z: 24, rot: 90 },
+    { type: 'bloodDrip', x: 22, z: 22 },
+    { type: 'bloodWriting', x: 28, z: 26, side: 'e', text: 'IT WAS NOT THE DAMP' }, // library
+    { type: 'bloodHands', x: 19, z: 27, side: 'w' },
   ],
 };

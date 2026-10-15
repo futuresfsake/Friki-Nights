@@ -5,12 +5,14 @@ import night1 from '../../shared/maps/night1.js';
 import { applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
 import { doorSlamScare } from './scares/doorSlam.js';
 import { createEffects } from './scares/effects.js';
+import { paintBloodSplatter } from './world/textures.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { whisperScare } from './scares/whisper.js';
 import { windowHandScare } from './scares/windowHand.js';
 import { createScares } from './scares/scares.js';
 import { createAudioEngine } from './audio/engine.js';
 import {
+  bloodDrip,
   breathing,
   clockTick,
   doorCreak,
@@ -95,6 +97,7 @@ const windows = createWindows(map, scene);
 const props = createProps(map, scene, {
   creak: (x, y, z) => audio && woodCreak(audio, x, y, z),
   tick: (x, y, z, tock) => audio && clockTick(audio, x, y, z, tock),
+  drip: (x, y, z) => audio && bloodDrip(audio, x, y, z),
 });
 const partners = createPartners(scene, {
   makeModel: createPartnerModel,
@@ -123,6 +126,21 @@ const reader = createNoteReader();
 const endScreen = createEndScreen({ onPlayAgain: () => location.reload() });
 const exitDoor = map.objects.find((o) => o.type === 'exit');
 const effects = createEffects();
+// Blood on the screen after a jump scare, repainted for every new splash.
+const bloodCanvas = document.getElementById('blood');
+let bloodCount = 0;
+function showBlood(time) {
+  const { amount, count } = effects.bloodOnScreen(time);
+  if (count !== bloodCount) {
+    bloodCount = count;
+    bloodCanvas.width = Math.round(innerWidth / 2);
+    bloodCanvas.height = Math.round(innerHeight / 2);
+    paintBloodSplatter(bloodCanvas);
+  }
+  bloodCanvas.style.opacity = amount;
+  // It runs: the whole splash slides slowly down the screen.
+  bloodCanvas.style.transform = `translateY(${(1 - amount) * 6}vh)`;
+}
 // Everything a scare may use. Scares are registered by id in later stories.
 const scares = createScares({
   isUiOpen: () => !player.controls.isLocked || reader.isOpen() || ended,
@@ -546,6 +564,7 @@ renderer.setAnimationLoop(() => {
   windows.update(time);
   props.update(time);
   updateCeilingLights(ceilingLights, time);
+  showBlood(time);
   if (effects.isBlackout(time)) {
     blackOutCeilingLights(ceilingLights);
     flashlight.spot.intensity = 0;

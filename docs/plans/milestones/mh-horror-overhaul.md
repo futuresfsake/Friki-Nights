@@ -18,8 +18,9 @@
 | MH-S05 | The ballerina: don't move | Must | M | 🧪 built |
 | MH-S06 | JS-01 face in the flashlight, scarier | Must | M | 🧪 built |
 | MH-S07 | More things in the house | Must | M | 🧪 built |
+| MH-S08 | Bloodier | Must | M | 🧪 built |
 
-**7 stories · 0 done** (7 Must · 0 Should · 0 Could)
+**8 stories · 0 done** (8 Must · 0 Should · 0 Could)
 
 ## Open question
 
@@ -153,3 +154,16 @@ New props (`shared/props.js`, `client/src/world/props.js`), placed in every room
 - **cobweb**: dusty webs strung across ceiling corners
 
 **Tests:** every prop builds and animates; every room stays reachable.
+
+### MH-S08 · Bloodier
+
+**Priority:** Must · **Size:** M · **Status:** 🧪 built · Requested 2026-10-15 ("i want it more bloodier")
+
+> As a player, I want blood everywhere, so that the house feels like something terrible happened here and is still happening.
+
+- **House:** new props `bloodHands` (bloody handprints smeared down walls, dripping), `bloodWriting` (words finger-painted in blood: UNDER THE BED, NO WAY OUT, SHE SEES YOU, HELP ME, DONT LOOK AT HER, DONT MOVE, SHE DANCES FOREVER, IT WAS NOT THE DAMP), `bloodTrail` (drag marks ending in a handprint), `footprints` (Clara's bloody pointe-shoe prints circling a pool in the Ballroom), `bloodDrip` (blood soaking through the ceiling, a drop falling every second or so into a spreading pool, each landing with a wet plink). 31 placed through every room
+- **The ghost:** gown soaked at the chest and running down the front, caked at the hem; blood running from its mouth and one eye; hands red to the wrist, nails black with dried blood
+- **Clara:** blood-soaked pointe shoes with blood running down from the ribbons; tutu stained from the hem up
+- **Jump scares** (the ghost, Clara, JS-01) splash blood over the screen that hangs there, then runs down and fades (`effects.splatter()`)
+
+**Tests:** every prop builds; wall decals only against walls; the map still parses and every room is reachable.

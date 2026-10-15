@@ -19,6 +19,14 @@
         width: 100vw !important;
         height: 100vh !important;
       }
+      #blood {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        opacity: 0;
+      }
       /* Film grain over everything, like old footage. */
       #grain {
         position: fixed;
@@ -484,6 +492,7 @@
   <body>
     <div id="game"></div>
     <div id="vignette"></div>
+    <canvas id="blood"></canvas>
     <div id="grain"></div>
     <div id="crosshair"></div>
     <div id="prompt"><kbd>E</kbd><span id="prompt-text"></span></div>

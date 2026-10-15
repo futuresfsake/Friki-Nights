@@ -739,6 +739,25 @@ export function clockTick(audio, x, y, z, tock = false) {
 }
 
 // Old wood creaking under a slow weight: the rocking chair.
+// A drop of blood landing in a pool: a short, wet plink, placed in 3D.
+export function bloodDrip(audio, x, y, z) {
+  const { ctx, panner } = audio;
+  const out = panner(x, y, z);
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = 'sine';
+  const f = 900 + Math.random() * 500;
+  osc.frequency.setValueAtTime(f, t);
+  osc.frequency.exponentialRampToValueAtTime(f * 2.2, t + 0.05);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.35, t + 0.004);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  osc.connect(gain).connect(out);
+  osc.start(t);
+  osc.stop(t + 0.14);
+}
+
 export function woodCreak(audio, x, y, z) {
   const { ctx, panner } = audio;
   const out = panner(x, y, z);

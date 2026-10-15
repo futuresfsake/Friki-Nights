@@ -1,7 +1,11 @@
 import * as THREE from 'three';
 import { WALL_HEIGHT } from '../../../shared/constants.js';
 import {
+  bloodFootprintsTexture,
+  bloodHandsTexture,
   bloodTexture,
+  bloodTrailTexture,
+  bloodWritingTexture,
   clockFaceTexture,
   cobwebTexture,
   dollFaceTexture,
@@ -43,6 +47,9 @@ function mats() {
     mirror: new THREE.MeshLambertMaterial({ map: mirrorTexture(), emissive: 0x0c0d0d }),
     web: new THREE.MeshBasicMaterial({ map: cobwebTexture(), transparent: true, depthWrite: false, side: THREE.DoubleSide, opacity: 0.8 }),
     wax: new THREE.MeshLambertMaterial({ color: 0xcfc6a8 }),
+    trail: new THREE.MeshLambertMaterial({ map: bloodTrailTexture(), transparent: true, depthWrite: false }),
+    footprints: new THREE.MeshLambertMaterial({ map: bloodFootprintsTexture(), transparent: true, depthWrite: false }),
+    fresh: new THREE.MeshLambertMaterial({ color: 0x5a0303, emissive: 0x120000 }),
   };
   return materials;
 }
@@ -380,6 +387,54 @@ const BUILDERS = {
       g.add(web);
     }
   },
+  bloodHands(g, m, def, rand) {
+    const prints = new THREE.Mesh(
+      new THREE.PlaneGeometry(def.w, def.h),
+      new THREE.MeshLambertMaterial({ map: bloodHandsTexture(Math.floor(rand() * 50)), transparent: true, depthWrite: false }),
+    );
+    prints.position.set(0, 1.25, 0.012);
+    g.add(prints);
+  },
+  bloodWriting(g, m, def, rand, prop) {
+    const words = new THREE.Mesh(
+      new THREE.PlaneGeometry(def.w, def.h),
+      new THREE.MeshLambertMaterial({ map: bloodWritingTexture(prop?.text ?? 'GET OUT'), transparent: true, depthWrite: false }),
+    );
+    words.position.set(0, 1.65, 0.012);
+    g.add(words);
+  },
+  bloodTrail: (g, m, def) => decal(g, def.w, def.d, m.trail, 0.007),
+  footprints: (g, m, def) => decal(g, def.w, def.d, m.footprints, 0.007),
+  bloodDrip(g, m, def) {
+    // A dark patch soaking through the ceiling, a drop falling every second or so, and a
+    // pool spreading underneath. Each drop lands with a little sound.
+    const patch = decal(g, 0.7, 0.7, m.blood, WALL_HEIGHT - 0.01);
+    patch.rotation.x = Math.PI / 2;
+    decal(g, 0.6, 0.5, m.blood, 0.008);
+    const drop = new THREE.Mesh(new THREE.SphereGeometry(0.018, 6, 4), m.fresh);
+    drop.scale.y = 1.6;
+    g.add(drop);
+    let fallFrom = Math.random() * 1.5;
+    let dripped = false;
+    return (time, events) => {
+      const t = time - fallFrom;
+      if (t < 0.6) {
+        // Swelling on the ceiling.
+        drop.position.y = WALL_HEIGHT - 0.03;
+        drop.scale.setScalar(0.4 + t);
+        dripped = false;
+        return;
+      }
+      const fall = t - 0.6;
+      drop.scale.set(1, 1.6, 1);
+      drop.position.y = Math.max(0, WALL_HEIGHT - 0.03 - 4.9 * fall * fall);
+      if (drop.position.y === 0 && !dripped) {
+        dripped = true;
+        events.drip?.();
+        fallFrom = time + 0.4 + Math.random() * 1.6;
+      }
+    };
+  },
   houseMap(g, m, def) {
     const sheet = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), m.paper);
     sheet.position.set(0, 1.45, 0.01);
@@ -400,7 +455,7 @@ function seeded(seed) {
   };
 }
 
-// events: { creak(x, y, z), tick(x, y, z, tock) } for the sounds props make.
+// events: { creak(x, y, z), tick(x, y, z, tock), drip(x, y, z) } for the sounds props make.
 export function createProps(map, scene, events = {}) {
   const m = mats();
   const animated = [];
@@ -411,9 +466,9 @@ export function createProps(map, scene, events = {}) {
     const g = new THREE.Group();
     g.position.set(p.x, 0, p.z);
     g.rotation.y = p.rotation;
-    const update = BUILDERS[p.type](g, m, p.def, seeded(1000 + i * 31));
+    const update = BUILDERS[p.type](g, m, p.def, seeded(1000 + i * 31), p);
     if (typeof update === 'function') {
-      const at = { creak: () => events.creak?.(p.x, 0.6, p.z) };
+      const at = { creak: () => events.creak?.(p.x, 0.6, p.z), drip: () => events.drip?.(p.x, 0.05, p.z) };
       animated.push((time) => update(time, at));
     }
     if (p.type === 'clock') clocks.push(p);

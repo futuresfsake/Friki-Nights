@@ -624,8 +624,8 @@ export function ghostFaceTexture(screaming = false) {
       // Black tears down the cheeks.
       for (let i = 0; i < 3; i++) {
         const tx = ex - 4 + rand() * 8;
-        g.fillStyle = 'rgba(8,4,6,0.85)';
-        g.fillRect(Math.round(tx), Math.round(ey + 3), 1 + Math.round(rand()), Math.round(8 + rand() * 18));
+        g.fillStyle = i ? 'rgba(8,4,6,0.85)' : 'rgba(95,4,4,0.95)'; // black tears, and blood
+        g.fillRect(tx, ey + 3, 1 + rand(), 8 + rand() * 18);
       }
       // A pinprick of light at the bottom of each hole.
       g.fillStyle = '#f8f8f0';
@@ -662,6 +662,11 @@ export function ghostFaceTexture(screaming = false) {
       g.fillStyle = 'rgba(70,20,26,0.6)';
       g.fillRect(s * 0.44, s * 0.78, 2, 5);
     }
+    // Blood running from the mouth, down the chin and off the bottom of the face.
+    for (let i = 0; i < (screaming ? 7 : 4); i++) {
+      drip(g, s / 2 + (rand() - 0.5) * (screaming ? 22 : 12), s * (screaming ? 0.9 : 0.76), s * (0.1 + rand() * 0.25), 1.5 + rand() * 2, i % 2 ? 'rgba(110,6,6,0.9)' : 'rgba(70,2,2,0.95)');
+    }
+    stain(g, s / 2, s * 0.98, 12, 'rgba(80,4,4,0.6)');
     // Dark veins under the skin.
     g.strokeStyle = 'rgba(40,40,70,0.45)';
     for (let i = 0; i < 8; i++) {
@@ -710,9 +715,12 @@ export function shroudTexture() {
     grime.addColorStop(1, 'rgba(40,30,25,0.75)');
     g.fillStyle = grime;
     g.fillRect(0, 0, s, s);
-    stain(g, s * 0.3, s * 0.22, 9, 'rgba(90,15,15,0.7)');
-    stain(g, s * 0.36, s * 0.3, 5, 'rgba(70,10,10,0.8)');
-    for (let i = 0; i < 6; i++) stain(g, rand() * s, s * (0.75 + rand() * 0.25), 4 + rand() * 6, 'rgba(70,15,12,0.6)');
+    // Blood: soaked through at the chest, running down the front, caked at the hem.
+    stain(g, s * 0.3, s * 0.22, 14, 'rgba(95,6,6,0.85)');
+    stain(g, s * 0.36, s * 0.3, 9, 'rgba(70,2,2,0.9)');
+    stain(g, s * 0.75, s * 0.4, 10, 'rgba(90,6,6,0.75)');
+    for (let i = 0; i < 9; i++) drip(g, s * (0.2 + rand() * 0.25), s * 0.25, s * (0.2 + rand() * 0.5), 1.5 + rand() * 2.5, 'rgba(90,4,4,0.85)');
+    for (let i = 0; i < 12; i++) stain(g, rand() * s, s * (0.7 + rand() * 0.3), 5 + rand() * 9, 'rgba(70,4,4,0.75)');
     // Rips.
     g.fillStyle = 'rgba(10,10,12,0.8)';
     for (let i = 0; i < 5; i++) g.fillRect(Math.round(rand() * s), Math.round(s * 0.4 + rand() * s * 0.6), 1, 3 + Math.round(rand() * 8));
@@ -958,5 +966,245 @@ export function dollFaceTexture() {
     g.lineTo(s * 0.2, s * 0.8);
     g.fill();
     speckle(g, s, rand, 150, 0.15);
+  });
+}
+
+// ---- Blood ----
+
+// A drip running down from (x, y): a thin streak that swells into a drop at the end.
+function drip(g, x, y, length, width, color) {
+  g.fillStyle = color;
+  g.beginPath();
+  g.moveTo(x - width / 2, y);
+  g.quadraticCurveTo(x - width * 0.3, y + length * 0.6, x - width * 0.25, y + length);
+  g.arc(x, y + length, width * 0.75, Math.PI, 0, true);
+  g.quadraticCurveTo(x + width * 0.3, y + length * 0.6, x + width / 2, y);
+  g.fill();
+}
+
+// One bloody handprint (palm and spread fingers), fingers pointing up at angle 0.
+function handprint(g, x, y, size, angle, rand, color) {
+  g.save();
+  g.translate(x, y);
+  g.rotate(angle);
+  g.fillStyle = color;
+  g.beginPath();
+  g.ellipse(0, 0, size * 0.42, size * 0.5, 0, 0, Math.PI * 2);
+  g.fill();
+  for (const [fx, len, a] of [
+    [-0.32, 0.55, -0.25],
+    [-0.12, 0.72, -0.08],
+    [0.1, 0.75, 0.05],
+    [0.3, 0.6, 0.2],
+  ]) {
+    g.save();
+    g.translate(fx * size, -size * 0.35);
+    g.rotate(a);
+    g.beginPath();
+    g.ellipse(0, -len * size * 0.5, size * 0.09, len * size * 0.5, 0, 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+  g.save();
+  g.translate(-size * 0.45, size * 0.05);
+  g.rotate(-1.0);
+  g.beginPath();
+  g.ellipse(0, -size * 0.25, size * 0.1, size * 0.27, 0, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+  // A smudged, uneven print: some of the skin never touched the wall.
+  g.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 25; i++) {
+    g.fillStyle = `rgba(0,0,0,${0.2 + rand() * 0.5})`;
+    g.beginPath();
+    g.arc((rand() - 0.5) * size, (rand() - 0.7) * size * 1.2, 1 + rand() * size * 0.06, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.restore();
+}
+
+const BLOOD = ['rgba(92,4,4,0.92)', 'rgba(70,2,2,0.9)', 'rgba(110,8,6,0.85)'];
+const bloodAlpha = (i, alpha) => BLOOD[i % 3].replace(/[\d.]+\)$/, `${alpha})`);
+
+// Bloody handprints on a wall, as if someone dragged themselves along it, smearing
+// down and dripping. seed picks the arrangement.
+export function bloodHandsTexture(seed = 1) {
+  const rand = mulberry32(900 + seed * 13);
+  return canvasTexture(128, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    const n = 2 + Math.floor(rand() * 3);
+    for (let i = 0; i < n; i++) {
+      const x = s * (0.2 + rand() * 0.6);
+      const y = s * (0.2 + rand() * 0.45);
+      const size = s * (0.13 + rand() * 0.05);
+      const color = BLOOD[Math.floor(rand() * BLOOD.length)];
+      // The smear where the hand slid down the wall.
+      if (rand() < 0.7) {
+        const grad = g.createLinearGradient(0, y, 0, y + s * 0.4);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, 'rgba(70,2,2,0)');
+        g.fillStyle = grad;
+        for (let k = 0; k < 4; k++) g.fillRect(x - size * 0.3 + k * size * 0.17, y - size * 0.6, size * 0.1, s * 0.4 + rand() * s * 0.15);
+      }
+      handprint(g, x, y, size, (rand() - 0.5) * 0.8, rand, color);
+      for (let k = 0; k < 3; k++) drip(g, x + (rand() - 0.5) * size, y + size * 0.3, s * (0.08 + rand() * 0.25), 1.2 + rand() * 1.5, color);
+    }
+    for (let i = 0; i < 40; i++) {
+      g.fillStyle = BLOOD[i % 3];
+      g.beginPath();
+      g.arc(rand() * s, rand() * s, 0.4 + rand() * 1.4, 0, Math.PI * 2);
+      g.fill();
+    }
+  });
+}
+
+// Words smeared on the wall in blood with a finger, running in drips.
+export function bloodWritingTexture(text) {
+  const rand = mulberry32(text.length * 77 + text.charCodeAt(0));
+  return surfaceTexture(2, 0.6, (g, W, H) => {
+    g.clearRect(0, 0, W, H);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = `bold ${Math.round(H * 0.5)}px Georgia, serif`;
+    // Finger-painted: the same letters smeared several times, a little off each time.
+    for (let i = 0; i < 6; i++) {
+      g.fillStyle = bloodAlpha(i, 0.35 + rand() * 0.3);
+      g.save();
+      g.translate(W / 2 + (rand() - 0.5) * 6, H * 0.42 + (rand() - 0.5) * 6);
+      g.rotate((rand() - 0.5) * 0.04);
+      g.fillText(text, 0, 0, W * 0.92);
+      g.restore();
+    }
+    const measured = g.measureText?.(text)?.width;
+    const width = Math.min(W * 0.92, typeof measured === 'number' && measured > 0 ? measured : W * 0.8);
+    for (let i = 0; i < 26; i++) drip(g, W / 2 + (rand() - 0.5) * width, H * 0.55, H * (0.05 + rand() * 0.4), 2 + rand() * 3, BLOOD[i % 3]);
+  });
+}
+
+// A long drag mark on the floor: something bleeding was pulled along here.
+export function bloodTrailTexture() {
+  const rand = mulberry32(431);
+  return surfaceTexture(0.7, 2, (g, W, H) => {
+    g.clearRect(0, 0, W, H);
+    g.lineCap = 'round';
+    for (let k = 0; k < 5; k++) {
+      let x = W * (0.3 + rand() * 0.4);
+      g.strokeStyle = BLOOD[k % 3];
+      g.lineWidth = 6 + rand() * 18;
+      g.beginPath();
+      g.moveTo(x, 0);
+      for (let y = 0; y < H; y += 20) {
+        x += (rand() - 0.5) * 8;
+        g.lineTo(x, y);
+      }
+      g.stroke();
+    }
+    // Thinning out where it was dragged furthest, scraped and streaky.
+    g.globalCompositeOperation = 'destination-out';
+    const fade = g.createLinearGradient(0, 0, 0, H);
+    fade.addColorStop(0, 'rgba(0,0,0,0.85)');
+    fade.addColorStop(0.5, 'rgba(0,0,0,0.2)');
+    fade.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = fade;
+    g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 300; i++) {
+      g.fillStyle = `rgba(0,0,0,${rand() * 0.6})`;
+      g.fillRect(rand() * W, rand() * H, 2 + rand() * 6, 1 + rand() * 2);
+    }
+    g.globalCompositeOperation = 'source-over';
+    stain(g, W * 0.5, H * 0.92, W * 0.45, 'rgba(70,2,2,0.9)');
+    handprint(g, W * 0.6, H * 0.8, W * 0.25, 2.8, rand, BLOOD[0]);
+  });
+}
+
+// Small bloody prints of a pointe shoe going round in a circle: where Clara danced.
+export function bloodFootprintsTexture() {
+  const rand = mulberry32(587);
+  return surfaceTexture(2, 2, (g, W, H) => {
+    g.clearRect(0, 0, W, H);
+    const steps = 22;
+    for (let i = 0; i < steps; i++) {
+      const a = (i / steps) * Math.PI * 2;
+      const r = W * 0.36 + (i % 2 ? 14 : -14);
+      g.save();
+      g.translate(W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r);
+      g.rotate(a + Math.PI);
+      g.fillStyle = bloodAlpha(i, 0.5 + rand() * 0.4);
+      g.beginPath();
+      g.ellipse(0, 0, 9, 16, 0, 0, Math.PI * 2); // a pointe shoe's tip: small and narrow
+      g.fill();
+      g.restore();
+    }
+    // In the middle, where she turned and turned: a dark, smeared pool.
+    stain(g, W / 2, H / 2, W * 0.14, 'rgba(70,2,2,0.85)');
+    g.strokeStyle = 'rgba(80,4,4,0.5)';
+    g.lineWidth = 3;
+    for (let i = 0; i < 6; i++) {
+      g.beginPath();
+      g.arc(W / 2, H / 2, W * (0.05 + rand() * 0.1), rand() * 6, rand() * 6 + 2);
+      g.stroke();
+    }
+  });
+}
+
+// Fresh blood splashed over the screen: big drops and spatter, running down. Drawn on
+// a canvas (not a texture); main.js lays it over the game during jump scares.
+export function paintBloodSplatter(canvas, rand = Math.random) {
+  const g = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  g.clearRect(0, 0, W, H);
+  const splashes = 3 + Math.floor(rand() * 3);
+  for (let i = 0; i < splashes; i++) {
+    // Mostly near the edges, where it reads as being on the lens.
+    const edge = rand() < 0.6;
+    const x = edge ? (rand() < 0.5 ? rand() * W * 0.25 : W - rand() * W * 0.25) : rand() * W;
+    const y = rand() * H * 0.7;
+    const r = Math.min(W, H) * (0.05 + rand() * 0.1);
+    const color = BLOOD[i % 3];
+    g.fillStyle = color;
+    // An irregular splash with spikes shooting out of it.
+    g.beginPath();
+    const points = 48;
+    for (let k = 0; k <= points; k++) {
+      const ang = (k / points) * Math.PI * 2;
+      const spike = rand() < 0.18 ? 1.4 + rand() * 1.4 : 0.8 + rand() * 0.35;
+      const px = x + Math.cos(ang) * r * spike;
+      const py = y + Math.sin(ang) * r * spike;
+      if (k === 0) g.moveTo(px, py);
+      else g.quadraticCurveTo(x + Math.cos(ang - 0.06) * r * 0.9, y + Math.sin(ang - 0.06) * r * 0.9, px, py);
+    }
+    g.fill();
+    // Thicker and darker in the middle, wet shine on top.
+    const core = g.createRadialGradient(x, y, 0, x, y, r);
+    core.addColorStop(0, 'rgba(40,0,0,0.6)');
+    core.addColorStop(1, 'rgba(40,0,0,0)');
+    g.fillStyle = core;
+    g.fillRect(x - r, y - r, r * 2, r * 2);
+    g.fillStyle = 'rgba(255,190,190,0.18)';
+    g.beginPath();
+    g.ellipse(x - r * 0.3, y - r * 0.35, r * 0.25, r * 0.1, -0.6, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = color;
+    for (let k = 0; k < 40; k++) {
+      const a = rand() * Math.PI * 2;
+      const d = r * (1 + rand() * 2.5);
+      g.beginPath();
+      g.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, 1 + rand() * r * 0.15, 0, Math.PI * 2);
+      g.fill();
+    }
+    for (let k = 0; k < 4; k++) drip(g, x + (rand() - 0.5) * r * 1.6, y + r * 0.5, H * (0.1 + rand() * 0.45), 3 + rand() * r * 0.15, color);
+  }
+}
+
+// Clara's tutu: grey-pink tulle with blood soaked up from the hem.
+export function tutuTexture() {
+  const rand = mulberry32(611);
+  return canvasTexture(64, (g, s) => {
+    g.fillStyle = '#a8989a';
+    g.fillRect(0, 0, s, s);
+    for (let i = 0; i < 14; i++) stain(g, rand() * s, s * (0.55 + rand() * 0.45), 4 + rand() * 9, 'rgba(90,4,4,0.75)');
+    for (let i = 0; i < 8; i++) drip(g, rand() * s, s * 0.3 + rand() * s * 0.3, s * 0.3, 1.5, 'rgba(90,4,4,0.6)');
+    speckle(g, s, rand, 200, 0.2);
   });
 }
