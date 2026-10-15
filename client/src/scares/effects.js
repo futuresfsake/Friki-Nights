@@ -6,6 +6,7 @@ export function createEffects(random = Math.random) {
   let shakeStrength = 0;
   let shakeLength = 1;
   let blackoutUntil = 0;
+  let flickerUntil = 0;
 
   return {
     shake(time, seconds, strength = 0.06) {
@@ -17,6 +18,15 @@ export function createEffects(random = Math.random) {
       blackoutUntil = Math.max(blackoutUntil, time + seconds);
     },
     isBlackout: (time) => time < blackoutUntil,
+    // The flashlight stutters on and off for a moment.
+    flicker(time, seconds) {
+      flickerUntil = Math.max(flickerUntil, time + seconds);
+    },
+    // Multiplies the flashlight: 1 normally, stuttering between dim and full while flickering.
+    lightFactor(time) {
+      if (time >= flickerUntil) return 1;
+      return Math.floor((flickerUntil - time) / 0.07) % 2 === 0 ? 0.05 : 1;
+    },
     // Camera offset for this frame; fades out over the shake's length.
     shakeOffset(time) {
       if (time >= shakeUntil) return { x: 0, y: 0, z: 0 };
