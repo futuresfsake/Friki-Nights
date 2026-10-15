@@ -18,7 +18,8 @@ const SCREAM_DROP = 1.6 - (HOVER + SHOULDER + NECK + HEAD / 2);
 // lying sideways on the floor: the look under the bed).
 export function createTenantModel() {
   const skin = new THREE.MeshLambertMaterial({ color: 0xc4cac6, emissive: 0x1a1e22 });
-  const nails = new THREE.MeshLambertMaterial({ color: 0x0c0a0c });
+  const nails = new THREE.MeshLambertMaterial({ color: 0x2a0303 }); // black with dried blood
+  const bloody = new THREE.MeshLambertMaterial({ color: 0x5a0606, emissive: 0x100000 });
   const hairMat = new THREE.MeshLambertMaterial({ color: 0x08070a, side: THREE.DoubleSide });
   const gownMat = new THREE.MeshLambertMaterial({
     map: shroudTexture(),
@@ -84,14 +85,14 @@ export function createTenantModel() {
     const hand = new THREE.Group();
     hand.position.y = -ARM * 0.38;
     elbow.add(hand);
-    const palm = box(0.05, 0.08, 0.07, skin);
+    const palm = box(0.05, 0.08, 0.07, bloody); // hands red to the wrist
     palm.position.y = -0.04;
     hand.add(palm);
     const fingers = [-0.026, -0.009, 0.009, 0.026].map((z) => {
       const knuckle = new THREE.Group();
       knuckle.position.set(0, -0.08, z);
       hand.add(knuckle);
-      const finger = box(0.014, 0.13, 0.014, skin);
+      const finger = box(0.014, 0.13, 0.014, bloody);
       finger.position.y = -0.065;
       knuckle.add(finger);
       const nail = box(0.016, 0.035, 0.016, nails);

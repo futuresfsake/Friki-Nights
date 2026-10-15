@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { ghostFaceTexture } from '../world/textures.js';
+import { ghostFaceTexture, tutuTexture } from '../world/textures.js';
 
 // Clara, the ballerina: a thin, grey dancer in a torn tutu, up on the points of her
 // shoes, arms rounded over her head. While she dances her body turns and turns but her
@@ -14,9 +14,11 @@ const HEAD = 0.24;
 // your face).
 export function createBallerinaModel() {
   const skin = new THREE.MeshLambertMaterial({ color: 0xc9cdc9, emissive: 0x1c2024 });
-  const tulle = new THREE.MeshLambertMaterial({ color: 0xa8989a, emissive: 0x1e1a1c, side: THREE.DoubleSide });
+  const tulle = new THREE.MeshLambertMaterial({ map: tutuTexture(), emissive: 0x1e1a1c, side: THREE.DoubleSide });
   const bodiceMat = new THREE.MeshLambertMaterial({ color: 0x8a7f80, emissive: 0x141214 });
-  const shoes = new THREE.MeshLambertMaterial({ color: 0x9a6f72 });
+  // She danced until her feet bled: the shoes are soaked through.
+  const shoes = new THREE.MeshLambertMaterial({ color: 0x5c0707, emissive: 0x120000 });
+  const blood = new THREE.MeshLambertMaterial({ color: 0x6a0606, emissive: 0x120000, side: THREE.DoubleSide });
   const hairMat = new THREE.MeshLambertMaterial({ color: 0x0a090b, side: THREE.DoubleSide });
   const calm = ghostFaceTexture(false);
   const screaming = ghostFaceTexture(true);
@@ -44,6 +46,10 @@ export function createBallerinaModel() {
     const knee = pivot(hip, 0, -HIP * 0.5);
     box(knee, 0.045, HIP * 0.42, 0.045, skin).position.y = -HIP * 0.21;
     box(knee, 0.05, HIP * 0.09, 0.06, shoes).position.y = -HIP * 0.455;
+    // Blood running down from the shoe ribbons, over the ankle.
+    const run = new THREE.Mesh(new THREE.PlaneGeometry(0.03, HIP * 0.3), blood);
+    run.position.set(side * 0.004, -HIP * 0.3, -0.024);
+    knee.add(run);
     return { hip, knee };
   });
 

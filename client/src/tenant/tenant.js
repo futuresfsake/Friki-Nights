@@ -151,6 +151,7 @@ export function createTenant({
       const p = k.toward(0, JUMPSCARE_DISTANCE);
       sounds.scream();
       k.shake(0.7, 0.12);
+      effects.splatter?.(now(), 3.5);
       if (!p) {
         // A wall in your face: only the scream and the dark.
         k.blackout(0.4);

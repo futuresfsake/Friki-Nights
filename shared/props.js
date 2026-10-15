@@ -39,6 +39,11 @@ export const PROPS = {
   chandelier: { w: 1.2, d: 1.2, h: 0.9, solid: false }, // hangs from the ceiling, sways
   doll: { w: 0.3, d: 0.35, h: 0.45, solid: false }, // a porcelain doll; now and then its head turns
   cobweb: { w: 1.0, d: 1.0, h: 0.8, solid: false }, // across a ceiling corner of its cell
+  bloodHands: { w: 1.6, d: 0.02, h: 1.6, wall: true, solid: false }, // bloody handprints smeared down a wall
+  bloodWriting: { w: 1.9, d: 0.02, h: 0.57, wall: true, solid: false }, // words in blood; the map entry gives `text`
+  bloodTrail: { w: 0.7, d: 2.0, h: 0.01, solid: false }, // something bleeding dragged across the floor
+  footprints: { w: 2.0, d: 2.0, h: 0.01, solid: false }, // bloody pointe-shoe prints in a circle
+  bloodDrip: { w: 0.4, d: 0.4, h: 0.01, solid: false }, // blood dripping from the ceiling into a pool
 };
 
 const SIDES = {
@@ -76,6 +81,7 @@ export function placeProp(entry, isSolid) {
   return {
     id: `prop-${entry.type}-${cx}-${cz}`,
     type: entry.type,
+    text: entry.text,
     cell: { x: cx, z: cz },
     x,
     z,

@@ -120,6 +120,7 @@ export function faceInFlashlight(ctx) {
       screamed = true;
       ctx.scream();
       effects.shake(ctx.now(), 0.9, 0.16);
+      effects.splatter(ctx.now(), 4);
       camera.add(head.flash);
       head.flash.position.set(0, 0, -0.2);
       head.flash.material.opacity = 0.45;

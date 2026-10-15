@@ -7,6 +7,9 @@ export function createEffects(random = Math.random) {
   let shakeLength = 1;
   let blackoutUntil = 0;
   let flickerUntil = 0;
+  let splatterAt = -Infinity;
+  let splatterLength = 1;
+  let splatters = 0;
 
   return {
     shake(time, seconds, strength = 0.06) {
@@ -18,6 +21,18 @@ export function createEffects(random = Math.random) {
       blackoutUntil = Math.max(blackoutUntil, time + seconds);
     },
     isBlackout: (time) => time < blackoutUntil,
+    // Blood splashed over the screen; it hangs there, then fades.
+    splatter(time, seconds = 3) {
+      splatterAt = time;
+      splatterLength = seconds;
+      splatters++;
+    },
+    // 0..1 how much blood is on the screen now; `count` changes with every new splash.
+    bloodOnScreen(time) {
+      const t = time - splatterAt;
+      if (t < 0 || t >= splatterLength) return { amount: 0, count: splatters };
+      return { amount: t < splatterLength * 0.5 ? 1 : 1 - (t - splatterLength * 0.5) / (splatterLength * 0.5), count: splatters };
+    },
     // The flashlight stutters on and off for a moment.
     flicker(time, seconds) {
       flickerUntil = Math.max(flickerUntil, time + seconds);
