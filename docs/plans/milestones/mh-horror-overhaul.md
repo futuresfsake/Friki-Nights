@@ -51,11 +51,11 @@ What's built (`client/src/tenant/model.js`, `tenant.js`, `acts.js`, `world/textu
 
 > As a player, I want the ghost to actually scream when it's in my face, so that the jump scare hits harder than a synth sting.
 
-- `ghostScream()` in `client/src/audio/sfx.js`: a high, raw voice through "ah→ee" formants that leaps up, wavers and cracks, over a growl an octave and a half lower, with ragged breath and light distortion; on the sting bus
+- `ghostScream()` in `client/src/audio/sfx.js` plays a **girl's scream** built sample by sample (`screamSamples()`): a glottal pulse train at ≈1.1–1.5 kHz with jitter, alternating weak pulses (the raw crack of a strained voice), a ~70 Hz roughness flutter, breath noise, and the formants of a wide-open "aaah" sliding to "eee"; it leaps up, wails, cracks and dies away. Three variants, slightly re-pitched each time, with a little room reverb; on the sting bus
 - Used for every ghost jump scare; the old `screamSting` stays for map scares
 
 **Acceptance criteria**
-- Owner says it sounds like a scream, not a beep (tune pitch, formants and length after the playtest)
+- Owner says it sounds like a scream, not a beep (tune pitch, formants and length after the playtest). If it still sounds synthetic, swap in a recorded, licence-free scream sample
 
 ### MH-S03 · A real abandoned house, not Minecraft blocks
 
