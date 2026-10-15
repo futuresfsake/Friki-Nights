@@ -30,6 +30,15 @@ export const PROPS = {
   portrait: { w: 0.7, d: 0.06, h: 0.9, wall: true, solid: false }, // hangs on the wall
   chains: { w: 0.4, d: 0.4, h: 1.4, solid: false }, // hang from the ceiling
   houseMap: { w: 0.6, d: 0.03, h: 0.45, wall: true, solid: false }, // the map pinned to a wall
+  piano: { w: 1.5, d: 0.6, h: 1.3, wall: true, solid: true }, // an upright, out of tune
+  stove: { w: 1.0, d: 0.65, h: 0.95, wall: true, solid: true }, // iron range, pipe to the ceiling
+  counter: { w: 1.6, d: 0.6, h: 0.9, wall: true, solid: true }, // cupboards and a stone sink
+  mirror: { w: 0.8, d: 0.05, h: 1.4, wall: true, solid: false }, // cracked, hangs on the wall
+  desk: { w: 1.2, d: 0.6, h: 0.78, solid: true },
+  sheetChair: { w: 0.85, d: 0.85, h: 1.15, solid: true }, // a dust sheet over a chair; looks like someone sitting
+  chandelier: { w: 1.2, d: 1.2, h: 0.9, solid: false }, // hangs from the ceiling, sways
+  doll: { w: 0.3, d: 0.35, h: 0.45, solid: false }, // a porcelain doll; now and then its head turns
+  cobweb: { w: 1.0, d: 1.0, h: 0.8, solid: false }, // across a ceiling corner of its cell
 };
 
 const SIDES = {

@@ -12,13 +12,14 @@
 | ID | Story (feature) | Priority | Size | Status |
 | --- | --- | --- | --- | --- |
 | MH-S01 | Full-body ghost with jump scares (replaces the tall man) | Must | L | 🧪 built, owner unsure: see open question |
-| MH-S02 | A real scream for the ghost's jump scares | Must | S | 🧪 built |
+| MH-S02 | A real (girl's) scream for the ghost's jump scares | Must | S | 🧪 built |
 | MH-S03 | A real abandoned house, not Minecraft blocks | Must | L | ⬜ |
-| MH-S04 | Bigger house: the south wing and the Ballroom | Must | L | ⬜ |
+| MH-S04 | Bigger house: the south wing and the Ballroom | Must | L | 🧪 built |
 | MH-S05 | The ballerina: don't move | Must | M | ⬜ |
 | MH-S06 | JS-01 face in the flashlight, scarier | Must | M | ⬜ |
+| MH-S07 | More things in the house | Must | M | 🧪 built |
 
-**6 stories · 0 done** (6 Must · 0 Should · 0 Could)
+**7 stories · 0 done** (7 Must · 0 Should · 0 Could)
 
 ## Open question
 
@@ -28,7 +29,7 @@
 
 ### MH-S01 · Full-body ghost with jump scares
 
-**Priority:** Must · **Size:** L · **Status:** 🧪 built (uncommitted), waiting on the owner · **Traces:** M5-S17
+**Priority:** Must · **Size:** L · **Status:** 🧪 built, waiting on the owner · **Traces:** M5-S17
 
 > As a player, I want a real horror ghost (a full body) that jump-scares me, not a tall man who just walks, so that the Tenant is actually frightening.
 
@@ -47,7 +48,7 @@ What's built (`client/src/tenant/model.js`, `tenant.js`, `acts.js`, `world/textu
 
 ### MH-S02 · A real scream for the ghost's jump scares
 
-**Priority:** Must · **Size:** S · **Status:** 🧪 built (uncommitted)
+**Priority:** Must · **Size:** S · **Status:** 🧪 built
 
 > As a player, I want the ghost to actually scream when it's in my face, so that the jump scare hits harder than a synth sting.
 
@@ -77,7 +78,7 @@ Why it looks like Minecraft now: 64 px textures with nearest-pixel filtering and
 
 ### MH-S04 · Bigger house: the south wing and the Ballroom
 
-**Priority:** Must · **Size:** L · **Status:** ⬜ · **Traces:** M2-S01 map format
+**Priority:** Must · **Size:** L · **Status:** 🧪 built · **Traces:** M2-S01 map format
 
 > As players, we want a bigger house to explore, so that the night lasts longer and there are more places for things to hide.
 
@@ -131,3 +132,18 @@ The owner likes this scare and wants more of it.
 - It stays a beat longer (≈0.8 s), with a red/static flash and the hardest camera shake in the game, then the light dies for a second
 - After the light comes back: a wet giggle somewhere behind you
 - **Tests:** the scare builds and cleans up after itself
+
+### MH-S07 · More things in the house
+
+**Priority:** Must · **Size:** M · **Status:** 🧪 built
+
+> As a player, I want the house full of things, so that it feels lived in, abandoned, and like something could be hiding anywhere.
+
+New props (`shared/props.js`, `client/src/world/props.js`), placed in every room:
+- **piano** (upright, missing keys, sheet music), **stove** (iron range, stovepipe, a pot with something dried in it), **counter** (cupboards, stone sink, plates, a knife), **desk** (drawers, inkwell, candle)
+- **mirror**: tarnished and cracked; **chandelier**: hangs from the ceiling, sways slowly and creaks
+- **sheetChair**: an armchair under a dust sheet that looks like someone sitting very still
+- **doll**: a cracked porcelain doll on the floor whose head is turned a different way every so often
+- **cobweb**: dusty webs strung across ceiling corners
+
+**Tests:** every prop builds and animates; every room stays reachable.

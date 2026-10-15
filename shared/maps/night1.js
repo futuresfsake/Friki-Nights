@@ -194,5 +194,36 @@ export default {
     { type: 'armchair', x: 26, z: 27, rot: 220, dx: 0.3 },
     { type: 'rug', x: 24, z: 28, rot: 90 },
     { type: 'papers', x: 26, z: 29 },
+    // More things in the house (MH-S07)
+    { type: 'doll', x: 6, z: 5, rot: 200 }, // dormitory, facing the beds
+    { type: 'cobweb', x: 7, z: 1, dx: 0.6, dz: -0.6 },
+    { type: 'mirror', x: 17, z: 2, side: 'e' }, // foyer
+    { type: 'chandelier', x: 13, z: 5 },
+    { type: 'sheetChair', x: 20, z: 5, rot: 60 }, // parlor
+    { type: 'cobweb', x: 28, z: 7, dx: 0.6, dz: 0.6 },
+    { type: 'cobweb', x: 1, z: 9, dx: -0.6, dz: -0.6 }, // hall
+    { type: 'doll', x: 15, z: 10, rot: 330 },
+    { type: 'cobweb', x: 28, z: 10, dx: 0.6, dz: 0.6 },
+    { type: 'doll', x: 11, z: 12, rot: 180 }, // cell 3, facing the door
+    { type: 'sheetChair', x: 7, z: 17, rot: 180 }, // gallery
+    { type: 'mirror', x: 21, z: 18, side: 's' },
+    { type: 'cobweb', x: 1, z: 17, dx: -0.6, dz: -0.6 },
+    { type: 'piano', x: 9, z: 30, side: 's' }, // ballroom
+    { type: 'chandelier', x: 9, z: 25 },
+    { type: 'mirror', x: 17, z: 26, side: 'e' },
+    { type: 'mirror', x: 17, z: 21, side: 'e' },
+    { type: 'sheetChair', x: 5, z: 24, rot: 30 },
+    { type: 'sheetChair', x: 14, z: 25, rot: 230 },
+    { type: 'sheetChair', x: 6, z: 29, rot: 340 },
+    { type: 'doll', x: 2, z: 26, rot: 90 },
+    { type: 'cobweb', x: 17, z: 30, dx: 0.6, dz: 0.6 },
+    { type: 'cobweb', x: 1, z: 30, dx: -0.6, dz: 0.6 },
+    { type: 'stove', x: 21, z: 20, side: 'n' }, // kitchen
+    { type: 'counter', x: 25, z: 20, side: 'n' },
+    { type: 'counter', x: 19, z: 23, side: 'w' },
+    { type: 'cobweb', x: 28, z: 24, dx: 0.6, dz: 0.6 },
+    { type: 'desk', x: 27, z: 29, rot: 270, dx: 0.2 }, // library
+    { type: 'doll', x: 23, z: 29, rot: 0 },
+    { type: 'cobweb', x: 19, z: 30, dx: -0.6, dz: 0.6 },
   ],
 };
