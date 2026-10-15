@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
+import { MAX_PIXEL_RATIO, PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
 import { applyEvent, blocksMovement, createNightState } from '../../shared/nightState.js';
@@ -63,8 +63,8 @@ import { createWindows } from './world/windows.js';
 const FOG_COLOR = 0x050507;
 let PLAYER_ID = 'local'; // replaced by our server id when the night starts
 
-const renderer = new THREE.WebGLRenderer({ antialias: false });
-renderer.setPixelRatio(PIXEL_RATIO);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(MAX_PIXEL_RATIO, Math.max(PIXEL_RATIO, devicePixelRatio)));
 renderer.setSize(innerWidth, innerHeight);
 document.getElementById('game').appendChild(renderer.domElement);
 
