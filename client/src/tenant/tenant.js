@@ -17,10 +17,12 @@ const FLICKER_STEP = 0.06;
 // play a different trick on each of you: "Did you see that?!" Nothing he does changes
 // the shared night state, so he can't make players' screens disagree.
 //
-// sounds: { step, giggle, whisper, breathing, knocks, rattle, sting } bound to audio
+// sounds: { step, giggle, whisper, breathing, knocks, rattle, sting, scream } bound to audio
 // (each may do nothing before audio exists).
 const GHOST_CHANCE = 0.35; // each time the house map is opened, once he's been around a while
 const GHOST_SPEED = 1.6; // m/s
+const JUMPSCARE_DISTANCE = 0.6; // metres from your eyes: its face fills the screen
+const JUMPSCARE_SECONDS = 0.7;
 
 export function createTenant({
   scene,
@@ -133,6 +135,25 @@ export function createTenant({
         k.blackout(0.2);
         k.hide();
         later(0.25, then);
+      });
+    },
+    // The jump scare: it's suddenly right in front of your eyes, screaming, claws out,
+    // then the dark takes it. then() runs once it's gone.
+    jumpscare(then) {
+      const p = k.toward(0, JUMPSCARE_DISTANCE);
+      sounds.scream();
+      k.shake(0.7, 0.12);
+      if (!p) {
+        // A wall in your face: only the scream and the dark.
+        k.blackout(0.4);
+        later(0.6, then);
+        return;
+      }
+      k.show(p.x, p.z, 'scream');
+      later(JUMPSCARE_SECONDS, () => {
+        k.blackout(0.35);
+        k.hide();
+        later(0.4, then);
       });
     },
     say: (text) => hud.subtitle(`[whispering] ${text}`),

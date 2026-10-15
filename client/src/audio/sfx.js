@@ -301,6 +301,89 @@ export function screamSting(audio) {
   hiss.stop(t + 0.6);
 }
 
+// The ghost's shriek, right in your face: a raw, high voice through "ah→ee"
+// formants that leaps up, wavers and cracks, over a guttural growl an octave and a
+// half down, with ragged breath and a little distortion. Goes through the sting bus.
+export function ghostScream(audio) {
+  const { ctx, sting, noiseSource } = audio;
+  const t = ctx.currentTime;
+  const end = t + 1.6;
+  const shaper = ctx.createWaveShaper();
+  const curve = new Float32Array(1024);
+  for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh(((i / (curve.length - 1)) * 2 - 1) * 2.5);
+  shaper.curve = curve;
+  const out = ctx.createGain();
+  out.gain.setValueAtTime(0.0001, t);
+  out.gain.exponentialRampToValueAtTime(0.75, t + 0.03);
+  out.gain.setValueAtTime(0.75, t + 0.9);
+  out.gain.exponentialRampToValueAtTime(0.001, end);
+  shaper.connect(out).connect(sting);
+
+  // Vibrato that speeds up as the scream goes on, plus a shakier, slower wobble.
+  const vibrato = ctx.createOscillator();
+  vibrato.frequency.setValueAtTime(6, t);
+  vibrato.frequency.linearRampToValueAtTime(11, end);
+  const wobble = ctx.createOscillator();
+  wobble.frequency.value = 2.3;
+
+  const pitch = 820 + Math.random() * 120;
+  const voices = [
+    // [pitch ×, detune, level, formants]
+    [1, -12, 0.3, [[1000, 5], [2700, 8], [3600, 10]]], // the shriek
+    [1, 15, 0.22, [[1000, 5], [2700, 8], [3600, 10]]],
+    [0.35, 0, 0.28, [[500, 4], [1200, 6]]], // the growl under it
+  ];
+  for (const [mul, detune, level, formants] of voices) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.detune.value = detune;
+    const f = pitch * mul;
+    // A leap up, a held wail, then the voice cracks and falls away.
+    osc.frequency.setValueAtTime(f * 0.7, t);
+    osc.frequency.exponentialRampToValueAtTime(f * 1.25, t + 0.12);
+    osc.frequency.exponentialRampToValueAtTime(f * 1.1, t + 0.7);
+    osc.frequency.setValueAtTime(f * 1.35, t + 0.72); // the crack
+    osc.frequency.exponentialRampToValueAtTime(f * 0.6, end);
+    const depth = ctx.createGain();
+    depth.gain.value = f * 0.045;
+    vibrato.connect(depth).connect(osc.frequency);
+    const shake = ctx.createGain();
+    shake.gain.value = f * 0.03;
+    wobble.connect(shake).connect(osc.frequency);
+    const gain = ctx.createGain();
+    gain.gain.value = level;
+    for (const [freq, q] of formants) {
+      const formant = ctx.createBiquadFilter();
+      formant.type = 'bandpass';
+      formant.frequency.setValueAtTime(freq, t);
+      formant.frequency.linearRampToValueAtTime(freq * 1.15, t + 0.5); // "ah" opening to "ee"
+      formant.Q.value = q;
+      osc.connect(formant).connect(gain);
+    }
+    gain.connect(shaper);
+    osc.start(t);
+    osc.stop(end);
+  }
+  vibrato.start(t);
+  vibrato.stop(end);
+  wobble.start(t);
+  wobble.stop(end);
+
+  // Ragged breath tearing through the voice.
+  const breath = noiseSource();
+  const breathFilter = ctx.createBiquadFilter();
+  breathFilter.type = 'bandpass';
+  breathFilter.frequency.value = 3000;
+  breathFilter.Q.value = 0.8;
+  const breathGain = ctx.createGain();
+  breathGain.gain.setValueAtTime(0.6, t);
+  breathGain.gain.exponentialRampToValueAtTime(0.15, t + 0.4);
+  breathGain.gain.exponentialRampToValueAtTime(0.001, end);
+  breath.connect(breathFilter).connect(breathGain).connect(shaper);
+  breath.start(t, Math.random());
+  breath.stop(end);
+}
+
 // Reverb tail generated from decaying noise, so the slam rings through the house.
 let slamReverb = null;
 function reverb(ctx) {

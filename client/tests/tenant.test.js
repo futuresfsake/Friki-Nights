@@ -40,6 +40,7 @@ function setup(seed = 1) {
     knocks: sound('knocks'),
     rattle: sound('rattle'),
     sting: sound('sting'),
+    scream: sound('scream'),
   };
   let clock = 0;
   const model = fakeModel();
