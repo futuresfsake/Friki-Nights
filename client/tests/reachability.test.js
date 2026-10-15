@@ -42,11 +42,11 @@ describe('Night 1 can be completed', () => {
 });
 
 describe('Night 1 notes', () => {
-  it('has 3–4 notes, one of which points to a fuse', () => {
+  it('has 3–7 notes (the south wing adds 3), one of which points to a fuse', () => {
     const map = parseMap(night1);
     const notes = map.objects.filter((o) => o.type === 'note');
     expect(notes.length).toBeGreaterThanOrEqual(3);
-    expect(notes.length).toBeLessThanOrEqual(4);
+    expect(notes.length).toBeLessThanOrEqual(7);
     expect(notes.some((n) => /fuse/i.test(n.text))).toBe(true);
   });
 });

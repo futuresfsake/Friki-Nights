@@ -5,6 +5,9 @@
 //   Parlor (east, locked): the house key and a fuse; leaving it slams the door (JS-02)
 //   Hall (south): fuse box at its east end; its lights (G) come on with the power
 //   Cells (off the hall): one bed each, a fuse in the last one
+//   South wing (through Cell 4's broken back wall): the Gallery, the Ballroom where
+//   Clara still dances, the Kitchen and the Library. Nothing you need is there; plenty
+//   you don't want is.
 // Puzzle chain: parlor key → parlor → house key + 3 fuses → fuse box → power → front door.
 export default {
   id: 'night1',
@@ -27,6 +30,21 @@ export default {
     '#...#...#.T.#.S.#...#...#...##',
     '#...#.B.#...#...#...#...#.U.##',
     '#C..#C..#C..#C..#CN.#C..#C..##',
+    '##############D###############',
+    '#B....S...............S......#',
+    '#..........................N.#',
+    '########D##############D######',
+    '#.................#.........B#',
+    '#..S..............#..........#',
+    '#.................#....S.....#',
+    '#.................#..........#',
+    '#.................#..........#',
+    '#........S........#####D######',
+    '#.................#..........#',
+    '#.................#..........#',
+    '#.................D..........#',
+    '#.................#..........#',
+    '#.B.............N.#.C.....N..#',
     '##############################',
   ],
   // Reading order: the house key (in the parlor) comes before the parlor key (dormitory).
@@ -38,6 +56,9 @@ export default {
     "Dearest A., the post came again and nothing from you. Mother says the sea swallows letters. I don't believe her. I believe this house. At night I hear paper tearing inside the walls. Write anyway. — E.",
     "Half a letter, torn clean down the middle: '...the brass key for the fuse box, I keep it here in the par...' and '...three fuses, love. One is in the last cell, where they put the ones who wouldn't stop wr...' The other half is gone.",
     "Day 41. They took my pen, so I scratch a line in the wall for every day without your answer. If anyone reads this: the hall lights still work. The box only needs its fuses. Then the front door will let you go. — A.",
+    "The portraits in the gallery were turned to face the wall the winter Clara died. Someone keeps turning them back. At night I hear her music box from the ballroom. Mother says nobody has wound it in years. — E.",
+    "Clara danced until her feet bled, because Father liked to watch. If you hear her music, stand still. Don't run, don't breathe. She only stops for the ones who stand still. The others she dances with. — A.",
+    "Index card, in pencil: 'Hollowmere, south wing. Closed 1931 by order of the family. Reason given: damp.' Underneath, scratched in so hard it tore the card: 'it was not the damp.'",
   ],
   triggers: [
     // A hand slams the foyer window the first time someone walks past it; everyone
@@ -64,6 +85,10 @@ export default {
     { name: 'Cell 5', x0: 17, z0: 12, x1: 19, z1: 15 },
     { name: 'Cell 6', x0: 21, z0: 12, x1: 23, z1: 15 },
     { name: 'Cell 7', x0: 25, z0: 12, x1: 27, z1: 15 },
+    { name: 'Gallery', x0: 1, z0: 17, x1: 28, z1: 18 },
+    { name: 'Ballroom', x0: 1, z0: 20, x1: 17, z1: 30 },
+    { name: 'Kitchen', x0: 19, z0: 20, x1: 28, z1: 24 },
+    { name: 'Library', x0: 19, z0: 26, x1: 28, z1: 30 },
   ],
   // Scribbles A. left on the map he drew (house map, M2-S21). Each ≤ 40 characters.
   mapNotes: [
@@ -73,6 +98,9 @@ export default {
     { x: 26, z: 13, text: 'the last one' },
     { x: 13, z: 1, text: 'OUT (when the lights live)' },
     { x: 19, z: 13, text: 'he sits here' },
+    { x: 14, z: 15, text: 'the wall is open here' },
+    { x: 9, z: 24, text: 'she still dances. DONT MOVE' },
+    { x: 24, z: 22, text: 'nobody eats here' },
   ],
   // Furniture and clutter (shared/props.js). Kept clear of doorways and the paths
   // between puzzle pieces; the reachability test walks around every solid one.
@@ -123,5 +151,48 @@ export default {
     { type: 'fallenChair', x: 22, z: 13, rot: 100 },
     { type: 'chains', x: 25, z: 13 },
     { type: 'portrait', x: 27, z: 12, side: 'e' },
+    // Gallery: portraits all the way along
+    { type: 'portrait', x: 3, z: 17, side: 'n' },
+    { type: 'portrait', x: 9, z: 17, side: 'n' },
+    { type: 'portrait', x: 18, z: 17, side: 'n' },
+    { type: 'portrait', x: 25, z: 17, side: 'n' },
+    { type: 'portrait', x: 5, z: 18, side: 's' },
+    { type: 'portrait', x: 16, z: 18, side: 's' },
+    { type: 'bench', x: 11, z: 18, side: 's' },
+    { type: 'bloodstain', x: 19, z: 18, rot: 40 },
+    { type: 'papers', x: 4, z: 18 },
+    { type: 'crates', x: 28, z: 17, side: 'e' },
+    // Ballroom
+    { type: 'clock', x: 1, z: 20, side: 'w' },
+    { type: 'portrait', x: 1, z: 23, side: 'w' },
+    { type: 'portrait', x: 1, z: 27, side: 'w' },
+    { type: 'fireplace', x: 17, z: 23, side: 'e' },
+    { type: 'rug', x: 9, z: 25 },
+    { type: 'fallenChair', x: 5, z: 27, rot: 60 },
+    { type: 'chair', x: 4, z: 23, rot: 20 },
+    { type: 'chair', x: 14, z: 21, rot: 200 },
+    { type: 'roundTable', x: 13, z: 28 },
+    { type: 'chair', x: 12, z: 28, rot: 90, dx: 0.2 },
+    { type: 'bloodstain', x: 10, z: 29, rot: 120 },
+    { type: 'papers', x: 7, z: 22 },
+    // Kitchen
+    { type: 'table', x: 24, z: 22, dz: 0.3 },
+    { type: 'chair', x: 23, z: 22, rot: 90, dx: 0.1, dz: 0.3 },
+    { type: 'fallenChair', x: 26, z: 23, rot: 250 },
+    { type: 'crates', x: 19, z: 20, side: 'n' },
+    { type: 'wardrobe', x: 28, z: 22, side: 'e' }, // the pantry
+    { type: 'bucket', x: 27, z: 24, dz: 0.4 },
+    { type: 'stool', x: 21, z: 21 },
+    { type: 'bloodstain', x: 21, z: 23, rot: 10 },
+    // Library
+    { type: 'bookshelf', x: 22, z: 30, side: 's' },
+    { type: 'bookshelf', x: 24, z: 30, side: 's' },
+    { type: 'bookshelf', x: 28, z: 27, side: 'e' },
+    { type: 'bookshelf', x: 20, z: 26, side: 'n' },
+    { type: 'rockingChair', x: 21, z: 28, rot: 120 },
+    { type: 'roundTable', x: 25, z: 28 },
+    { type: 'armchair', x: 26, z: 27, rot: 220, dx: 0.3 },
+    { type: 'rug', x: 24, z: 28, rot: 90 },
+    { type: 'papers', x: 26, z: 29 },
   ],
 };
