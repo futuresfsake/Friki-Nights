@@ -529,3 +529,121 @@ export function clockFaceTexture() {
     }
   });
 }
+
+// A mirror gone dark with age: tarnished silver, black spots where the backing has
+// rotted, and one crack spidering out from a point near the middle.
+export function mirrorTexture() {
+  const rand = mulberry32(881);
+  return canvasTexture(128, (g, s) => {
+    const silver = g.createLinearGradient(0, 0, s, s);
+    silver.addColorStop(0, '#5d625f');
+    silver.addColorStop(0.5, '#2c302f');
+    silver.addColorStop(1, '#4a4e4b');
+    g.fillStyle = silver;
+    g.fillRect(0, 0, s, s);
+    for (let i = 0; i < 25; i++) stain(g, rand() * s, rand() * s, 2 + rand() * 9, 'rgba(8,8,8,0.7)');
+    for (let i = 0; i < 6; i++) stain(g, rand() * s, s - rand() * 10, 10 + rand() * 14, 'rgba(10,10,10,0.6)');
+    const cx = s * 0.45;
+    const cy = s * 0.4;
+    g.strokeStyle = 'rgba(220,225,220,0.75)';
+    g.lineWidth = 1;
+    for (let i = 0; i < 9; i++) {
+      let x = cx;
+      let y = cy;
+      const a = (i / 9) * Math.PI * 2 + rand() * 0.4;
+      g.beginPath();
+      g.moveTo(x, y);
+      for (let k = 0; k < 6; k++) {
+        x += Math.cos(a + (rand() - 0.5) * 0.8) * (6 + rand() * 10);
+        y += Math.sin(a + (rand() - 0.5) * 0.8) * (6 + rand() * 10);
+        g.lineTo(x, y);
+      }
+      g.stroke();
+    }
+    g.strokeStyle = 'rgba(200,205,200,0.4)';
+    for (let r = 6; r < 30; r += 9) {
+      g.beginPath();
+      g.arc(cx, cy, r + rand() * 3, 0, Math.PI * 2);
+      g.stroke();
+    }
+  });
+}
+
+// An old cobweb, thick with dust. Transparent around the threads.
+export function cobwebTexture() {
+  const rand = mulberry32(457);
+  return canvasTexture(128, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    g.strokeStyle = 'rgba(210,210,200,0.55)';
+    g.lineWidth = 1;
+    const spokes = [];
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 8) * (Math.PI / 2) + (rand() - 0.5) * 0.1;
+      spokes.push(a);
+      g.beginPath();
+      g.moveTo(0, 0);
+      g.lineTo(Math.cos(a) * s * 1.1, Math.sin(a) * s * 1.1);
+      g.stroke();
+    }
+    for (let r = 10; r < s; r += 9 + rand() * 6) {
+      g.beginPath();
+      spokes.forEach((a, i) => {
+        const rr = r * (0.92 + rand() * 0.16);
+        const x = Math.cos(a) * rr;
+        const y = Math.sin(a) * rr;
+        if (i === 0) g.moveTo(x, y);
+        else g.quadraticCurveTo(Math.cos(a - 0.1) * rr * 0.9, Math.sin(a - 0.1) * rr * 0.9, x, y);
+      });
+      g.stroke();
+    }
+    // Torn strands hanging loose.
+    for (let i = 0; i < 5; i++) {
+      g.beginPath();
+      const x = rand() * s;
+      g.moveTo(x, rand() * s * 0.5);
+      g.lineTo(x + (rand() - 0.5) * 10, s);
+      g.stroke();
+    }
+  });
+}
+
+// A porcelain doll's face: chipped white, rosy cheeks gone grey, glass eyes, a crack
+// running down from one eye.
+export function dollFaceTexture() {
+  const rand = mulberry32(229);
+  return canvasTexture(64, (g, s) => {
+    g.fillStyle = '#d9d4c8';
+    g.fillRect(0, 0, s, s);
+    stain(g, s * 0.3, s * 0.62, 7, 'rgba(150,90,90,0.35)');
+    stain(g, s * 0.7, s * 0.62, 7, 'rgba(150,90,90,0.35)');
+    for (const ex of [s * 0.34, s * 0.66]) {
+      g.fillStyle = '#e8e6de';
+      g.beginPath();
+      g.ellipse(ex, s * 0.45, 6, 5, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#2a3a4a';
+      g.beginPath();
+      g.arc(ex, s * 0.45, 3.5, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#000';
+      g.fillRect(Math.round(ex) - 1, Math.round(s * 0.45) - 1, 2, 2);
+    }
+    g.fillStyle = '#6a2020';
+    g.fillRect(s * 0.45, s * 0.74, s * 0.1, 2);
+    g.strokeStyle = 'rgba(40,30,30,0.9)';
+    g.beginPath();
+    let x = s * 0.66;
+    let y = s * 0.5;
+    g.moveTo(x, y);
+    for (let i = 0; i < 6; i++) g.lineTo((x += (rand() - 0.3) * 4), (y += 3 + rand() * 3));
+    g.stroke();
+    // A chip missing from the cheek.
+    g.fillStyle = '#7a7268';
+    g.beginPath();
+    g.moveTo(s * 0.12, s * 0.7);
+    g.lineTo(s * 0.24, s * 0.66);
+    g.lineTo(s * 0.2, s * 0.8);
+    g.fill();
+    speckle(g, s, rand, 150, 0.15);
+  });
+}

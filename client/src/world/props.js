@@ -1,11 +1,21 @@
 import * as THREE from 'three';
 import { WALL_HEIGHT } from '../../../shared/constants.js';
-import { bloodTexture, clockFaceTexture, paperTexture, portraitTexture, rugTexture, woodTexture } from './textures.js';
+import {
+  bloodTexture,
+  clockFaceTexture,
+  cobwebTexture,
+  dollFaceTexture,
+  mirrorTexture,
+  paperTexture,
+  portraitTexture,
+  rugTexture,
+  woodTexture,
+} from './textures.js';
 
 // Furniture and clutter from the map's props list (placed by shared/props.js). Every
 // piece is built from boxes and cylinders, centred on its footprint with its back to
 // local -z (the wall) and its front to +z. Built once, never changes, except the clock
-// pendulum and the rocking chair, which move in update().
+// pendulum, the rocking chair, the chandelier and the dolls, which move in update().
 
 let materials = null;
 function mats() {
@@ -23,6 +33,16 @@ function mats() {
     rug: new THREE.MeshLambertMaterial({ map: rugTexture() }),
     blood: new THREE.MeshLambertMaterial({ map: bloodTexture(), transparent: true, depthWrite: false }),
     face: new THREE.MeshLambertMaterial({ map: clockFaceTexture() }),
+    // Dust sheets catch whatever light there is, so they're the first thing you see.
+    sheet: new THREE.MeshLambertMaterial({ color: 0xb9b5a9, emissive: 0x16161a }),
+    porcelain: new THREE.MeshLambertMaterial({ color: 0xd8d2c4 }),
+    dollFace: new THREE.MeshLambertMaterial({ map: dollFaceTexture() }),
+    dress: new THREE.MeshLambertMaterial({ color: 0x5a3a44 }),
+    hair: new THREE.MeshLambertMaterial({ color: 0x3a2a1a }),
+    ivory: new THREE.MeshLambertMaterial({ color: 0xbdb39a }),
+    mirror: new THREE.MeshLambertMaterial({ map: mirrorTexture(), emissive: 0x0c0d0d }),
+    web: new THREE.MeshBasicMaterial({ map: cobwebTexture(), transparent: true, depthWrite: false, side: THREE.DoubleSide, opacity: 0.8 }),
+    wax: new THREE.MeshLambertMaterial({ color: 0xcfc6a8 }),
   };
   return materials;
 }
@@ -234,6 +254,130 @@ const BUILDERS = {
         shackle.position.set(x, WALL_HEIGHT - 0.1 - links * 0.06, 0);
         g.add(shackle);
       }
+    }
+  },
+  piano(g, m, def) {
+    box(g, def.w, def.h, def.d * 0.6, m.darkWood, 0, def.h / 2, -def.d * 0.2);
+    box(g, def.w, 0.08, def.d, m.darkWood, 0, 0.72, 0); // key bed
+    box(g, def.w - 0.12, 0.02, 0.16, m.ivory, 0, 0.77, def.d / 2 - 0.1);
+    // Black keys in twos and threes; a few missing.
+    for (let i = 0; i < 36; i++) {
+      if (i % 7 === 2 || i % 7 === 6 || i === 17) continue;
+      box(g, 0.012, 0.025, 0.09, m.void, -def.w / 2 + 0.12 + i * 0.036, 0.79, def.d / 2 - 0.13);
+    }
+    for (const sx of [-1, 1]) box(g, 0.06, 0.72, 0.06, m.darkWood, sx * (def.w / 2 - 0.05), 0.36, def.d / 2 - 0.05);
+    box(g, 0.5, 0.3, 0.02, m.paper, 0, 0.98, def.d * 0.1 + 0.01); // sheet music
+    box(g, def.w + 0.04, 0.04, def.d * 0.65, m.wood, 0, def.h, -def.d * 0.18);
+  },
+  stove(g, m, def) {
+    box(g, def.w, def.h, def.d, m.iron, 0, def.h / 2, 0);
+    box(g, def.w * 0.42, def.h * 0.45, 0.02, m.void, -def.w * 0.2, def.h * 0.35, def.d / 2 + 0.005); // oven
+    box(g, def.w * 0.3, def.h * 0.3, 0.02, m.ash, def.w * 0.25, def.h * 0.4, def.d / 2 + 0.005); // firebox
+    for (const x of [-0.25, 0.2]) cylinder(g, 0.13, 0.13, 0.02, m.void, x, def.h + 0.01, 0.05, 10);
+    cylinder(g, 0.07, 0.07, WALL_HEIGHT - def.h, m.iron, def.w / 2 - 0.15, def.h + (WALL_HEIGHT - def.h) / 2, -def.d / 2 + 0.12, 8);
+    // A pot left on the stove, something black dried inside it.
+    cylinder(g, 0.13, 0.11, 0.18, m.iron, -0.25, def.h + 0.1, 0.05, 10);
+    cylinder(g, 0.12, 0.12, 0.005, m.void, -0.25, def.h + 0.19, 0.05, 10);
+  },
+  counter(g, m, def) {
+    box(g, def.w, def.h - 0.05, def.d, m.wood, 0, (def.h - 0.05) / 2, 0);
+    box(g, def.w + 0.04, 0.05, def.d + 0.04, m.stone, 0, def.h - 0.025, 0);
+    for (let i = 0; i < 3; i++) box(g, def.w / 3 - 0.06, def.h - 0.2, 0.02, m.darkWood, -def.w / 3 + i * (def.w / 3), (def.h - 0.05) / 2, def.d / 2 + 0.005);
+    box(g, 0.55, 0.02, 0.38, m.void, -0.3, def.h + 0.001, 0); // the sink
+    cylinder(g, 0.015, 0.015, 0.3, m.brass, -0.3, def.h + 0.15, -def.d / 2 + 0.08, 6);
+    box(g, 0.02, 0.02, 0.14, m.brass, -0.3, def.h + 0.3, -def.d / 2 + 0.14);
+    // Plates stacked, a knife.
+    for (let i = 0; i < 4; i++) cylinder(g, 0.11, 0.1, 0.012, m.porcelain, 0.45, def.h + 0.01 + i * 0.014, 0, 10);
+    box(g, 0.02, 0.005, 0.24, m.iron, 0.15, def.h + 0.005, 0.1).rotation.y = 0.6;
+  },
+  mirror(g, m, def) {
+    box(g, def.w, def.h, 0.04, m.darkWood, 0, 1.6, 0);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(def.w - 0.1, def.h - 0.1), m.mirror);
+    glass.position.set(0, 1.6, 0.025);
+    g.add(glass);
+  },
+  desk(g, m, def) {
+    box(g, def.w, 0.05, def.d, m.wood, 0, def.h, 0);
+    box(g, 0.4, def.h - 0.05, def.d, m.wood, def.w / 2 - 0.2, (def.h - 0.05) / 2, 0); // drawers
+    for (let i = 0; i < 3; i++) box(g, 0.34, 0.18, 0.02, m.darkWood, def.w / 2 - 0.2, 0.15 + i * 0.22, def.d / 2 + 0.01);
+    legs(g, def.w, def.d, def.h, m.darkWood, 0.05);
+    const sheet = decal(g, 0.22, 0.29, m.paper, def.h + 0.03);
+    sheet.position.x = -0.2;
+    sheet.rotation.z = 0.2;
+    cylinder(g, 0.04, 0.04, 0.05, m.void, 0.1, def.h + 0.05, -0.15, 8); // inkwell
+    cylinder(g, 0.025, 0.025, 0.12, m.wax, -0.45, def.h + 0.085, -0.18, 6); // candle
+  },
+  sheetChair(g, m, def) {
+    // An armchair under a dust sheet. The rounded top reads as a head and shoulders.
+    cylinder(g, def.w * 0.42, def.w * 0.56, 0.55, m.sheet, 0, 0.275, 0, 10);
+    const back = cylinder(g, def.w * 0.32, def.w * 0.42, 0.5, m.sheet, 0, 0.78, -0.18, 10);
+    back.scale.z = 0.6;
+    const top = new THREE.Mesh(new THREE.SphereGeometry(0.17, 8, 6), m.sheet);
+    top.position.set(0, 1.03, -0.15);
+    top.scale.set(1, 1.1, 0.9);
+    g.add(top);
+  },
+  chandelier(g, m, def, rand) {
+    // Hangs from the ceiling and sways, very slowly, with a creak now and then.
+    const pivot = new THREE.Group();
+    pivot.position.y = WALL_HEIGHT;
+    g.add(pivot);
+    cylinder(pivot, 0.012, 0.012, 0.6, m.iron, 0, -0.3, 0, 4);
+    cylinder(pivot, 0.08, 0.05, 0.25, m.brass, 0, -0.72, 0, 8);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(def.w / 2 - 0.1, 0.015, 4, 16), m.brass);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = -0.82;
+    pivot.add(ring);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const r = def.w / 2 - 0.1;
+      if (rand() < 0.8) cylinder(pivot, 0.02, 0.02, 0.07 + rand() * 0.08, m.wax, Math.cos(a) * r, -0.76, Math.sin(a) * r, 5);
+      const drop = box(pivot, 0.02, 0.07, 0.02, m.ivory, Math.cos(a + 0.4) * r, -0.9, Math.sin(a + 0.4) * r);
+      drop.rotation.y = a;
+    }
+    let creakAt = 15 + rand() * 40;
+    return (time, events) => {
+      pivot.rotation.z = Math.sin(time * 0.4) * 0.025;
+      pivot.rotation.x = Math.sin(time * 0.31 + 1) * 0.02;
+      if (time > creakAt) {
+        creakAt = time + 40 + Math.random() * 80;
+        events.creak?.();
+      }
+    };
+  },
+  doll(g, m) {
+    // Sitting on the floor, legs straight out, facing the room. Every so often its
+    // head is turned somewhere else.
+    const dress = cylinder(g, 0.06, 0.13, 0.18, m.dress, 0, 0.09, 0, 8);
+    dress.scale.z = 0.8;
+    for (const sx of [-1, 1]) {
+      box(g, 0.035, 0.035, 0.16, m.porcelain, sx * 0.04, 0.02, 0.1);
+      box(g, 0.03, 0.12, 0.03, m.porcelain, sx * 0.08, 0.12, 0.02).rotation.z = sx * 0.3;
+    }
+    const head = new THREE.Group();
+    head.position.y = 0.2;
+    g.add(head);
+    // Faces: +x, -x, +y, -y, +z (front, the face), -z.
+    const skull = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.11, 0.1), [m.porcelain, m.porcelain, m.hair, m.porcelain, m.dollFace, m.hair]);
+    skull.position.y = 0.055;
+    head.add(skull);
+    box(head, 0.11, 0.08, 0.04, m.hair, 0, 0.06, -0.05);
+    let turnAt = 10 + Math.random() * 30;
+    return (time) => {
+      if (time < turnAt) return;
+      turnAt = time + 20 + Math.random() * 40;
+      head.rotation.y = Math.random() < 0.4 ? 0 : (Math.random() - 0.5) * 3;
+      head.rotation.z = (Math.random() - 0.5) * 0.6;
+    };
+  },
+  cobweb(g, m, def, rand) {
+    // Strung across the ceiling of the cell (move it into a corner with dx / dz).
+    for (let i = 0; i < 2; i++) {
+      const web = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), m.web);
+      web.position.set(0, WALL_HEIGHT - def.h / 2 - i * 0.1, 0);
+      web.rotation.y = Math.PI / 4 + (rand() - 0.5) * 0.3;
+      web.rotation.x = 0.2;
+      g.add(web);
     }
   },
   houseMap(g, m, def) {
