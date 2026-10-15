@@ -134,6 +134,9 @@ const scares = createScares({
     now: () => clock.elapsedTime,
     audio: () => audio,
     sting: () => audio && screamSting(audio),
+    scream: () => audio && ghostScream(audio),
+    breathe: (x, z, seconds) => audio && breathing(audio, x, 1.6, z, seconds),
+    giggle: (x, z) => audio && giggle(audio, x, 1.65, z, 1),
     slamDoor,
     whispers,
     windows,
@@ -522,6 +525,7 @@ renderer.setAnimationLoop(() => {
       flashlightOn: flashlight.state.on,
     });
     if (tenant) flashlight.spot.intensity *= tenant.lightFactor();
+    flashlight.spot.intensity *= effects.lightFactor(time);
     hud.setBattery(flashlight.state.battery);
     hud.setPrompt(describe(interaction.lookTarget()));
     maybeKnock(time);

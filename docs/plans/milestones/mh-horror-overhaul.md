@@ -16,7 +16,7 @@
 | MH-S03 | A real abandoned house, not Minecraft blocks | Must | L | ⬜ |
 | MH-S04 | Bigger house: the south wing and the Ballroom | Must | L | 🧪 built |
 | MH-S05 | The ballerina: don't move | Must | M | 🧪 built |
-| MH-S06 | JS-01 face in the flashlight, scarier | Must | M | ⬜ |
+| MH-S06 | JS-01 face in the flashlight, scarier | Must | M | 🧪 built |
 | MH-S07 | More things in the house | Must | M | 🧪 built |
 
 **7 stories · 0 done** (7 Must · 0 Should · 0 Could)
@@ -121,11 +121,13 @@ Proposed layout (Night 1 grid grows from 30×17 to 30×32):
 
 ### MH-S06 · JS-01 face in the flashlight, scarier
 
-**Priority:** Must · **Size:** M · **Status:** ⬜ · **Traces:** M2 JS-01
+**Priority:** Must · **Size:** M · **Status:** 🧪 built · **Traces:** M2 JS-01
 
 > As a player, I want the face that appears when I take the parlor key to be even scarier, so that it's the scare everyone remembers.
 
 The owner likes this scare and wants more of it.
+
+**Built** (`client/src/scares/faceInFlashlight.js`): flicker 0.7 s with breathing in front → a head with long black hair and shoulders staring from 2.3 m (0.45 s) → lunges to 0.33 m in 0.14 s, jaw opening → girl scream, red flash, shake 0.16 for 0.9 s (0.7 s in your face) → 1.1 s blackout → giggle behind you. New `effects.flicker()` / `lightFactor()`.
 
 **Acceptance criteria**
 - Before: the flashlight flickers for a moment and you hear a breath right in front of you
