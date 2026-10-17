@@ -24,7 +24,7 @@ export default {
     '#.......#.........#.........N#',
     '#############D################',
     '#.....G...............G.....F#',
-    '#.............G..............#',
+    '#.............G.T............#',
     '##D###D###D###D###D###D###D###',
     '#...#...#...#...#...#...#...##',
     '#...#...#.T.#.S.#...#...#...##',
@@ -67,6 +67,7 @@ export default {
     // Leaving the parlor with the house key: the parlor door slams behind the player.
     { scare: 'JS-02', once: true, door: 'door-18-4', onlyIf: { doorOpen: 'door-18-4', hasKey: 'house' } },
     { scare: 'whisper' }, // dormitory, in the dark
+    { scare: 'JS-03', once: true }, // hall, the lights die
     { scare: 'whisper', duration: 3.5 }, // cells
     // Walking into the Ballroom: Clara dances. Don't move. (The client plays her only the
     // first time each player walks in.)
