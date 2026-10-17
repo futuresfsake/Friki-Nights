@@ -280,5 +280,16 @@ export default {
     { type: 'bloodWriting', x: 20, z: 26, side: 'n', text: 'LOOK BEHIND YOU' }, // library
     { type: 'footprints', x: 12, z: 28 }, // ballroom, more of Clara's prints
     { type: 'bloodDrip', x: 21, z: 14 }, // cell 6
+    // More things in the house (MH-S13)
+    { type: 'doll', x: 1, z: 13, rot: 90 }, // cell 1, facing the door
+    { type: 'cobweb', x: 28, z: 1, dx: 0.6, dz: -0.6 }, // parlor ceiling corner
+    { type: 'chains', x: 9, z: 14 }, // cell 3, hanging from the ceiling
+    { type: 'doll', x: 25, z: 14, rot: 270 }, // cell 7, facing the wall
+    { type: 'cobweb', x: 1, z: 20, dx: -0.6, dz: -0.6 }, // ballroom corner
+    { type: 'sheetChair', x: 3, z: 21, rot: 150 }, // ballroom, looks like someone sitting
+    { type: 'doll', x: 15, z: 24, rot: 180 }, // ballroom, watching the dance
+    { type: 'cobweb', x: 28, z: 30, dx: 0.6, dz: 0.6 }, // library floor corner
+    { type: 'chains', x: 22, z: 14 }, // cell 6
+    { type: 'fallenChair', x: 23, z: 24, rot: 140 }, // kitchen, knocked over
   ],
 };
