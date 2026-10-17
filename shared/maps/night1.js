@@ -81,7 +81,10 @@ export default {
     { scare: 'JS-08' }, // ballroom, breathing behind you near the mirrors
     { scare: 'JS-04', once: true }, // ballroom, the piano plays itself
   ],
-  eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
+  eventTriggers: [
+    { when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true },
+    { when: { type: 'fuse-placed' }, scare: 'JS-05', once: true },
+  ],
   fuseBoxKey: 'house',
   // Named areas for the house map (inclusive cell ranges). Entering one marks it on
   // your map.
@@ -113,6 +116,9 @@ export default {
     { x: 14, z: 15, text: 'the wall is open here' },
     { x: 9, z: 24, text: 'she still dances. DONT MOVE' },
     { x: 24, z: 22, text: 'nobody eats here' },
+    { x: 5, z: 13, text: 'he scratches all night' },
+    { x: 22, z: 28, text: 'the photos. THE ROOM.' },
+    { x: 4, z: 28, text: 'she was here last night' },
   ],
   // Furniture and clutter (shared/props.js). Kept clear of doorways and the paths
   // between puzzle pieces; the reachability test walks around every solid one.

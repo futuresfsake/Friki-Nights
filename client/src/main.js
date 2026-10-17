@@ -13,6 +13,7 @@ import { lightsOutScare } from './scares/lightsOut.js';
 import { pianoScare } from './scares/pianoScare.js';
 import { portraitCrashScare } from './scares/portraitCrash.js';
 import { scratchingScare } from './scares/scratching.js';
+import { fuseStingScare } from './scares/fuseSting.js';
 import { whisperScare } from './scares/whisper.js';
 import { windowHandScare } from './scares/windowHand.js';
 import { createScares } from './scares/scares.js';
@@ -182,6 +183,7 @@ scares.register('JS-06', windowHandScare);
 scares.register('JS-04', pianoScare);
 scares.register('JS-08', breathBehindScare);
 scares.register('JS-09', blackoutGiggleScare);
+scares.register('JS-05', fuseStingScare);
 scares.register('JS-10', portraitCrashScare);
 // Clara dances in the Ballroom (MH-S05): the Tenant plays her, for this player only,
 // the first time they walk in.
