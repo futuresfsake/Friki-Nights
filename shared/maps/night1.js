@@ -36,7 +36,7 @@ export default {
     '########D##############D######',
     '#.......T.........#.........B#',
     '#..S..............#..........#',
-    '#.................#....S.....#',
+    '#.................#..T.S.....#',
     '#.................#..........#',
     '#.................#..........#',
     '#........S........#####D######',
@@ -74,6 +74,7 @@ export default {
     // Walking into the Ballroom: Clara dances. Don't move. (The client plays her only the
     // first time each player walks in.)
     { scare: 'ballerina' },
+    { scare: 'JS-09', once: true }, // kitchen, blackout and a giggle behind you
   ],
   eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
   fuseBoxKey: 'house',
