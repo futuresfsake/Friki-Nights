@@ -720,6 +720,48 @@ export function musicBox(audio, x, y, z, seconds = 9) {
   };
 }
 
+// A heavy frame crashing to the floor: wood snapping, glass shattering, thud.
+export function frameCrash(audio, x, y, z) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t = ctx.currentTime;
+
+  const crack = noiseSource();
+  const crackFilter = ctx.createBiquadFilter();
+  crackFilter.type = 'bandpass';
+  crackFilter.frequency.value = 1800;
+  crackFilter.Q.value = 3;
+  const crackGain = ctx.createGain();
+  crackGain.gain.setValueAtTime(1.2, t);
+  crackGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  crack.connect(crackFilter).connect(crackGain).connect(out);
+  crack.start(t, Math.random());
+  crack.stop(t + 0.16);
+
+  const thud = ctx.createOscillator();
+  thud.frequency.setValueAtTime(80, t + 0.02);
+  thud.frequency.exponentialRampToValueAtTime(30, t + 0.22);
+  const thudGain = ctx.createGain();
+  thudGain.gain.setValueAtTime(0.0001, t);
+  thudGain.gain.setValueAtTime(1.0, t + 0.02);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.27);
+  thud.connect(thudGain).connect(out);
+  thud.start(t);
+  thud.stop(t + 0.28);
+
+  const glass = noiseSource();
+  const glassFilter = ctx.createBiquadFilter();
+  glassFilter.type = 'highpass';
+  glassFilter.frequency.value = 3200;
+  const glassGain = ctx.createGain();
+  glassGain.gain.setValueAtTime(0.0001, t);
+  glassGain.gain.setValueAtTime(0.4, t + 0.04);
+  glassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+  glass.connect(glassFilter).connect(glassGain).connect(out);
+  glass.start(t + 0.04, Math.random());
+  glass.stop(t + 0.42);
+}
+
 // Fingernails scratching on wood inside a wall, placed in 3D: short raspy
 // strokes with pauses, like something trying to claw its way out.
 export function scratching(audio, x, y, z, duration = 4) {

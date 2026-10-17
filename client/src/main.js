@@ -8,6 +8,7 @@ import { createEffects } from './scares/effects.js';
 import { paintBloodSplatter } from './world/textures.js';
 import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { lightsOutScare } from './scares/lightsOut.js';
+import { portraitCrashScare } from './scares/portraitCrash.js';
 import { scratchingScare } from './scares/scratching.js';
 import { whisperScare } from './scares/whisper.js';
 import { windowHandScare } from './scares/windowHand.js';
@@ -24,6 +25,7 @@ import {
   flashlightClick,
   footstep,
   footstepAt,
+  frameCrash,
   glassBang,
   scratching,
   fuseClunk,
@@ -163,6 +165,7 @@ const scares = createScares({
     windows,
     glassBang,
     scratching,
+    frameCrash,
   },
 });
 scares.register('JS-01', faceInFlashlight);
@@ -171,6 +174,7 @@ scares.register('whisper', whisperScare);
 scares.register('JS-03', lightsOutScare);
 scares.register('scratching', scratchingScare);
 scares.register('JS-06', windowHandScare);
+scares.register('JS-10', portraitCrashScare);
 // Clara dances in the Ballroom (MH-S05): the Tenant plays her, for this player only,
 // the first time they walk in.
 let metClara = false;

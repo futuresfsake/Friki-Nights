@@ -31,7 +31,7 @@ export default {
     '#...#.B.#...#...#...#...#.U.##',
     '#C..#C..#C..#C..#CN.#C..#C..##',
     '##############D###############',
-    '#B....S...............S......#',
+    '#B....S.......T.......S......#',
     '#..........................N.#',
     '########D##############D######',
     '#.......T.........#.........B#',
@@ -70,6 +70,7 @@ export default {
     { scare: 'JS-03', once: true }, // hall, the lights die
     { scare: 'scratching' }, // cell 5, something in the walls
     { scare: 'whisper', duration: 3.5 }, // cells
+    { scare: 'JS-10', once: true }, // gallery, a portrait crashes down
     // Walking into the Ballroom: Clara dances. Don't move. (The client plays her only the
     // first time each player walks in.)
     { scare: 'ballerina' },
