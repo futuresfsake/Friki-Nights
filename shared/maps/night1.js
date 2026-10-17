@@ -266,5 +266,16 @@ export default {
     { type: 'bloodDrip', x: 22, z: 22 },
     { type: 'bloodWriting', x: 28, z: 26, side: 'e', text: 'IT WAS NOT THE DAMP' }, // library
     { type: 'bloodHands', x: 19, z: 27, side: 'w' },
+    // More blood (MH-S12)
+    { type: 'bloodWriting', x: 1, z: 3, side: 'w', text: 'THEY HEAR YOU BREATHING' }, // dormitory, by the beds
+    { type: 'bloodWriting', x: 15, z: 15, side: 's', text: 'COUNT THE DAYS' }, // cell 4, south wall
+    { type: 'bloodHands', x: 28, z: 2, side: 'e' }, // parlor, cornered
+    { type: 'bloodDrip', x: 13, z: 10 }, // hall, under the lights
+    { type: 'bloodTrail', x: 3, z: 18, rot: 0 }, // gallery, dragged sideways
+    { type: 'bloodWriting', x: 1, z: 20, side: 'w', text: 'SHE KNOWS YOUR NAME' }, // ballroom entrance
+    { type: 'bloodHands', x: 19, z: 22, side: 'w' }, // kitchen doorway
+    { type: 'bloodWriting', x: 20, z: 26, side: 'n', text: 'LOOK BEHIND YOU' }, // library
+    { type: 'footprints', x: 12, z: 28 }, // ballroom, more of Clara's prints
+    { type: 'bloodDrip', x: 21, z: 14 }, // cell 6
   ],
 };
