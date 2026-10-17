@@ -10,6 +10,7 @@ import { faceInFlashlight } from './scares/faceInFlashlight.js';
 import { blackoutGiggleScare } from './scares/blackoutGiggle.js';
 import { breathBehindScare } from './scares/breathBehind.js';
 import { lightsOutScare } from './scares/lightsOut.js';
+import { pianoScare } from './scares/pianoScare.js';
 import { portraitCrashScare } from './scares/portraitCrash.js';
 import { scratchingScare } from './scares/scratching.js';
 import { whisperScare } from './scares/whisper.js';
@@ -27,6 +28,7 @@ import {
   flashlightClick,
   footstep,
   footstepAt,
+  discordPiano,
   frameCrash,
   glassBang,
   scratching,
@@ -168,6 +170,7 @@ const scares = createScares({
     glassBang,
     scratching,
     frameCrash,
+    discordPiano,
   },
 });
 scares.register('JS-01', faceInFlashlight);
@@ -176,6 +179,7 @@ scares.register('whisper', whisperScare);
 scares.register('JS-03', lightsOutScare);
 scares.register('scratching', scratchingScare);
 scares.register('JS-06', windowHandScare);
+scares.register('JS-04', pianoScare);
 scares.register('JS-08', breathBehindScare);
 scares.register('JS-09', blackoutGiggleScare);
 scares.register('JS-10', portraitCrashScare);

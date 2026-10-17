@@ -43,7 +43,7 @@ export default {
     '#.................#..........#',
     '#...............T.#..........#',
     '#.................D..........#',
-    '#.................#..........#',
+    '#........T........#..........#',
     '#.B.............N.#.C.....N..#',
     '##############################',
   ],
@@ -76,6 +76,7 @@ export default {
     { scare: 'ballerina' },
     { scare: 'JS-09', once: true }, // kitchen, blackout and a giggle behind you
     { scare: 'JS-08' }, // ballroom, breathing behind you near the mirrors
+    { scare: 'JS-04', once: true }, // ballroom, the piano plays itself
   ],
   eventTriggers: [{ when: { type: 'item-taken', keyId: 'parlor' }, scare: 'JS-01', once: true }],
   fuseBoxKey: 'house',

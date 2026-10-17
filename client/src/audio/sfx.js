@@ -720,6 +720,35 @@ export function musicBox(audio, x, y, z, seconds = 9) {
   };
 }
 
+// A few wrong notes on a broken piano, each one more frantic than the last.
+// Low chromatic cluster, badly out of tune, through the master bus so the
+// sound fills the room.
+export function discordPiano(audio) {
+  const { ctx, master } = audio;
+  const t0 = ctx.currentTime + 0.1;
+  const notes = [36, 41, 43, 37, 48, 35, 44];
+  for (let i = 0; i < notes.length; i++) {
+    const t = t0 + i * (0.28 - i * 0.02) + Math.random() * 0.04;
+    const freq = 440 * 2 ** ((notes[i] - 69) / 12);
+    for (const [mul, level, decay] of [
+      [1, 0.25, 2.5],
+      [2, 0.06, 0.8],
+      [3.01, 0.03, 0.4],
+    ]) {
+      const osc = ctx.createOscillator();
+      osc.frequency.value = freq * mul;
+      osc.detune.value = (Math.random() - 0.5) * 35;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(level, t + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.001, t + decay);
+      osc.connect(g).connect(master);
+      osc.start(t);
+      osc.stop(t + decay + 0.05);
+    }
+  }
+}
+
 // A heavy frame crashing to the floor: wood snapping, glass shattering, thud.
 export function frameCrash(audio, x, y, z) {
   const { ctx, noiseSource, panner } = audio;
