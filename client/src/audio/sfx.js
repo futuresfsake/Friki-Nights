@@ -720,6 +720,35 @@ export function musicBox(audio, x, y, z, seconds = 9) {
   };
 }
 
+// Fingernails scratching on wood inside a wall, placed in 3D: short raspy
+// strokes with pauses, like something trying to claw its way out.
+export function scratching(audio, x, y, z, duration = 4) {
+  const { ctx, noiseSource, panner } = audio;
+  const out = panner(x, y, z);
+  const t0 = ctx.currentTime + 0.05;
+  const src = noiseSource();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 2200;
+  filter.Q.value = 2;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, t0);
+  src.connect(filter).connect(gain).connect(out);
+
+  let t = t0;
+  while (t < t0 + duration) {
+    const stroke = 0.06 + Math.random() * 0.1;
+    const peak = 0.12 + Math.random() * 0.15;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(peak, t + stroke * 0.3);
+    gain.gain.linearRampToValueAtTime(0, t + stroke);
+    t += stroke + Math.random() * 0.12;
+    if (Math.random() < 0.2) t += 0.4 + Math.random() * 0.6;
+  }
+  src.start(t0, Math.random());
+  src.stop(t + 0.05);
+}
+
 // One tick of the grandfather clock, placed in 3D. tock: the deeper second beat.
 export function clockTick(audio, x, y, z, tock = false) {
   const { ctx, noiseSource, panner } = audio;
