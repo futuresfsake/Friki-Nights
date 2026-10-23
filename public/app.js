@@ -68,7 +68,7 @@ socket.on('chat-message', (data) => {
       ${!isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
       <div class="msg-bubble">
         <div class="msg-author">${escapeHtml(data.username)}</div>
-        <div class="msg-text">${escapeHtml(data.message)}</div>
+        <div class="msg-text">${convertEmojis(escapeHtml(data.message))}</div>
         <div class="msg-time">${time}</div>
       </div>
       ${isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
@@ -140,4 +140,30 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+const EMOJI_MAP = {
+  ':)': '\u{1F642}', ':-)': '\u{1F642}', ':D': '\u{1F604}', ':-D': '\u{1F604}',
+  ':(': '\u{1F641}', ':-(': '\u{1F641}', ';)': '\u{1F609}', ';-)': '\u{1F609}',
+  ':P': '\u{1F61B}', ':-P': '\u{1F61B}', ':O': '\u{1F62E}', ':-O': '\u{1F62E}',
+  '<3': '\u{2764}\u{FE0F}', 'XD': '\u{1F606}', 'xD': '\u{1F606}',
+  ':fire:': '\u{1F525}', ':heart:': '\u{2764}\u{FE0F}', ':star:': '\u{2B50}',
+  ':thumbsup:': '\u{1F44D}', ':thumbsdown:': '\u{1F44E}', ':clap:': '\u{1F44F}',
+  ':laugh:': '\u{1F602}', ':cry:': '\u{1F622}', ':angry:': '\u{1F620}',
+  ':cool:': '\u{1F60E}', ':thinking:': '\u{1F914}', ':rocket:': '\u{1F680}',
+  ':wave:': '\u{1F44B}', ':100:': '\u{1F4AF}', ':eyes:': '\u{1F440}',
+  ':skull:': '\u{1F480}', ':ghost:': '\u{1F47B}', ':alien:': '\u{1F47D}',
+  ':robot:': '\u{1F916}', ':game:': '\u{1F3AE}', ':trophy:': '\u{1F3C6}',
+  ':pizza:': '\u{1F355}', ':beer:': '\u{1F37A}', ':party:': '\u{1F389}',
+  ':moon:': '\u{1F319}', ':sun:': '\u{2600}\u{FE0F}', ':gg:': '\u{1F3AE}\u{1F44D}',
+  ':lol:': '\u{1F602}', ':brb:': '\u{1F3C3}', ':nerd:': '\u{1F913}',
+  ':check:': '\u{2705}', ':x:': '\u{274C}', ':poop:': '\u{1F4A9}'
+};
+
+function convertEmojis(text) {
+  let result = text;
+  for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+    result = result.split(code).join(emoji);
+  }
+  return result;
 }
