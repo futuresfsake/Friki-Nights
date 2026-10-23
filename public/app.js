@@ -42,6 +42,22 @@ function playNotificationSound() {
 }
 
 const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+const themeToggle = document.getElementById('theme-toggle');
+
+(function initTheme() {
+  try {
+    const saved = localStorage.getItem('friki-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {}
+})();
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  themeToggle.innerHTML = next === 'light' ? '&#9728;' : '&#9789;';
+  try { localStorage.setItem('friki-theme', next); } catch (e) {}
+});
 
 messagesDiv.addEventListener('scroll', () => {
   const distFromBottom = messagesDiv.scrollHeight - messagesDiv.scrollTop - messagesDiv.clientHeight;
