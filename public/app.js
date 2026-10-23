@@ -41,6 +41,18 @@ function playNotificationSound() {
   osc.stop(audioCtx.currentTime + 0.3);
 }
 
+const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+
+messagesDiv.addEventListener('scroll', () => {
+  const distFromBottom = messagesDiv.scrollHeight - messagesDiv.scrollTop - messagesDiv.clientHeight;
+  scrollBottomBtn.classList.toggle('hidden', distFromBottom < 100);
+});
+
+scrollBottomBtn.addEventListener('click', () => {
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  scrollBottomBtn.classList.add('hidden');
+});
+
 joinForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const username = usernameInput.value.trim();
