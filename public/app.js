@@ -68,7 +68,7 @@ socket.on('chat-message', (data) => {
       ${!isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
       <div class="msg-bubble">
         <div class="msg-author">${escapeHtml(data.username)}</div>
-        <div class="msg-text">${convertEmojis(escapeHtml(data.message))}</div>
+        <div class="msg-text">${linkifyUrls(convertEmojis(escapeHtml(data.message)))}</div>
         <div class="msg-time">${time}</div>
       </div>
       ${isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
@@ -166,4 +166,11 @@ function convertEmojis(text) {
     result = result.split(code).join(emoji);
   }
   return result;
+}
+
+function linkifyUrls(text) {
+  return text.replace(
+    /(https?:\/\/[^\s<>"']+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>'
+  );
 }

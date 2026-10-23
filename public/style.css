@@ -359,6 +359,17 @@ main {
   text-align: right;
 }
 
+.chat-link {
+  color: #93c5fd;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.chat-link:hover {
+  color: #bfdbfe;
+}
+
 .system-msg {
   text-align: center;
   color: var(--text-muted);
