@@ -51,6 +51,20 @@ const themeToggle = document.getElementById('theme-toggle');
   } catch (e) {}
 })();
 
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+sidebarToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  sidebarOverlay.classList.toggle('open');
+});
+
+sidebarOverlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  sidebarOverlay.classList.remove('open');
+});
+
 themeToggle.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme');
   const next = current === 'light' ? 'dark' : 'light';

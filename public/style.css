@@ -505,10 +505,51 @@ main {
   border-radius: 3px;
 }
 
+.mobile-only {
+  display: none;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
+  .mobile-only {
+    display: flex;
+  }
+
   #sidebar {
     display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+    padding-top: 4rem;
+  }
+
+  #sidebar.open {
+    display: block;
+  }
+
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+  }
+
+  #sidebar-overlay.open {
+    display: block;
+  }
+
+  #sidebar-toggle {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0.25rem;
   }
 
   .join-container {
