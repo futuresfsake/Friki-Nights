@@ -52,7 +52,10 @@
         <button id="scroll-bottom-btn" class="hidden" aria-label="Scroll to bottom">&darr;</button>
         <div id="typing-indicator" class="hidden"></div>
         <form id="message-form">
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" maxlength="1000">
+          <div class="input-wrapper">
+            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" maxlength="1000">
+            <span id="char-count" class="char-count">0/1000</span>
+          </div>
           <button type="submit">Send</button>
         </form>
       </main>

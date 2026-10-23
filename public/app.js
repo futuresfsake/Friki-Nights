@@ -104,8 +104,12 @@ messageForm.addEventListener('submit', (e) => {
   socket.emit('chat-message', { message });
   socket.emit('stop-typing');
   messageInput.value = '';
+  charCount.textContent = '0/1000';
+  charCount.classList.remove('warning', 'danger');
   messageInput.focus();
 });
+
+const charCount = document.getElementById('char-count');
 
 messageInput.addEventListener('input', () => {
   socket.emit('typing');
@@ -113,6 +117,11 @@ messageInput.addEventListener('input', () => {
   typingTimeout = setTimeout(() => {
     socket.emit('stop-typing');
   }, 1500);
+
+  const len = messageInput.value.length;
+  charCount.textContent = `${len}/1000`;
+  charCount.classList.toggle('warning', len > 800 && len <= 950);
+  charCount.classList.toggle('danger', len > 950);
 });
 
 function getInitials(name) {

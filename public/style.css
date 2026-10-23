@@ -496,9 +496,14 @@ main {
   flex-shrink: 0;
 }
 
-#message-input {
+.input-wrapper {
   flex: 1;
-  padding: 0.75rem 1rem;
+  position: relative;
+}
+
+#message-input {
+  width: 100%;
+  padding: 0.75rem 4.5rem 0.75rem 1rem;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
@@ -511,6 +516,25 @@ main {
 
 #message-input:focus {
   border-color: var(--accent);
+}
+
+.char-count {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.char-count.warning {
+  color: #f59e0b;
+}
+
+.char-count.danger {
+  color: #ef4444;
 }
 
 /* Scrollbar */
