@@ -15,7 +15,14 @@ let currentUser = '';
 let typingTimeout = null;
 let windowFocused = true;
 
-window.addEventListener('focus', () => { windowFocused = true; });
+let unreadCount = 0;
+const originalTitle = document.title;
+
+window.addEventListener('focus', () => {
+  windowFocused = true;
+  unreadCount = 0;
+  document.title = originalTitle;
+});
 window.addEventListener('blur', () => { windowFocused = false; });
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -98,7 +105,13 @@ socket.on('chat-message', (data) => {
   messagesDiv.appendChild(msgEl);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-  if (!isOwn) playNotificationSound();
+  if (!isOwn) {
+    playNotificationSound();
+    if (!windowFocused) {
+      unreadCount++;
+      document.title = `(${unreadCount}) ${originalTitle}`;
+    }
+  }
 });
 
 socket.on('user-joined', (data) => {
