@@ -421,6 +421,28 @@ main {
   color: #bfdbfe;
 }
 
+.date-separator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.date-separator::before,
+.date-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.date-separator span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .system-msg {
   text-align: center;
   color: var(--text-muted);

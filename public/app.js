@@ -119,6 +119,19 @@ function getInitials(name) {
   return name.charAt(0).toUpperCase();
 }
 
+let lastMessageDate = '';
+
+function addDateSeparator(timestamp) {
+  const date = new Date(timestamp);
+  const dateStr = date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+  if (dateStr === lastMessageDate) return;
+  lastMessageDate = dateStr;
+  const sep = document.createElement('div');
+  sep.className = 'date-separator';
+  sep.innerHTML = `<span>${dateStr}</span>`;
+  messagesDiv.appendChild(sep);
+}
+
 socket.on('chat-message', (data) => {
   const isOwn = data.username === currentUser;
   const msgEl = document.createElement('div');
@@ -129,6 +142,7 @@ socket.on('chat-message', (data) => {
     minute: '2-digit'
   });
 
+  addDateSeparator(data.timestamp);
   const avatarColor = data.color || '#7c3aed';
   const initial = getInitials(data.username);
 
