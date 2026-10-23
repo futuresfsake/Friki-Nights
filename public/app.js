@@ -46,6 +46,10 @@ messageInput.addEventListener('input', () => {
   }, 1500);
 });
 
+function getInitials(name) {
+  return name.charAt(0).toUpperCase();
+}
+
 socket.on('chat-message', (data) => {
   const isOwn = data.username === currentUser;
   const msgEl = document.createElement('div');
@@ -56,10 +60,19 @@ socket.on('chat-message', (data) => {
     minute: '2-digit'
   });
 
+  const avatarColor = data.color || '#7c3aed';
+  const initial = getInitials(data.username);
+
   msgEl.innerHTML = `
-    <div class="msg-author">${escapeHtml(data.username)}</div>
-    <div class="msg-text">${escapeHtml(data.message)}</div>
-    <div class="msg-time">${time}</div>
+    <div class="msg-row ${isOwn ? 'msg-row-own' : ''}">
+      ${!isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
+      <div class="msg-bubble">
+        <div class="msg-author">${escapeHtml(data.username)}</div>
+        <div class="msg-text">${escapeHtml(data.message)}</div>
+        <div class="msg-time">${time}</div>
+      </div>
+      ${isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
+    </div>
   `;
 
   messagesDiv.appendChild(msgEl);
@@ -80,7 +93,9 @@ socket.on('user-list', (users) => {
   userList.innerHTML = '';
   users.forEach((user) => {
     const li = document.createElement('li');
-    li.textContent = user;
+    const name = typeof user === 'object' ? user.username : user;
+    const color = typeof user === 'object' ? user.color : '#7c3aed';
+    li.innerHTML = `<span class="avatar-sm" style="background:${color}">${getInitials(name)}</span> ${escapeHtml(name)}`;
     userList.appendChild(li);
   });
 });
