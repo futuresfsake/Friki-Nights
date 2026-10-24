@@ -59,6 +59,7 @@ export function createRooms({ random = randomInt } = {}) {
         if (room.idleSince !== null && now - room.idleSince >= ROOM_EXPIRY_MS) expired.push(room.code);
       }
       for (const code of expired) rooms.delete(code);
+      if (expired.length) console.log(`Swept ${expired.length} idle room(s): ${expired.join(', ')} (${rooms.size} remaining)`);
       return expired;
     },
     get size() {
