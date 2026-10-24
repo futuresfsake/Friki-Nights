@@ -18,14 +18,6 @@ export function createGameServer({ clientOrigin, accessPhrase, now }) {
     next();
   });
 
-  // Pinged by the lobby to wake Render's free tier ("Waking the house…").
-  app.get('/health', (_req, res) => {
-    res.type('json').send(JSON.stringify({
-      status: 'ok',
-      uptime: Math.floor(process.uptime()),
-    }));
-  });
-
   const http = createServer(app);
   const io = new Server(http, {
     cors: { origin: clientOrigin },
@@ -40,6 +32,17 @@ export function createGameServer({ clientOrigin, accessPhrase, now }) {
 
   io.use(accessGuard(accessPhrase, { now }));
   const game = attachGame(io, { now });
+
+  // Pinged by the lobby to wake Render's free tier ("Waking the house…").
+  app.get('/health', (_req, res) => {
+    const mem = process.memoryUsage();
+    res.type('json').send(JSON.stringify({
+      status: 'ok',
+      uptime: Math.floor(process.uptime()),
+      rooms: game.rooms.size,
+      memory: { rss: Math.round(mem.rss / 1024 / 1024), heap: Math.round(mem.heapUsed / 1024 / 1024) },
+    }));
+  });
   io.on('close', game.stop);
   http.on('close', game.stop);
 
