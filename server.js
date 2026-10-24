@@ -31,6 +31,9 @@ io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   socket.on('join', (username) => {
+    if (!username || typeof username !== 'string') return;
+    username = username.trim().slice(0, 20);
+    if (!username) return;
     const color = assignColor(username);
     users.set(socket.id, { username, color });
     io.emit('user-joined', { username, color, userCount: users.size });
@@ -41,10 +44,13 @@ io.on('connection', (socket) => {
   socket.on('chat-message', (data) => {
     const user = users.get(socket.id);
     if (!user) return;
+    if (!data.message || typeof data.message !== 'string') return;
+    const message = data.message.trim().slice(0, 1000);
+    if (!message) return;
     io.emit('chat-message', {
       username: user.username,
       color: user.color,
-      message: data.message,
+      message,
       timestamp: new Date().toISOString()
     });
   });
