@@ -132,6 +132,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       if (!clean) return reply({ error: 'bad-name' });
       const { room, player } = rooms.create(clean);
       enter(socket, room, player);
+      console.log(`Room ${room.code} created by "${clean}" (${rooms.size} active)`);
       reply({ code: room.code, playerId: player.id, playerToken: player.token });
       broadcastRoom(room);
     });
@@ -145,6 +146,7 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       const result = rooms.join(code, clean);
       if (result.error) return reply({ error: result.error });
       enter(socket, result.room, result.player);
+      console.log(`"${clean}" joined room ${code} (${result.room.players.length} players)`);
       reply({ code, playerId: result.player.id, playerToken: result.player.token });
       broadcastRoom(result.room);
     });
@@ -187,6 +189,8 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       if (!everyoneReady(room)) return reply({ error: 'not-ready' });
       room.phase = 'playing';
       room.night = startNight(room);
+      const mode = room.players.length === 1 ? 'solo' : `${room.players.length}-player`;
+      console.log(`Room ${room.code}: night started (${mode})`);
       reply({ ok: true });
       io.to(room.code).emit('night:start', nightStartView(room));
       broadcastRoom(room);
