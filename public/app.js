@@ -227,6 +227,10 @@ socket.on('chat-message', (data) => {
   }
 });
 
+socket.on('rate-limited', (data) => {
+  addSystemMessage(data.message);
+});
+
 socket.on('user-joined', (data) => {
   addSystemMessage(`${data.username} joined the chat`);
   userCount.textContent = `${data.userCount} online`;

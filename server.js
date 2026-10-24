@@ -12,6 +12,21 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 const users = new Map();
+const rateLimits = new Map();
+
+const RATE_LIMIT_WINDOW = 5000;
+const RATE_LIMIT_MAX = 5;
+
+function isRateLimited(socketId) {
+  const now = Date.now();
+  if (!rateLimits.has(socketId)) {
+    rateLimits.set(socketId, []);
+  }
+  const timestamps = rateLimits.get(socketId).filter(t => now - t < RATE_LIMIT_WINDOW);
+  timestamps.push(now);
+  rateLimits.set(socketId, timestamps);
+  return timestamps.length > RATE_LIMIT_MAX;
+}
 
 const AVATAR_COLORS = [
   '#7c3aed', '#e11d48', '#0891b2', '#059669', '#d97706',
@@ -45,6 +60,10 @@ io.on('connection', (socket) => {
     const user = users.get(socket.id);
     if (!user) return;
     if (!data.message || typeof data.message !== 'string') return;
+    if (isRateLimited(socket.id)) {
+      socket.emit('rate-limited', { message: 'Slow down! Too many messages.' });
+      return;
+    }
     const message = data.message.trim().slice(0, 1000);
     if (!message) return;
     io.emit('chat-message', {
@@ -73,6 +92,7 @@ io.on('connection', (socket) => {
     const user = users.get(socket.id);
     if (user) {
       users.delete(socket.id);
+      rateLimits.delete(socket.id);
       io.emit('user-left', { username: user.username, userCount: users.size });
       io.emit('user-list', Array.from(users.values()));
       console.log(`${user.username} left the chat`);
