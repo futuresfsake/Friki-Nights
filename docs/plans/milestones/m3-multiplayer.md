@@ -24,17 +24,17 @@
 | M3-S11 | Server-authoritative interactions | Must | L | ✅ |
 | M3-S12 | Shared and per-player scare triggers | Must | M | ✅ |
 | M3-S13 | Exit together | Must | S | ✅ |
-| M3-S14 | Disconnect pause and rejoin | Must | M | ⬜ |
+| M3-S14 | Disconnect pause and rejoin | Must | M | ✅ |
 | M3-S15 | Room expiry and cleanup | Must | S | ✅ |
-| M3-S16 | Validation and rate limits | Must | M | ⬜ |
-| M3-S17 | "Waking the house…" screen | Should | S | ⬜ |
-| M3-S18 | Solo play | Must | M | ⬜ |
+| M3-S16 | Validation and rate limits | Must | M | ✅ |
+| M3-S17 | "Waking the house…" screen | Should | S | ✅ |
+| M3-S18 | Solo play | Must | M | ✅ |
 | M3-S19 | Network delay testing | Must | M | ⬜ |
 | M3-S20 | Real-distance test Cebu ↔ Europe | Must | S | ⬜ |
 | M3-S21 | Up to 4 players in a room | Must | M | ⬜ |
 | M3-S22 | Player colors and name tags | Should | S | ✅ |
 
-**22 stories · 15 done · 0 testing** (20 Must · 2 Should · 0 Could)
+**22 stories · 19 done · 0 testing** (20 Must · 2 Should · 0 Could)
 
 ## Out of scope
 

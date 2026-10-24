@@ -2,7 +2,7 @@
 
 Live progress tracker. Update this file whenever a story or milestone changes state. The stories themselves (features, acceptance criteria, tasks) live in [`milestones/`](milestones/).
 
-**Last updated:** 2026-10-15
+**Last updated:** 2026-10-24
 **Current milestone:** M3 — Multiplayer (in progress)
 **Deadline:** personal date, flexible — target is the full game (M1–M8)
 
@@ -12,14 +12,14 @@ Live progress tracker. Update this file whenever a story or milestone changes st
 | --- | --- | --- | --- | --- | --- |
 | M1 | Dark house prototype | ✅ Done | 12 / 12 | `m1-prototype` (merged) | [M1](milestones/m1-dark-house-prototype.md) |
 | M2 | Interactions + first scares | ✅ Done | 21 / 21 | `m2-interactions` | [M2](milestones/m2-interactions-and-first-scares.md) |
-| M3 | Multiplayer | 🔨 In progress | 15 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
+| M3 | Multiplayer | 🔨 In progress | 19 / 22 | `m3-multiplayer` | [M3](milestones/m3-multiplayer.md) |
 | M4 | Voice | ⬜ Not started | 0 / 11 | `m4-voice` | [M4](milestones/m4-voice.md) |
 | M5 | The Waiting One + Scare Director | ⬜ Not started (S17 pulled forward) | 1 / 17 | `m5-waiting-one` | [M5](milestones/m5-waiting-one-and-scare-director.md) |
 | M6 | Progression | ⬜ Not started | 0 / 10 | `m6-progression` | [M6](milestones/m6-progression.md) |
 | M7 | Content | ⬜ Not started | 0 / 25 | `m7-night2` … | [M7](milestones/m7-content.md) |
 | M8 | Polish and release | ⬜ Not started | 0 / 15 | `m8-release` | [M8](milestones/m8-polish-and-release.md) |
 | MH | Horror overhaul (owner requests) | 🧪 Testing (all 8 built, awaiting playtest) | 0 / 8 | `mh-…` | [MH](milestones/mh-horror-overhaul.md) |
-| | **Total** | | **49 / 141** | | |
+| | **Total** | | **53 / 141** | | |
 
 Milestone states: ⬜ Not started · ⏭️ Next · 🔨 In progress · 🧪 Testing · ✅ Done
 Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done · ❌ Dropped
@@ -41,7 +41,7 @@ Story states: ⬜ Not started · 🔨 In progress · 🧪 Testing · ✅ Done ·
 
 ## Current milestone: M3
 
-M2 done (19/19). M3 in progress: one branch per story, merged into `main` when its tests and build pass.
+M2 done (19/19). M3 in progress (19/22): S14 disconnect/rejoin, S16 rate limiting, S17 waking screen, and S18 solo play built. Remaining: S19 network delay testing, S20 real-distance test, S21 up to 4 players.
 Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 
 ## Later (ideas not in any milestone yet)
@@ -73,3 +73,4 @@ Full story list: [M3 — Multiplayer](milestones/m3-multiplayer.md).
 | 2026-10-15 | New milestone MH "Horror overhaul" from owner requests: full-body ghost with jump scares and a real scream (built, awaiting owner), real abandoned-house look instead of blocky textures, bigger house with a Ballroom wing, the "don't move" ballerina, scarier JS-01. 139 stories |
 | 2026-10-15 | MH built and pushed: S01 ghost + jump scares, S02 girl scream, S04 south wing (map 30×32), S07 more props, S05 Clara the ballerina, S06 scarier JS-01, S03 real-house textures. All 🧪, waiting on the owner's playtest. 140 stories |
 | 2026-10-15 | MH-S08 "Bloodier" (owner request): blood decals, dripping ceilings, bloodier ghost and Clara, blood on the screen in jump scares. 141 stories |
+| 2026-10-24 | M3-S17 "Waking the house…" loading screen built. M3-S16 per-socket rate limiting built. M3-S18 solo play (server + client) built. M3-S14 disconnect pause and rejoin (server + client) built. 19/22 M3 stories done |
