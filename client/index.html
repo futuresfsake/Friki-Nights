@@ -493,6 +493,15 @@
           opacity: 0.35;
         }
       }
+      @keyframes flicker {
+        0%, 100% { opacity: 0.7; transform: scale(1); }
+        25% { opacity: 1; transform: scale(1.02); }
+        50% { opacity: 0.6; transform: scale(0.98); }
+        75% { opacity: 0.85; transform: scale(1.01); }
+      }
+      #waking-text {
+        animation: flicker 1.8s ease-in-out infinite;
+      }
     </style>
   </head>
   <body>
