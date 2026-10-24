@@ -56,6 +56,7 @@ import { createMoveSender } from './net/moves.js';
 import { createPartners } from './net/partners.js';
 import { askName, connectWithAccess, hideLobby } from './ui/lobby.js';
 import { createRoomLobby } from './ui/room.js';
+import { loadSeat, request } from './net/room.js';
 import { createBallerinaModel } from './tenant/ballerina.js';
 import { createTenantModel } from './tenant/model.js';
 import { createTenant } from './tenant/tenant.js';
@@ -288,6 +289,29 @@ connectWithAccess().then(async (s) => {
   });
   // The server refused a move (too fast, or into a wall): go back to where it saw us.
   socket.on('player:correct', ({ x, z }) => player.placeAt(x, z));
+  // Disconnect pause: the server pauses the night when someone drops.
+  socket.on('night:paused', ({ name, timeoutMs }) => {
+    hud.subtitle(`${name} lost connection. Waiting ${Math.ceil(timeoutMs / 1000)}s…`, timeoutMs / 1000);
+    player.controls.unlock();
+    hud.showOverlay(true);
+    document.getElementById('overlay-prompt').textContent = 'GAME PAUSED — WAITING FOR RECONNECT';
+  });
+  socket.on('night:resumed', ({ reason, name }) => {
+    const msg = reason === 'rejoin' ? `${name} is back.` : `${name} is gone. Continuing without them.`;
+    hud.toast(msg);
+    document.getElementById('overlay-prompt').textContent = 'CLICK TO CONTINUE';
+  });
+  // Auto-rejoin if we reload during a night.
+  socket.on('disconnect', () => {
+    if (!ended) hud.subtitle('Connection lost. Reconnecting…', 60);
+  });
+  socket.io.on('reconnect', async () => {
+    const seat = loadSeat();
+    if (seat) {
+      const res = await request(socket, 'room:rejoin', { code: seat.code, playerToken: seat.playerToken });
+      if (!res.error) hud.toast('Reconnected.');
+    }
+  });
   hideLobby();
 });
 
