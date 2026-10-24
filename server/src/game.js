@@ -5,7 +5,7 @@ import { atExit, interact, slamDoor } from './interact.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
 import { scaresOnEvents, scaresOnMove } from './scares.js';
-import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './rooms.js';
+import { createRooms, everyoneReady, markIdle, REJOIN_TIMEOUT_MS, removePlayer, roomView } from './rooms.js';
 
 // Room and game events for every connected socket. socket.data holds which room and
 // player this socket is ({ code, playerId }) once it has created or joined one.
@@ -55,6 +55,8 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
     socket.join(playerChannel(player.id));
   }
 
+  const rejoinTimers = new Map();
+
   // In the lobby a player who leaves is gone. Once the night has started they keep
   // their seat (marked disconnected) so they can come back. Either way, a room with
   // nobody connected is swept away after ROOM_EXPIRY_MS.
@@ -70,6 +72,24 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       const player = room.players.find((p) => p.id === playerId);
       if (player) player.connected = false;
       if (player && room.night?.atExit?.size) checkExit(room, playerId, false);
+      // In multiplayer (not solo), pause for the others and start a rejoin countdown.
+      const connected = room.players.filter((p) => p.connected);
+      if (connected.length > 0 && room.players.length > 1) {
+        room.paused = true;
+        const name = player?.name ?? 'Someone';
+        io.to(room.code).emit('night:paused', { reason: 'disconnect', name, timeoutMs: REJOIN_TIMEOUT_MS });
+        const timer = setTimeout(() => {
+          rejoinTimers.delete(code);
+          room.paused = false;
+          if (player) {
+            removePlayer(room, playerId);
+            io.to(room.code).emit('night:resumed', { reason: 'timeout', name });
+            broadcastRoom(room);
+          }
+        }, REJOIN_TIMEOUT_MS);
+        timer.unref?.();
+        rejoinTimers.set(code, { timer, playerId });
+      }
     }
     markIdle(room, now());
     if (room.idleSince === null) broadcastRoom(room);
@@ -127,6 +147,25 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       enter(socket, result.room, result.player);
       reply({ code, playerId: result.player.id, playerToken: result.player.token });
       broadcastRoom(result.room);
+    });
+
+    handle('room:rejoin', ({ code, playerToken }, reply) => {
+      if (socket.data.code) return reply({ error: 'already-in-room' });
+      const result = rooms.rejoin(code, playerToken);
+      if (result.error) return reply({ error: result.error });
+      const { room, player } = result;
+      enter(socket, room, player);
+      reply({ code: room.code, playerId: player.id });
+      // Cancel the rejoin timer and resume the night for everyone.
+      const pending = rejoinTimers.get(code);
+      if (pending?.playerId === player.id) {
+        clearTimeout(pending.timer);
+        rejoinTimers.delete(code);
+      }
+      room.paused = false;
+      io.to(room.code).emit('night:resumed', { reason: 'rejoin', name: player.name });
+      broadcastRoom(room);
+      if (room.night) socket.emit('night:start', nightStartView(room));
     });
 
     handle('player:ready', (payload, reply) => {

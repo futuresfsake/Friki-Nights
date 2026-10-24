@@ -4,6 +4,7 @@ import { ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from '../../shared/events.js';
 
 // A room nobody is connected to is deleted after this long (its code is never reused).
 export const ROOM_EXPIRY_MS = 5 * 60_000;
+export const REJOIN_TIMEOUT_MS = 60_000;
 
 // All rooms live in memory (no database). A player's `id` is public (sent to the
 // room); their `token` is secret and only ever sent to that player, to rejoin with.
@@ -39,6 +40,15 @@ export function createRooms({ random = randomInt } = {}) {
       if (room.players.length >= MAX_PLAYERS) return { error: 'room:full' };
       if (room.phase !== 'lobby') return { error: 'room:started' };
       return { room, player: addPlayer(room, name) };
+    },
+    rejoin(code, playerToken) {
+      const room = rooms.get(code);
+      if (!room) return { error: 'room:notfound' };
+      const player = room.players.find((p) => p.token === playerToken && !p.connected);
+      if (!player) return { error: 'rejoin:invalid' };
+      player.connected = true;
+      room.idleSince = null;
+      return { room, player };
     },
     get: (code) => rooms.get(code) ?? null,
     remove: (code) => rooms.delete(code),

@@ -52,4 +52,5 @@ export const schemas = {
   // Standing in (at: true) or stepping out of (false) the open exit; the night ends
   // when every connected player is there.
   'exit:at': z.object({ at: z.boolean() }).strict(),
+  'room:rejoin': z.object({ code: roomCode, playerToken: z.string().max(100) }).strict(),
 };
