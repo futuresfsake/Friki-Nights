@@ -328,6 +328,15 @@ function linkifyUrls(text) {
 }
 
 const connectionStatus = document.getElementById('connection-status');
+const joinUserCount = document.getElementById('join-user-count');
+
+socket.on('online-count', (data) => {
+  if (data.count > 0) {
+    joinUserCount.textContent = `${data.count} ${data.count === 1 ? 'person' : 'people'} chatting now`;
+  } else {
+    joinUserCount.textContent = 'Be the first to join!';
+  }
+});
 
 socket.on('connect', () => {
   connectionStatus.className = 'status-connected';

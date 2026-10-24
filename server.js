@@ -44,6 +44,7 @@ function assignColor(username) {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+  socket.emit('online-count', { count: users.size });
 
   socket.on('join', (username) => {
     if (!username || typeof username !== 'string') return;
