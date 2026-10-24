@@ -6,7 +6,14 @@ export const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3
 // socket once the server lets us in; rejects with the server's reason
 // ('access-denied', 'too-many-attempts') or 'unreachable'.
 export function connectToServer(accessPhrase) {
-  const socket = io(SERVER_URL, { auth: { accessPhrase }, transports: ['websocket'], timeout: 15000 });
+  const socket = io(SERVER_URL, {
+    auth: { accessPhrase },
+    transports: ['websocket'],
+    timeout: 15000,
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 10,
+  });
   return new Promise((resolve, reject) => {
     socket.once('connect', () => resolve(socket));
     socket.once('connect_error', (err) => {
