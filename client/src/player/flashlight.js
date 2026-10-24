@@ -46,5 +46,10 @@ export function createFlashlight(camera, { onToggle }) {
     spot.intensity = intensity * blinkFactor(blink, time);
   }
 
-  return { state, update, spot };
+  function addBattery(amount) {
+    state.battery = Math.min(BATTERY_MAX, state.battery + amount);
+    if (state.battery > BATTERY_LOW) lowWarned = false;
+  }
+
+  return { state, update, spot, addBattery };
 }
