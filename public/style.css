@@ -220,6 +220,7 @@ header h2 {
   font-size: 0.875rem;
 }
 
+#sound-toggle,
 #theme-toggle {
   background: none;
   border: 1px solid var(--border);
@@ -232,9 +233,14 @@ header h2 {
   margin-left: 0.75rem;
 }
 
+#sound-toggle:hover,
 #theme-toggle:hover {
   background: var(--bg-card);
   border-color: var(--accent);
+}
+
+#sound-toggle.muted {
+  opacity: 0.5;
 }
 
 .header-right {

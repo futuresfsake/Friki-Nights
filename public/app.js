@@ -27,7 +27,7 @@ window.addEventListener('blur', () => { windowFocused = false; });
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playNotificationSound() {
-  if (windowFocused) return;
+  if (windowFocused || !soundEnabled) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain);
@@ -43,6 +43,24 @@ function playNotificationSound() {
 
 const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
 const themeToggle = document.getElementById('theme-toggle');
+const soundToggle = document.getElementById('sound-toggle');
+
+let soundEnabled = true;
+try {
+  const saved = localStorage.getItem('friki-sound');
+  if (saved === 'false') {
+    soundEnabled = false;
+    soundToggle.innerHTML = '&#128263;';
+    soundToggle.classList.add('muted');
+  }
+} catch (e) {}
+
+soundToggle.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.innerHTML = soundEnabled ? '&#128264;' : '&#128263;';
+  soundToggle.classList.toggle('muted', !soundEnabled);
+  try { localStorage.setItem('friki-sound', soundEnabled); } catch (e) {}
+});
 
 (function initTheme() {
   try {
