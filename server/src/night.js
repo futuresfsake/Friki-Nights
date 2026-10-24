@@ -2,7 +2,7 @@ import { randomInt } from 'node:crypto';
 import { EYE_HEIGHT } from '../../shared/constants.js';
 import { cellCenter, parseMap } from '../../shared/mapParser.js';
 import night1 from '../../shared/maps/night1.js';
-import { addPlayer, createNightState } from '../../shared/nightState.js';
+import { addPlayer, createNightState, SOLO_EXTRA_BATTERIES, BATTERY_PICKUP } from '../../shared/nightState.js';
 import { createNightTriggers } from './scares.js';
 
 // Nights the server can run, parsed once from the same files the client uses.
@@ -24,7 +24,8 @@ export function startNight(room, { nightId = FIRST_NIGHT, seed = randomInt(2 ** 
     const spawn = cellCenter(map.spawns[slot].x, map.spawns[slot].z);
     players.set(p.id, { slot, x: spawn.x, z: spawn.z, y: EYE_HEIGHT, yaw: 0, pitch: 0 });
   });
-  return { id: nightId, map, state, seed, players, triggers: createNightTriggers(map, state) };
+  const solo = room.players.length === 1;
+  return { id: nightId, map, state, seed, players, solo, triggers: createNightTriggers(map, state) };
 }
 
 // Sent to everyone when the night starts (and to a player who rejoins it).
@@ -34,6 +35,8 @@ export function nightStartView(room) {
     night: night.id,
     seed: night.seed,
     playerCount: room.players.length,
+    solo: night.solo,
+    extraBatteries: night.solo ? SOLO_EXTRA_BATTERIES : 0,
     players: room.players.map((p) => {
       const at = night.players.get(p.id);
       return { id: p.id, name: p.name, slot: at.slot, x: at.x, z: at.z, yaw: at.yaw };

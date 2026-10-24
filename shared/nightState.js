@@ -2,6 +2,7 @@
 // so the same code runs in the browser now and on the server from M3.
 
 export const BATTERY_PICKUP = 40;
+export const SOLO_EXTRA_BATTERIES = 2;
 
 // playerCount (1–4) lets puzzles scale with the room size.
 export function createNightState(map, { playerCount = 1 } = {}) {
