@@ -3,3 +3,18 @@ dist/
 .env
 .env.*
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Debug
+coverage/
+*.tsbuildinfo
