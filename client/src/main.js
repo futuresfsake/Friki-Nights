@@ -1,3 +1,4 @@
+import './errors.js';
 import * as THREE from 'three';
 import { MAX_PIXEL_RATIO, PIXEL_RATIO, PLAYER_RADIUS } from '../../shared/constants.js';
 import { cellAt, cellCenter, parseMap } from '../../shared/mapParser.js';
