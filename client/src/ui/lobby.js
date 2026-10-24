@@ -1,9 +1,10 @@
-import { connectToServer } from '../net/socket.js';
+import { connectToServer, SERVER_URL } from '../net/socket.js';
 import { cleanName, NAME_MAX_LENGTH } from '../../../shared/names.js';
 import { local } from '../save/storage.js';
 
 const ACCESS_KEY = 'frikiNights.access';
 const NAME_KEY = 'frikiNights.name';
+const WAKE_GRACE_MS = 2000;
 
 const MESSAGES = {
   'access-denied': 'The house does not know those words.',
@@ -20,9 +21,28 @@ export function hideLobby() {
   document.getElementById('lobby').classList.add('hidden');
 }
 
+async function wakeServer() {
+  let showTimer = null;
+  const show = new Promise((r) => { showTimer = setTimeout(r, WAKE_GRACE_MS); });
+  const ping = async () => {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      try {
+        const res = await fetch(`${SERVER_URL}/health`, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) { clearTimeout(showTimer); return; }
+      } catch { /* server still asleep */ }
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  };
+  const done = ping();
+  await Promise.race([done, show]);
+  showScreen('screen-waking');
+  await done;
+}
+
 // Asks for the access phrase (once; it's remembered) and connects. Keeps asking
 // until the server lets us in. Resolves with the connected socket.
 export async function connectWithAccess() {
+  await wakeServer();
   let phrase = local.get(ACCESS_KEY);
   let error = '';
   for (;;) {
