@@ -425,12 +425,14 @@ function handleEvent(event) {
       hiding = { bedId: event.targetId, stood: player.hideAt(bed.under) };
       if (bed.lookYaw !== null) camera.rotation.set(0, bed.lookYaw, 0, 'YXZ');
       if (audio) footstep(audio, false);
+      hud.toast('You crawl under the bed. Press E to crawl out.');
       break;
     }
     case 'left-hiding':
       player.standAt(hiding.stood);
       hiding = null;
       if (audio) footstep(audio, false);
+      hud.toast('You crawl out.');
       break;
     case 'item-taken': {
       const item = items.get(event.targetId);
