@@ -1,6 +1,7 @@
 import { BATTERY_LOW, BATTERY_MAX } from '../../../shared/constants.js';
 
 const TOAST_SECONDS = 2.2;
+const LONG_TOAST_SECONDS = 4.5;
 
 // All text goes through textContent, never innerHTML (player-provided text later).
 export function createHud() {
@@ -25,11 +26,12 @@ export function createHud() {
       if (text && promptText.textContent !== text) promptText.textContent = text;
       prompt.classList.toggle('show', !!text);
     },
-    toast(text) {
+    toast(text, long = false) {
       toast.textContent = text;
       toast.classList.add('show');
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), TOAST_SECONDS * 1000);
+      const seconds = long ? LONG_TOAST_SECONDS : TOAST_SECONDS;
+      toastTimer = setTimeout(() => toast.classList.remove('show'), seconds * 1000);
     },
     // A line of heard speech ("[whispering] …"), separate from toasts so both can show.
     subtitle(text, seconds = 3.5) {
