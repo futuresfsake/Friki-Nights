@@ -274,3 +274,20 @@ function linkifyUrls(text) {
     '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>'
   );
 }
+
+const connectionStatus = document.getElementById('connection-status');
+
+socket.on('connect', () => {
+  connectionStatus.className = 'status-connected';
+  connectionStatus.title = 'Connected';
+});
+
+socket.on('disconnect', () => {
+  connectionStatus.className = 'status-disconnected';
+  connectionStatus.title = 'Disconnected';
+});
+
+socket.io.on('reconnect_attempt', () => {
+  connectionStatus.className = 'status-reconnecting';
+  connectionStatus.title = 'Reconnecting...';
+});

@@ -242,6 +242,30 @@ header h2 {
   align-items: center;
 }
 
+#connection-status {
+  font-size: 0.6rem;
+  margin-right: 0.5rem;
+  transition: color 0.3s;
+}
+
+.status-connected {
+  color: var(--success);
+}
+
+.status-disconnected {
+  color: #ef4444;
+}
+
+.status-reconnecting {
+  color: #f59e0b;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 .chat-layout {
   display: flex;
   flex: 1;
