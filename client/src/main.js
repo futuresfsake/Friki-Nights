@@ -49,7 +49,7 @@ import { addBattery } from './player/battery.js';
 import { createController } from './player/controller.js';
 import { createFlashlight } from './player/flashlight.js';
 import { createInteraction } from './player/interact.js';
-import { createEndScreen } from './ui/endScreen.js';
+import { createEndScreen, formatTime } from './ui/endScreen.js';
 import { createHud } from './ui/hud.js';
 import { createInventory } from './ui/inventory.js';
 import { createMoveSender } from './net/moves.js';
@@ -194,6 +194,8 @@ scares.register('ballerina', () => {
 });
 let playTime = 0; // seconds actually playing, not paused
 let ended = false;
+const playTimerEl = document.getElementById('play-timer');
+let lastTimerUpdate = 0;
 let audio = null;
 
 const player = createController(camera, document.body, map, {
@@ -609,6 +611,10 @@ renderer.setAnimationLoop(() => {
     hud.setPrompt(describe(interaction.lookTarget()));
     maybeKnock(time);
     playTime += dt;
+    if (playTime - lastTimerUpdate >= 1) {
+      lastTimerUpdate = playTime;
+      playTimerEl.textContent = formatTime(playTime);
+    }
     checkExit();
     moves?.update({ x: camera.position.x, z: camera.position.z, yaw: look.y, pitch: look.x, light: flashlight.state.on });
     const cell = cellAt(camera.position.x, camera.position.z);
