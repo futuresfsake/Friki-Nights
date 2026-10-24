@@ -201,10 +201,12 @@ socket.on('chat-message', (data) => {
   const avatarColor = data.color || '#7c3aed';
   const initial = getInitials(data.username);
 
+  const fullTime = new Date(data.timestamp).toLocaleString();
+
   msgEl.innerHTML = `
     <div class="msg-row ${isOwn ? 'msg-row-own' : ''}">
       ${!isOwn ? `<div class="avatar" style="background:${avatarColor}">${initial}</div>` : ''}
-      <div class="msg-bubble">
+      <div class="msg-bubble" title="${fullTime}">
         <div class="msg-author">${escapeHtml(data.username)}</div>
         <div class="msg-text">${linkifyUrls(convertEmojis(escapeHtml(data.message)))}</div>
         <div class="msg-time">${time}</div>

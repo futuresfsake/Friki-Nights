@@ -438,6 +438,12 @@ main {
   color: var(--text-muted);
   margin-top: 0.2rem;
   text-align: right;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.message:hover .msg-time {
+  opacity: 1;
 }
 
 .chat-link {
