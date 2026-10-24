@@ -11,7 +11,15 @@ if (!ACCESS_PHRASE) {
 }
 if (ACCESS_PHRASE === DEV_PHRASE) console.log(`Development access phrase: "${DEV_PHRASE}"`);
 
-const { http } = createGameServer({ clientOrigin: CLIENT_ORIGIN, accessPhrase: ACCESS_PHRASE });
+const { http, io } = createGameServer({ clientOrigin: CLIENT_ORIGIN, accessPhrase: ACCESS_PHRASE });
 http.listen(PORT, () => {
   console.log(`Friki Nights server on :${PORT}, allowing ${CLIENT_ORIGIN}`);
 });
+
+function shutdown(signal) {
+  console.log(`${signal} received — closing connections`);
+  io.close(() => http.close(() => process.exit(0)));
+  setTimeout(() => process.exit(1), 5_000).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
