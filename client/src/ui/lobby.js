@@ -91,6 +91,7 @@ export function askName() {
   showScreen('screen-name');
   const form = document.getElementById('name-form');
   const input = document.getElementById('name-input');
+  const nameError = document.getElementById('name-error');
   input.maxLength = NAME_MAX_LENGTH;
   input.value = local.get(NAME_KEY) ?? '';
   input.focus();
@@ -98,7 +99,11 @@ export function askName() {
     form.onsubmit = (e) => {
       e.preventDefault();
       const name = cleanName(input.value);
-      if (!name) return;
+      if (!name) {
+        if (nameError) nameError.textContent = 'The house needs a name to call you.';
+        return;
+      }
+      if (nameError) nameError.textContent = '';
       local.set(NAME_KEY, name);
       resolve(name);
     };
