@@ -18,6 +18,7 @@ export function accessGuard(accessPhrase, { now } = {}) {
     if (!failures.allowed(ip)) return next(new Error('too-many-attempts'));
     if (samePhrase(socket.handshake.auth?.accessPhrase ?? '', accessPhrase)) return next();
     failures.hit(ip);
+    console.log(`Access denied for ${ip} (${failures.allowed(ip) ? 'within' : 'at'} rate limit)`);
     next(new Error('access-denied'));
   };
 }
