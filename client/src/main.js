@@ -237,9 +237,16 @@ connectWithAccess().then(async (s) => {
   await room.choose(playerName);
   const start = await room.waitForStart();
   PLAYER_ID = room.playerId;
+  const isSolo = start.solo;
   const me = start.players.find((p) => p.id === PLAYER_ID);
   player.placeAt(me.x, me.z);
-  hud.setIntro(`NIGHT 1 · ${map.name.toUpperCase()}`, map.intro);
+  if (start.extraBatteries > 0) {
+    flashlight.state.battery = Math.min(100, flashlight.state.battery + start.extraBatteries * 40);
+  }
+  hud.setIntro(
+    `NIGHT 1 · ${map.name.toUpperCase()}`,
+    isSolo ? `${map.intro}\n\nYou are alone.` : map.intro,
+  );
   for (const p of start.players) {
     names.set(p.id, p.name);
     if (p.id !== PLAYER_ID) partners.add(p);
