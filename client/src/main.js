@@ -340,6 +340,14 @@ addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
+renderer.domElement.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  hud.subtitle('The house flickers. Recovering…', 10);
+});
+renderer.domElement.addEventListener('webglcontextrestored', () => {
+  hud.subtitle('', 0.01);
+});
+
 // Tab would move browser focus, so it is always swallowed while playing.
 addEventListener('keydown', (e) => {
   if (e.code !== 'Tab') return;
