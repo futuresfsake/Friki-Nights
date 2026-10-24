@@ -29,3 +29,23 @@ export function clientIp(handshake) {
   const forwarded = handshake.headers['x-forwarded-for'];
   return (typeof forwarded === 'string' && forwarded.split(',')[0].trim()) || handshake.address;
 }
+
+// Per-socket rate limiting: each socket gets one shared counter per event name.
+// Returns a guard function: guard(socketId, event) → true if allowed.
+export function createSocketRateLimiter({ limits, now = Date.now }) {
+  const limiters = new Map();
+  return {
+    allowed(socketId, event) {
+      const cfg = limits[event];
+      if (!cfg) return true;
+      const key = `${socketId}:${event}`;
+      if (!limiters.has(key)) limiters.set(key, createRateLimiter({ limit: cfg.limit, windowMs: cfg.windowMs, now }));
+      return limiters.get(key).hit(key);
+    },
+    remove(socketId) {
+      for (const key of limiters.keys()) {
+        if (key.startsWith(`${socketId}:`)) limiters.delete(key);
+      }
+    },
+  };
+}

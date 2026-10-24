@@ -1,6 +1,6 @@
 import { isRoomCode, schemas } from '../../shared/events.js';
 import { cleanName } from '../../shared/names.js';
-import { clientIp, createRateLimiter } from './rateLimit.js';
+import { clientIp, createRateLimiter, createSocketRateLimiter } from './rateLimit.js';
 import { atExit, interact, slamDoor } from './interact.js';
 import { acceptMove } from './movement.js';
 import { startNight, nightStartView } from './night.js';
@@ -12,9 +12,21 @@ import { createRooms, everyoneReady, markIdle, removePlayer, roomView } from './
 export const JOINS_PER_MINUTE = 5;
 const SWEEP_MS = 30_000;
 
+const SOCKET_RATE_LIMITS = {
+  'room:create': { limit: 3, windowMs: 10_000 },
+  'room:join': { limit: 5, windowMs: 60_000 },
+  'player:ready': { limit: 10, windowMs: 10_000 },
+  'night:begin': { limit: 3, windowMs: 10_000 },
+  'player:move': { limit: 20, windowMs: 1_000 },
+  interact: { limit: 10, windowMs: 2_000 },
+  'door:slam': { limit: 5, windowMs: 5_000 },
+  'exit:at': { limit: 10, windowMs: 5_000 },
+};
+
 export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
   // Every join attempt counts, right or wrong: this is what makes guessing codes slow.
   const joins = createRateLimiter({ limit: JOINS_PER_MINUTE, windowMs: 60_000, now });
+  const socketLimiter = createSocketRateLimiter({ limits: SOCKET_RATE_LIMITS, now });
   const broadcastRoom = (room) => io.to(room.code).emit('room:update', roomView(room));
   // Each player's sockets also sit in a channel of their own, for things only they get.
   const playerChannel = (playerId) => `player:${playerId}`;
@@ -80,10 +92,11 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
   sweeper.unref?.();
 
   io.on('connection', (socket) => {
-    // Every event is validated first; a bad payload is ignored, never trusted.
+    // Every event is validated and rate-limited first; a bad payload is ignored, never trusted.
     const handle = (event, fn) =>
       socket.on(event, (payload, ack) => {
         const reply = typeof ack === 'function' ? ack : () => {};
+        if (!socketLimiter.allowed(socket.id, event)) return reply({ error: 'rate-limited' });
         const parsed = schemas[event].safeParse(payload);
         if (!parsed.success) return reply({ error: 'bad-request' });
         try {
@@ -172,7 +185,10 @@ export function attachGame(io, { rooms = createRooms(), now = Date.now } = {}) {
       checkExit(room, player.id, at);
     });
 
-    socket.on('disconnect', () => leave(socket));
+    socket.on('disconnect', () => {
+      leave(socket);
+      socketLimiter.remove(socket.id);
+    });
   });
 
   return { rooms, sweep: () => rooms.sweep(now()), stop: () => clearInterval(sweeper) };
