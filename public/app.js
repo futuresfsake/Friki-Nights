@@ -114,10 +114,29 @@ joinForm.addEventListener('submit', (e) => {
   messageInput.focus();
 });
 
+const SLASH_COMMANDS = {
+  '/shrug': String.raw`¯\_(ツ)_/¯`,
+  '/tableflip': '(╯°□°)╯︵ ┻━┻',
+  '/unflip': '┬─┬ ノ( ゜-゜ノ)',
+  '/lenny': '( ͡° ͜ʖ ͡°)',
+  '/disapproval': 'ಠ_ಠ',
+  '/sparkles': '✨✨✨',
+  '/fight': '(ง •_•)ง',
+  '/bear': 'ʕ•ᴥ•ʔ',
+};
+
 messageForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const message = messageInput.value.trim();
+  let message = messageInput.value.trim();
   if (!message) return;
+
+  for (const [cmd, replacement] of Object.entries(SLASH_COMMANDS)) {
+    if (message.startsWith(cmd)) {
+      const rest = message.slice(cmd.length).trim();
+      message = rest ? `${rest} ${replacement}` : replacement;
+      break;
+    }
+  }
 
   socket.emit('chat-message', { message });
   socket.emit('stop-typing');
