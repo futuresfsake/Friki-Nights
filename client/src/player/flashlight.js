@@ -24,11 +24,14 @@ export function createFlashlight(camera, { onToggle }) {
 
   let blink = null;
   let nextBlinkAt = null;
+  let lowWarned = false;
 
   function update(dt, time, reduceFlashing = false) {
     state.battery = drainBattery(state.battery, state.on, dt);
     if (state.battery <= 0) state.on = false;
     const low = state.battery < BATTERY_LOW;
+    if (low && !lowWarned && state.on) lowWarned = true;
+    if (!low) lowWarned = false;
 
     if (nextBlinkAt === null) nextBlinkAt = time + nextBlinkDelay(low);
     if (blink && blinkFinished(blink, time)) blink = null;
