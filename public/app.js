@@ -142,6 +142,15 @@ messageInput.addEventListener('input', () => {
   charCount.classList.toggle('danger', len > 950);
 });
 
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    messageInput.value = '';
+    charCount.textContent = '0/1000';
+    charCount.classList.remove('warning', 'danger');
+    socket.emit('stop-typing');
+  }
+});
+
 function getInitials(name) {
   return name.charAt(0).toUpperCase();
 }
