@@ -19,7 +19,12 @@ export function createGameServer({ clientOrigin, accessPhrase, now }) {
   });
 
   // Pinged by the lobby to wake Render's free tier ("Waking the house…").
-  app.get('/health', (_req, res) => res.type('text').send('ok'));
+  app.get('/health', (_req, res) => {
+    res.type('json').send(JSON.stringify({
+      status: 'ok',
+      uptime: Math.floor(process.uptime()),
+    }));
+  });
 
   const http = createServer(app);
   const io = new Server(http, {
